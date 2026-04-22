@@ -1,0 +1,122 @@
+# OpenPortal — Docker Compose for Local Development
+# Usage: pnpm docker:dev (or docker compose -f docker/docker-compose.dev.yml up -d)
+
+services:
+  # ─────────────────────────────────────────────
+  # PostgreSQL 16 — Primary Database
+  # ─────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: openportal-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: openportal
+      POSTGRES_PASSWORD: openportal_dev
+      POSTGRES_DB: openportal
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openportal"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # Redis 7 — Cache, Sessions, Real-time Pub/Sub
+  # ─────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: openportal-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # Meilisearch — Full-Text Search Engine
+  # ─────────────────────────────────────────────
+  meilisearch:
+    image: getmeili/meilisearch:v1.12
+    container_name: openportal-meilisearch
+    restart: unless-stopped
+    ports:
+      - "7700:7700"
+    environment:
+      MEILI_MASTER_KEY: openportal_search_dev_key
+      MEILI_ENV: development
+      MEILI_LOG_LEVEL: INFO
+    volumes:
+      - ./data/meilisearch:/meili_data
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:7700/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # MinIO — S3-Compatible Object Storage
+  # ─────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: openportal-minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"   # API
+      - "9001:9001"   # Console
+    environment:
+      MINIO_ROOT_USER: openportal
+      MINIO_ROOT_PASSWORD: openportal_dev
+    command: server /data --console-address ":9001"
+    volumes:
+      - ./data/minio:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ─────────────────────────────────────────────
+  # MinIO Setup — Create default buckets
+  # ─────────────────────────────────────────────
+  minio-setup:
+    image: minio/mc:latest
+    container_name: openportal-minio-setup
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set openportal http://minio:9000 openportal openportal_dev;
+        mc mb --ignore-existing openportal/documents;
+        mc mb --ignore-existing openportal/avatars;
+        mc mb --ignore-existing openportal/thumbnails;
+        mc mb --ignore-existing openportal/exports;
+        mc anonymous set download openportal/avatars;
+        mc anonymous set download openportal/thumbnails;
+        echo 'MinIO buckets created successfully';
+      "
+
+  # ─────────────────────────────────────────────
+  # Mailpit — Email Testing (catches all emails)
+  # ─────────────────────────────────────────────
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: openportal-mailpit
+    restart: unless-stopped
+    ports:
+      - "8025:8025"   # Web UI
+      - "1025:1025"   # SMTP
+    environment:
+      MP_MAX_MESSAGES: 5000
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
