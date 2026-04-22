@@ -1,116 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --brand-primary: #2563EB;
-    --brand-primary-hover: #1D4ED8;
-    --surface-bg: #FFFFFF;
-    --surface-secondary: #F8FAFC;
-    --text-primary: #0F172A;
-    --text-secondary: #475569;
-    --text-tertiary: #94A3B8;
-    --border-default: #E2E8F0;
+    --color-bg: #FAFAF9;
+    --color-surface: #FFFFFF;
+    --color-subtle: #F5F5F4;
+    --color-muted: #E7E5E4;
+    --color-border: #E7E5E4;
+    --color-border-subtle: #F0EEEC;
+    --color-text: #1C1917;
+    --color-text-secondary: #78716C;
+    --color-text-tertiary: #A8A29E;
+    --color-accent: #1D4ED8;
+    --color-accent-subtle: #EFF6FF;
+    --sidebar-width: 240px;
   }
 
-  .dark {
-    --brand-primary: #3B82F6;
-    --brand-primary-hover: #60A5FA;
-    --surface-bg: #0F172A;
-    --surface-secondary: #1E293B;
-    --text-primary: #F1F5F9;
-    --text-secondary: #94A3B8;
-    --text-tertiary: #64748B;
-    --border-default: #334155;
+  * {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    @apply bg-surface text-slate-900 antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-size: 13px;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
   }
 
-  /* Smooth scrolling */
-  html {
-    scroll-behavior: smooth;
+  ::selection {
+    background: var(--color-accent);
+    color: white;
   }
 
-  /* Focus styles */
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-brand-600;
+    outline: 1.5px solid var(--color-accent);
+    outline-offset: 1px;
+    border-radius: 4px;
+  }
+
+  input, button, textarea, select {
+    font-family: inherit;
   }
 }
 
 @layer components {
-  /* Button base */
-  .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 
-           text-sm font-medium transition-all duration-150 
-           focus-visible:outline-2 focus-visible:outline-offset-2 
-           disabled:opacity-50 disabled:cursor-not-allowed;
-  }
-
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700 
-           focus-visible:outline-brand-600 active:bg-brand-800
-           shadow-sm hover:shadow;
+    @apply inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5
+           text-xs font-medium transition-all duration-100
+           disabled:opacity-40 disabled:cursor-not-allowed;
+    background: var(--color-text);
+    color: white;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #292524;
+    transform: translateY(-0.5px);
+  }
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
   }
 
   .btn-secondary {
-    @apply btn bg-white text-slate-700 border border-slate-300 
-           hover:bg-slate-50 hover:border-slate-400 
-           focus-visible:outline-brand-600;
+    @apply inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5
+           text-xs font-medium transition-all duration-100;
+    color: var(--color-text);
+    background: var(--color-surface);
+    box-shadow: 0 0 0 1px var(--color-border), 0 1px 2px 0 rgba(0,0,0,0.03);
+  }
+  .btn-secondary:hover {
+    background: var(--color-subtle);
   }
 
-  .btn-ghost {
-    @apply btn text-slate-600 hover:bg-slate-100 hover:text-slate-900;
-  }
-
-  .btn-danger {
-    @apply btn bg-red-600 text-white hover:bg-red-700;
-  }
-
-  /* Input base */
   .input {
-    @apply w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 
-           text-sm text-slate-900 placeholder:text-slate-400
-           focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none
-           transition-colors duration-150;
+    @apply w-full rounded-md px-3 py-2 text-xs transition-colors duration-100;
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: 0 0 0 1px var(--color-border);
+  }
+  .input::placeholder {
+    color: var(--color-text-tertiary);
+  }
+  .input:focus {
+    box-shadow: 0 0 0 1px var(--color-accent), 0 0 0 3px rgba(29,78,216,0.08);
+    outline: none;
   }
 
-  .input-error {
-    @apply input border-red-300 focus:border-red-500 focus:ring-red-500/20;
-  }
-
-  /* Card */
-  .card {
-    @apply rounded-xl border border-slate-200 bg-white shadow-card;
-  }
-
-  /* Badge */
-  .badge {
-    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  .surface-elevated {
+    background: var(--color-surface);
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.04);
   }
 }
 
 @layer utilities {
-  /* Custom scrollbar */
-  .scrollbar-thin {
-    scrollbar-width: thin;
-    scrollbar-color: #CBD5E1 transparent;
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
   }
-  
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
   }
-  
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
+
+  .fade-in {
+    animation: fadeIn 0.4s ease-out both;
   }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #CBD5E1;
-    border-radius: 3px;
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
+
+  .stagger-1 { animation-delay: 0.03s; }
+  .stagger-2 { animation-delay: 0.06s; }
+  .stagger-3 { animation-delay: 0.09s; }
+  .stagger-4 { animation-delay: 0.12s; }
+  .stagger-5 { animation-delay: 0.15s; }
 }
