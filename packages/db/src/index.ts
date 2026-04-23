@@ -4,36 +4,31 @@ import * as tenantSchema from "./schema/tenants";
 import * as userSchema from "./schema/users";
 import * as siteSchema from "./schema/sites";
 import * as auditSchema from "./schema/audit";
+import * as documentSchema from "./schema/documents";
 
-// Combine all schemas
 const schema = {
   ...tenantSchema,
   ...userSchema,
   ...siteSchema,
   ...auditSchema,
+  ...documentSchema,
 };
 
-// Create the database connection
 const connectionString = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
 
-// For query purposes (connection pool)
 const queryClient = postgres(connectionString, {
-  max: 20,               // Max connections in pool
-  idle_timeout: 20,      // Close idle connections after 20s
-  connect_timeout: 10,   // Connection timeout 10s
+  max: 20,
+  idle_timeout: 20,
+  connect_timeout: 10,
 });
 
-// The Drizzle ORM instance — use this everywhere
 export const db = drizzle(queryClient, { schema });
 
-// Export all schemas
 export * from "./schema/tenants";
 export * from "./schema/users";
 export * from "./schema/sites";
 export * from "./schema/audit";
+export * from "./schema/documents";
 
-// Export the schema object for migrations
 export { schema };
-
-// Export types
 export type Database = typeof db;

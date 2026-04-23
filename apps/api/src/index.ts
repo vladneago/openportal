@@ -9,19 +9,13 @@ import { authRoutes } from "./modules/auth/routes";
 import { tenantRoutes } from "./modules/tenants/routes";
 import { siteRoutes } from "./modules/sites/routes";
 import { userRoutes } from "./modules/users/routes";
+import { documentRoutes } from "./modules/documents/routes";
 import { healthRoutes } from "./modules/health";
 import { errorHandler } from "./middleware/error-handler";
 
-// ─────────────────────────────────────────────
-// Create the Hono app
-// ─────────────────────────────────────────────
-
 const app = new Hono();
 
-// ─────────────────────────────────────────────
 // Global Middleware
-// ─────────────────────────────────────────────
-
 app.use("*", requestId());
 app.use("*", logger());
 app.use("*", secureHeaders());
@@ -33,17 +27,9 @@ app.use("*", cors({
   exposeHeaders: ["X-Request-Id"],
 }));
 
-// ─────────────────────────────────────────────
-// Error handling
-// ─────────────────────────────────────────────
-
 app.onError(errorHandler);
 
-// ─────────────────────────────────────────────
-// Routes
-// ─────────────────────────────────────────────
-
-// Health check (no auth required)
+// Health
 app.route("/api/health", healthRoutes);
 
 // API v1
@@ -52,12 +38,9 @@ v1.route("/auth", authRoutes);
 v1.route("/tenants", tenantRoutes);
 v1.route("/sites", siteRoutes);
 v1.route("/users", userRoutes);
+v1.route("/documents", documentRoutes);
 
 app.route("/api/v1", v1);
-
-// ─────────────────────────────────────────────
-// 404 handler
-// ─────────────────────────────────────────────
 
 app.notFound((c) => {
   return c.json({
@@ -66,18 +49,14 @@ app.notFound((c) => {
   }, 404);
 });
 
-// ─────────────────────────────────────────────
-// Start the server
-// ─────────────────────────────────────────────
-
 const port = parseInt(process.env.API_PORT || "4000", 10);
 
 console.log(`
 ╔══════════════════════════════════════════╗
-║          🌐 OpenPortal API              ║
+║          OpenPortal API v0.2            ║
 ║                                          ║
-║   Running on: http://localhost:${port}      ║
-║   Environment: ${process.env.NODE_ENV || "development"}            ║
+║   http://localhost:${port}                  ║
+║   Sprint 3: Document Libraries           ║
 ╚══════════════════════════════════════════╝
 `);
 
