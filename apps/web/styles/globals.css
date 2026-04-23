@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&display=swap');
+@import url('https://cdn.jsdelivr.net/npm/geist@1.0.0/dist/fonts/geist-sans/style.css');
 
 @tailwind base;
 @tailwind components;
@@ -6,18 +6,28 @@
 
 @layer base {
   :root {
-    --color-bg: #FAFAF9;
-    --color-surface: #FFFFFF;
-    --color-subtle: #F5F5F4;
-    --color-muted: #E7E5E4;
-    --color-border: #E7E5E4;
-    --color-border-subtle: #F0EEEC;
-    --color-text: #1C1917;
-    --color-text-secondary: #78716C;
-    --color-text-tertiary: #A8A29E;
-    --color-accent: #1D4ED8;
-    --color-accent-subtle: #EFF6FF;
-    --sidebar-width: 240px;
+    /* Sidebar (dark) */
+    --sidebar-bg: #09090B;
+    --sidebar-border: rgba(255,255,255,0.06);
+    --sidebar-text: #71717A;
+    --sidebar-text-hover: #A1A1AA;
+    --sidebar-text-active: #FAFAFA;
+    --sidebar-hover: rgba(255,255,255,0.03);
+    --sidebar-active: rgba(255,255,255,0.06);
+    --sidebar-muted: #3F3F46;
+    --sidebar-subtle: #52525B;
+    /* Main content */
+    --page-bg: #FAFAFA;
+    --surface: #FFFFFF;
+    --border: #F4F4F5;
+    --border-hover: #E4E4E7;
+    --text: #18181B;
+    --text-secondary: #71717A;
+    --text-tertiary: #A1A1AA;
+    --text-muted: #D4D4D8;
+    --accent: #6366F1;
+    --accent-subtle: #8B5CF6;
+    --success: #10B981;
   }
 
   * {
@@ -26,75 +36,82 @@
   }
 
   body {
-    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--color-bg);
-    color: var(--color-text);
+    font-family: 'Geist', 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--sidebar-bg);
+    color: var(--text);
     font-size: 13px;
     line-height: 1.5;
     letter-spacing: -0.01em;
   }
 
   ::selection {
-    background: var(--color-accent);
+    background: var(--accent);
     color: white;
   }
 
   *:focus-visible {
-    outline: 1.5px solid var(--color-accent);
+    outline: 1.5px solid var(--accent);
     outline-offset: 1px;
     border-radius: 4px;
-  }
-
-  input, button, textarea, select {
-    font-family: inherit;
   }
 }
 
 @layer components {
   .btn-primary {
     @apply inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5
-           text-xs font-medium transition-all duration-100
+           text-xs font-medium transition-all duration-100 border-0 cursor-pointer
            disabled:opacity-40 disabled:cursor-not-allowed;
-    background: var(--color-text);
+    background: var(--text);
     color: white;
   }
   .btn-primary:hover:not(:disabled) {
-    background: #292524;
-    transform: translateY(-0.5px);
+    background: #27272A;
   }
   .btn-primary:active:not(:disabled) {
-    transform: translateY(0);
+    transform: scale(0.98);
   }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5
-           text-xs font-medium transition-all duration-100;
-    color: var(--color-text);
-    background: var(--color-surface);
-    box-shadow: 0 0 0 1px var(--color-border), 0 1px 2px 0 rgba(0,0,0,0.03);
+           text-xs font-medium transition-all duration-100 border-0 cursor-pointer;
+    color: var(--text);
+    background: var(--surface);
+    box-shadow: 0 0 0 1px var(--border-hover), 0 1px 2px rgba(0,0,0,0.04);
   }
   .btn-secondary:hover {
-    background: var(--color-subtle);
+    background: var(--page-bg);
+    box-shadow: 0 0 0 1px var(--border-hover), 0 2px 4px rgba(0,0,0,0.06);
   }
 
   .input {
-    @apply w-full rounded-md px-3 py-2 text-xs transition-colors duration-100;
-    background: var(--color-surface);
-    color: var(--color-text);
-    box-shadow: 0 0 0 1px var(--color-border);
+    @apply w-full rounded-md px-3 py-2 text-xs transition-all duration-100 border-0;
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: 0 0 0 1px var(--border-hover);
   }
   .input::placeholder {
-    color: var(--color-text-tertiary);
+    color: var(--text-tertiary);
   }
   .input:focus {
-    box-shadow: 0 0 0 1px var(--color-accent), 0 0 0 3px rgba(29,78,216,0.08);
+    box-shadow: 0 0 0 1px var(--accent), 0 0 0 3px rgba(99,102,241,0.1);
     outline: none;
   }
 
-  .surface-elevated {
-    background: var(--color-surface);
+  .panel {
+    background: var(--surface);
     border-radius: 10px;
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .panel-row {
+    @apply flex items-center gap-3 px-4 py-3 transition-colors duration-100 cursor-pointer;
+  }
+  .panel-row:hover {
+    background: var(--page-bg);
+  }
+  .panel-row:not(:last-child) {
+    border-bottom: 1px solid var(--page-bg);
   }
 }
 
@@ -106,19 +123,4 @@
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
-
-  .fade-in {
-    animation: fadeIn 0.4s ease-out both;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .stagger-1 { animation-delay: 0.03s; }
-  .stagger-2 { animation-delay: 0.06s; }
-  .stagger-3 { animation-delay: 0.09s; }
-  .stagger-4 { animation-delay: 0.12s; }
-  .stagger-5 { animation-delay: 0.15s; }
 }
