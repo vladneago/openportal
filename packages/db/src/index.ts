@@ -6,6 +6,7 @@ import * as siteSchema from "./schema/sites";
 import * as auditSchema from "./schema/audit";
 import * as documentSchema from "./schema/documents";
 import * as tableSchema from "./schema/tables";
+import * as pageSchema from "./schema/pages";
 
 const schema = {
   ...tenantSchema,
@@ -14,16 +15,11 @@ const schema = {
   ...auditSchema,
   ...documentSchema,
   ...tableSchema,
+  ...pageSchema,
 };
 
 const connectionString = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
-
-const queryClient = postgres(connectionString, {
-  max: 20,
-  idle_timeout: 20,
-  connect_timeout: 10,
-});
-
+const queryClient = postgres(connectionString, { max: 20, idle_timeout: 20, connect_timeout: 10 });
 export const db = drizzle(queryClient, { schema });
 
 export * from "./schema/tenants";
@@ -32,6 +28,7 @@ export * from "./schema/sites";
 export * from "./schema/audit";
 export * from "./schema/documents";
 export * from "./schema/tables";
+export * from "./schema/pages";
 
 export { schema };
 export type Database = typeof db;
