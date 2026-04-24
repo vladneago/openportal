@@ -5,6 +5,7 @@ import * as userSchema from "./schema/users";
 import * as siteSchema from "./schema/sites";
 import * as auditSchema from "./schema/audit";
 import * as documentSchema from "./schema/documents";
+import * as tableSchema from "./schema/tables";
 
 const schema = {
   ...tenantSchema,
@@ -12,6 +13,7 @@ const schema = {
   ...siteSchema,
   ...auditSchema,
   ...documentSchema,
+  ...tableSchema,
 };
 
 const connectionString = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
@@ -29,6 +31,7 @@ export * from "./schema/users";
 export * from "./schema/sites";
 export * from "./schema/audit";
 export * from "./schema/documents";
+export * from "./schema/tables";
 
 export { schema };
 export type Database = typeof db;

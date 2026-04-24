@@ -10,12 +10,12 @@ import { tenantRoutes } from "./modules/tenants/routes";
 import { siteRoutes } from "./modules/sites/routes";
 import { userRoutes } from "./modules/users/routes";
 import { documentRoutes } from "./modules/documents/routes";
+import { tableRoutes } from "./modules/tables/routes";
 import { healthRoutes } from "./modules/health";
 import { errorHandler } from "./middleware/error-handler";
 
 const app = new Hono();
 
-// Global Middleware
 app.use("*", requestId());
 app.use("*", logger());
 app.use("*", secureHeaders());
@@ -28,38 +28,22 @@ app.use("*", cors({
 }));
 
 app.onError(errorHandler);
-
-// Health
 app.route("/api/health", healthRoutes);
 
-// API v1
 const v1 = new Hono();
 v1.route("/auth", authRoutes);
 v1.route("/tenants", tenantRoutes);
 v1.route("/sites", siteRoutes);
 v1.route("/users", userRoutes);
 v1.route("/documents", documentRoutes);
+v1.route("/tables", tableRoutes);
 
 app.route("/api/v1", v1);
 
-app.notFound((c) => {
-  return c.json({
-    success: false,
-    error: { code: "NOT_FOUND", message: "The requested resource was not found" },
-  }, 404);
-});
+app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));
 
 const port = parseInt(process.env.API_PORT || "4000", 10);
-
-console.log(`
-╔══════════════════════════════════════════╗
-║          OpenPortal API v0.2            ║
-║                                          ║
-║   http://localhost:${port}                  ║
-║   Sprint 3: Document Libraries           ║
-╚══════════════════════════════════════════╝
-`);
-
+console.log(`\n  OpenPortal API v0.3 — http://localhost:${port}\n  Sprint 5: Tables & Data\n`);
 serve({ fetch: app.fetch, port });
 
 export default app;
