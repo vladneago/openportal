@@ -7,15 +7,14 @@ import * as auditSchema from "./schema/audit";
 import * as documentSchema from "./schema/documents";
 import * as tableSchema from "./schema/tables";
 import * as pageSchema from "./schema/pages";
+import * as commentSchema from "./schema/comments";
+import * as notificationSchema from "./schema/notifications";
+import * as formSchema from "./schema/forms";
 
 const schema = {
-  ...tenantSchema,
-  ...userSchema,
-  ...siteSchema,
-  ...auditSchema,
-  ...documentSchema,
-  ...tableSchema,
-  ...pageSchema,
+  ...tenantSchema, ...userSchema, ...siteSchema, ...auditSchema,
+  ...documentSchema, ...tableSchema, ...pageSchema,
+  ...commentSchema, ...notificationSchema, ...formSchema,
 };
 
 const connectionString = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
@@ -29,6 +28,9 @@ export * from "./schema/audit";
 export * from "./schema/documents";
 export * from "./schema/tables";
 export * from "./schema/pages";
+export * from "./schema/comments";
+export * from "./schema/notifications";
+export * from "./schema/forms";
 
 export { schema };
 export type Database = typeof db;

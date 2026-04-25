@@ -12,6 +12,9 @@ import { userRoutes } from "./modules/users/routes";
 import { documentRoutes } from "./modules/documents/routes";
 import { tableRoutes } from "./modules/tables/routes";
 import { pageRoutes } from "./modules/pages/routes";
+import { commentRoutes } from "./modules/comments/routes";
+import { notificationRoutes } from "./modules/notifications/routes";
+import { formRoutes } from "./modules/forms/routes";
 import { healthRoutes } from "./modules/health";
 import { errorHandler } from "./middleware/error-handler";
 
@@ -39,12 +42,15 @@ v1.route("/users", userRoutes);
 v1.route("/documents", documentRoutes);
 v1.route("/tables", tableRoutes);
 v1.route("/pages", pageRoutes);
+v1.route("/comments", commentRoutes);
+v1.route("/notifications", notificationRoutes);
+v1.route("/forms", formRoutes);
 
 app.route("/api/v1", v1);
 
 app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));
 
 const port = parseInt(process.env.API_PORT || "4000", 10);
-console.log(`\n  OpenPortal API v0.4 — http://localhost:${port}\n  Sprint 6: Page Editor\n`);
+console.log(`\n  OpenPortal API v0.5 — http://localhost:${port}\n  Comments, Notifications, Forms\n`);
 serve({ fetch: app.fetch, port });
 export default app;
