@@ -17,6 +17,8 @@ import { notificationRoutes } from "./modules/notifications/routes";
 import { formRoutes } from "./modules/forms/routes";
 import { workflowRoutes } from "./modules/workflows/routes";
 import { analyticsRoutes } from "./modules/analytics/routes";
+import { chatRoutes } from "./modules/chat/routes";
+import { calendarRoutes } from "./modules/calendar/routes";
 import { healthRoutes } from "./modules/health";
 import { errorHandler } from "./middleware/error-handler";
 
@@ -49,12 +51,14 @@ v1.route("/notifications", notificationRoutes);
 v1.route("/forms", formRoutes);
 v1.route("/workflows", workflowRoutes);
 v1.route("/analytics", analyticsRoutes);
+v1.route("/chat", chatRoutes);
+v1.route("/calendar", calendarRoutes);
 
 app.route("/api/v1", v1);
 
 app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));
 
 const port = parseInt(process.env.API_PORT || "4000", 10);
-console.log(`\n  OpenPortal API v0.6 — http://localhost:${port}\n  Workflows + Analytics\n`);
+console.log(`\n  OpenPortal API v0.7 — http://localhost:${port}\n  Phase 2: Chat & Calendar\n`);
 serve({ fetch: app.fetch, port });
 export default app;

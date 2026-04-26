@@ -13,6 +13,8 @@ const NAV_ITEMS = [
   { id: "tables", label: "Tabele", href: "/tables" },
   { id: "forms", label: "Formulare", href: "/forms" },
   { id: "workflows", label: "Automatizări", href: "/workflows" },
+  { id: "chat", label: "Mesaje", href: "/chat" },
+  { id: "calendar", label: "Calendar", href: "/calendar" },
   { id: "search", label: "Căutare", href: "/search" },
 ];
 
@@ -30,14 +32,11 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const [sites, setSites] = useState<SiteItem[]>([]);
   const [tenantName, setTenantName] = useState("OpenPortal");
-const [user, setUser] = useState<any>(null);
-
-useEffect(() => {
-  setUser(getUser());
-}, []);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     async function loadSidebar() {
+      setUser(getUser());
       const [sitesRes, tenantRes] = await Promise.all([
         api("/api/v1/sites"),
         api("/api/v1/tenants/current"),
@@ -202,6 +201,8 @@ function NavIcon({ id, active }: { id: string; active: boolean }) {
     case "tables": return <svg {...p}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>;
     case "forms": return <svg {...p}><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h4"/></svg>;
     case "workflows": return <svg {...p}><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M5 8v2a4 4 0 0 0 4 4h2M19 8v2a4 4 0 0 1-4 4h-2"/></svg>;
+    case "chat": return <svg {...p}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
+    case "calendar": return <svg {...p}><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>;
     case "search": return <svg {...p}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
     default: return null;
   }

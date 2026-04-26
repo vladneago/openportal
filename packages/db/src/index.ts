@@ -11,12 +11,14 @@ import * as commentSchema from "./schema/comments";
 import * as notificationSchema from "./schema/notifications";
 import * as formSchema from "./schema/forms";
 import * as workflowSchema from "./schema/workflows";
+import * as chatSchema from "./schema/chat";
+import * as calendarSchema from "./schema/calendar";
 
 const schema = {
   ...tenantSchema, ...userSchema, ...siteSchema, ...auditSchema,
   ...documentSchema, ...tableSchema, ...pageSchema,
   ...commentSchema, ...notificationSchema, ...formSchema,
-  ...workflowSchema,
+  ...workflowSchema, ...chatSchema, ...calendarSchema,
 };
 
 const connectionString = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
@@ -34,6 +36,8 @@ export * from "./schema/comments";
 export * from "./schema/notifications";
 export * from "./schema/forms";
 export * from "./schema/workflows";
+export * from "./schema/chat";
+export * from "./schema/calendar";
 
 export { schema };
 export type Database = typeof db;
