@@ -30,7 +30,11 @@ export default function PortalLayout({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const [sites, setSites] = useState<SiteItem[]>([]);
   const [tenantName, setTenantName] = useState("OpenPortal");
-  const user = getUser();
+const [user, setUser] = useState<any>(null);
+
+useEffect(() => {
+  setUser(getUser());
+}, []);
 
   useEffect(() => {
     async function loadSidebar() {

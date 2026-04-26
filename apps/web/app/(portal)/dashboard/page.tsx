@@ -6,7 +6,7 @@ import Link from "next/link";
 
 interface Stats {
   sites: number; users: number; documents: number; storageBytes: number;
-  tables: number; tableRows: number; pages: number; publishedPages: number;
+  libraries: number; tables: number; tableRows: number; pages: number; publishedPages: number;
   forms: number; formSubmissions: number; workflows: number; workflowRuns: number;
 }
 
@@ -16,7 +16,11 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [sites, setSites] = useState<SiteItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const user = getUser();
+const [user, setUser] = useState<any>(null);
+
+useEffect(() => {
+  setUser(getUser());
+}, []);
 
   useEffect(() => {
     async function load() {
