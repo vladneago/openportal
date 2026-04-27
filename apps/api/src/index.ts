@@ -21,48 +21,30 @@ import { chatRoutes } from "./modules/chat/routes";
 import { calendarRoutes } from "./modules/calendar/routes";
 import { portalRoutes } from "./modules/portal/routes";
 import { educationRoutes } from "./modules/education/routes";
+import { hrRoutes } from "./modules/hr/routes";
+import { projectRoutes } from "./modules/projects/routes";
 import { healthRoutes } from "./modules/health";
 import { errorHandler } from "./middleware/error-handler";
 
 const app = new Hono();
-
 app.use("*", requestId());
 app.use("*", logger());
 app.use("*", secureHeaders());
-app.use("*", cors({
-  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
-  credentials: true,
-  allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowHeaders: ["Content-Type", "Authorization", "X-Tenant-ID"],
-  exposeHeaders: ["X-Request-Id"],
-}));
-
+app.use("*", cors({ origin: process.env.CORS_ORIGIN || "http://localhost:3000", credentials: true, allowMethods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"], allowHeaders: ["Content-Type","Authorization","X-Tenant-ID"], exposeHeaders: ["X-Request-Id"] }));
 app.onError(errorHandler);
 app.route("/api/health", healthRoutes);
 
 const v1 = new Hono();
-v1.route("/auth", authRoutes);
-v1.route("/tenants", tenantRoutes);
-v1.route("/sites", siteRoutes);
-v1.route("/users", userRoutes);
-v1.route("/documents", documentRoutes);
-v1.route("/tables", tableRoutes);
-v1.route("/pages", pageRoutes);
-v1.route("/comments", commentRoutes);
-v1.route("/notifications", notificationRoutes);
-v1.route("/forms", formRoutes);
-v1.route("/workflows", workflowRoutes);
-v1.route("/analytics", analyticsRoutes);
-v1.route("/chat", chatRoutes);
-v1.route("/calendar", calendarRoutes);
-v1.route("/portal", portalRoutes);
-v1.route("/education", educationRoutes);
-
+v1.route("/auth", authRoutes); v1.route("/tenants", tenantRoutes); v1.route("/sites", siteRoutes);
+v1.route("/users", userRoutes); v1.route("/documents", documentRoutes); v1.route("/tables", tableRoutes);
+v1.route("/pages", pageRoutes); v1.route("/comments", commentRoutes); v1.route("/notifications", notificationRoutes);
+v1.route("/forms", formRoutes); v1.route("/workflows", workflowRoutes); v1.route("/analytics", analyticsRoutes);
+v1.route("/chat", chatRoutes); v1.route("/calendar", calendarRoutes); v1.route("/portal", portalRoutes);
+v1.route("/education", educationRoutes); v1.route("/hr", hrRoutes); v1.route("/projects", projectRoutes);
 app.route("/api/v1", v1);
 
 app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));
-
 const port = parseInt(process.env.API_PORT || "4000", 10);
-console.log(`\n  OpenPortal API v0.8 — http://localhost:${port}\n  Portal Builder + Education Module\n`);
+console.log(`\n  OpenPortal API v0.9 — http://localhost:${port}\n  HR + Project Management\n`);
 serve({ fetch: app.fetch, port });
 export default app;
