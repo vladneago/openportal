@@ -10,6 +10,8 @@ import * as calendarSchema from "./schema/calendar"; import * as portalSchema fr
 import * as educationSchema from "./schema/education"; import * as hrSchema from "./schema/hr";
 import * as projectSchema from "./schema/projects"; import * as supportSchema from "./schema/support";
 import * as crmSchema from "./schema/crm"; import * as financeSchema from "./schema/finance";
+import * as governmentSchema from "./schema/government"; import * as legalSchema from "./schema/legal";
+import * as healthcareSchema from "./schema/healthcare";
 
 const schema = {
   ...tenantSchema, ...userSchema, ...siteSchema, ...auditSchema,
@@ -18,6 +20,7 @@ const schema = {
   ...workflowSchema, ...chatSchema, ...calendarSchema,
   ...portalSchema, ...educationSchema, ...hrSchema, ...projectSchema,
   ...supportSchema, ...crmSchema, ...financeSchema,
+  ...governmentSchema, ...legalSchema, ...healthcareSchema,
 };
 
 const connectionString = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
@@ -30,7 +33,8 @@ export * from "./schema/pages"; export * from "./schema/comments"; export * from
 export * from "./schema/forms"; export * from "./schema/workflows"; export * from "./schema/chat";
 export * from "./schema/calendar"; export * from "./schema/portal"; export * from "./schema/education";
 export * from "./schema/hr"; export * from "./schema/projects"; export * from "./schema/support";
-export * from "./schema/crm"; export * from "./schema/finance";
+export * from "./schema/crm"; export * from "./schema/finance"; export * from "./schema/government";
+export * from "./schema/legal"; export * from "./schema/healthcare";
 
 export { schema };
 export type Database = typeof db;
