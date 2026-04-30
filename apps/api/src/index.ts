@@ -29,6 +29,9 @@ import { financeRoutes } from "./modules/finance/routes";
 import { governmentRoutes } from "./modules/government/routes";
 import { legalRoutes } from "./modules/legal/routes";
 import { healthcareRoutes } from "./modules/healthcare/routes";
+import { realestateRoutes } from "./modules/realestate/routes";
+import { eventsRoutes } from "./modules/events/routes";
+import { itopsRoutes } from "./modules/itops/routes";
 import { healthRoutes } from "./modules/health";
 import { errorHandler } from "./middleware/error-handler";
 
@@ -49,10 +52,17 @@ v1.route("/chat", chatRoutes); v1.route("/calendar", calendarRoutes); v1.route("
 v1.route("/education", educationRoutes); v1.route("/hr", hrRoutes); v1.route("/projects", projectRoutes);
 v1.route("/support", supportRoutes); v1.route("/crm", crmRoutes); v1.route("/finance", financeRoutes);
 v1.route("/government", governmentRoutes); v1.route("/legal", legalRoutes); v1.route("/healthcare", healthcareRoutes);
+v1.route("/realestate", realestateRoutes); v1.route("/events", eventsRoutes); v1.route("/itops", itopsRoutes);
 app.route("/api/v1", v1);
 
 app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));
 const port = parseInt(process.env.API_PORT || "4000", 10);
-console.log(`\n  OpenPortal API v1.1 — http://localhost:${port}\n  24 modules · Government + Legal + Healthcare\n`);
+console.log(`
+╔══════════════════════════════════════════════╗
+║       OpenPortal API v1.2 COMPLETE           ║
+║   http://localhost:${port}                       ║
+║   27 modules · All verticals deployed        ║
+╚══════════════════════════════════════════════╝
+`);
 serve({ fetch: app.fetch, port });
 export default app;
