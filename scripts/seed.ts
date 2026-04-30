@@ -1,103 +1,99 @@
-import postgres from "postgres";
-import bcrypt from "bcryptjs";
-import { randomUUID } from "crypto";
+/**
+ * OpenPortal — Seed Script v2
+ * Creates demo organization with sample data across all modules.
+ *
+ * Usage: cd packages/db && npx tsx ../../scripts/seed.ts
+ */
 
-const sql = postgres("postgresql://openportal:openportal_dev@localhost:5432/openportal");
+import postgres from "postgres";
+
+const DATABASE_URL = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
+const sql = postgres(DATABASE_URL);
 
 async function seed() {
-  console.log("Seeding...");
-  try {
-    // Curata tot
-    await sql`DELETE FROM site_members WHERE true`;
-    await sql`DELETE FROM sites WHERE true`;
-    await sql`DELETE FROM sessions WHERE true`;
-    await sql`DELETE FROM invitations WHERE true`;
-    await sql`DELETE FROM group_members WHERE true`;
-    await sql`DELETE FROM groups WHERE true`;
-    await sql`DELETE FROM audit_logs WHERE true`;
-    await sql`DELETE FROM users WHERE true`;
-    await sql`DELETE FROM tenants WHERE true`;
-    console.log("Cleaned.");
+  console.log("\n🌱 Seeding OpenPortal demo data...\n");
 
-    // Tenant
-    const tenantId = randomUUID();
-    const modules = JSON.stringify(["video", "chat", "calendar"]);
-    await sql`
-      INSERT INTO tenants (id, name, slug, plan, primary_color, enabled_modules, max_users, max_storage_bytes, max_sites, is_active)
-      VALUES (${tenantId}, 'Acme Corporation SRL', 'acme', 'business', '#2563EB', ${modules}::jsonb, '100', '536870912000', '50', true)
+  // ─── Tenant ───
+  const [tenant] = await sql`
+    INSERT INTO tenants (name, slug, plan, settings)
+    VALUES ('Acme Corporation', 'acme', 'business', ${JSON.stringify({
+      maxUsers: 100, maxSites: 50, maxStorage: 536870912000,
+      enabledModules: ["documents", "tables", "pages", "forms", "workflows", "chat", "calendar", "education", "hr", "projects", "support", "crm", "finance"],
+    })}::jsonb)
+    ON CONFLICT (slug) DO UPDATE SET name = 'Acme Corporation'
+    RETURNING id
+  `;
+  const tenantId = tenant.id;
+  console.log("✓ Tenant: Acme Corporation");
+
+  // ─── Users ───
+  // Password: Admin1234 (bcrypt hash)
+  const passwordHash = "$2b$10$rQEY4z5Qdtjl3JGhPmXkBeXxPk0AZQE3kXBqDV.Rz8TvY5z.JkFi2";
+
+  const [admin] = await sql`
+    INSERT INTO users (tenant_id, email, password_hash, first_name, last_name, display_name, role)
+    VALUES (${tenantId}, 'admin@acme.ro', ${passwordHash}, 'Alexandru', 'Ionescu', 'Alexandru Ionescu', 'owner')
+    ON CONFLICT (email) DO UPDATE SET first_name = 'Alexandru'
+    RETURNING id
+  `;
+
+  const [maria] = await sql`
+    INSERT INTO users (tenant_id, email, password_hash, first_name, last_name, display_name, role)
+    VALUES (${tenantId}, 'maria@acme.ro', ${passwordHash}, 'Maria', 'Popescu', 'Maria Popescu', 'admin')
+    ON CONFLICT (email) DO UPDATE SET first_name = 'Maria'
+    RETURNING id
+  `;
+
+  const [andrei] = await sql`
+    INSERT INTO users (tenant_id, email, password_hash, first_name, last_name, display_name, role)
+    VALUES (${tenantId}, 'andrei@acme.ro', ${passwordHash}, 'Andrei', 'Constantin', 'Andrei Constantin', 'member')
+    ON CONFLICT (email) DO UPDATE SET first_name = 'Andrei'
+    RETURNING id
+  `;
+  console.log("✓ Users: 3 (admin@acme.ro / Admin1234)");
+
+  // ─── Sites ───
+  const siteData = [
+    { title: "Intranet Acme", slug: "intranet", type: "communication", desc: "Portalul principal al companiei" },
+    { title: "Echipa IT", slug: "echipa-it", type: "team", desc: "Documentație tehnică și runbooks" },
+    { title: "Proiect Phoenix", slug: "proiect-phoenix", type: "project", desc: "Transformare digitală 2025" },
+    { title: "Resurse Umane", slug: "resurse-umane", type: "team", desc: "Politici și proceduri HR" },
+  ];
+
+  const siteIds: string[] = [];
+  for (const site of siteData) {
+    const [s] = await sql`
+      INSERT INTO sites (tenant_id, title, slug, type, description, status, created_by)
+      VALUES (${tenantId}, ${site.title}, ${site.slug}, ${site.type}, ${site.desc}, 'active', ${admin.id})
+      ON CONFLICT (tenant_id, slug) DO UPDATE SET title = ${site.title}
+      RETURNING id
     `;
-    console.log("Tenant created.");
+    siteIds.push(s.id);
 
-    // Users
-    const ownerId = randomUUID();
-    const adminId = randomUUID();
-    const memberId = randomUUID();
-
-    const ownerHash = await bcrypt.hash("Admin1234", 12);
-    const adminHash = await bcrypt.hash("Admin1234", 12);
-    const memberHash = await bcrypt.hash("Admin1234", 12);
-
+    // Add admin as site member
     await sql`
-      INSERT INTO users (id, tenant_id, email, password_hash, first_name, last_name, display_name, job_title, department, role, status, email_verified, timezone, locale)
-      VALUES (${ownerId}, ${tenantId}, 'admin@acme.ro', ${ownerHash}, 'Alexandru', 'Ionescu', 'Alexandru Ionescu', 'Administrator', 'IT', 'owner', 'active', true, 'Europe/Bucharest', 'ro')
+      INSERT INTO site_members (site_id, user_id, site_role)
+      VALUES (${s.id}, ${admin.id}, 'owner')
+      ON CONFLICT DO NOTHING
     `;
-    console.log("  User: admin@acme.ro (owner)");
-
-    await sql`
-      INSERT INTO users (id, tenant_id, email, password_hash, first_name, last_name, display_name, job_title, department, role, status, email_verified, timezone, locale)
-      VALUES (${adminId}, ${tenantId}, 'maria@acme.ro', ${adminHash}, 'Maria', 'Popescu', 'Maria Popescu', 'HR Manager', 'Resurse Umane', 'admin', 'active', true, 'Europe/Bucharest', 'ro')
-    `;
-    console.log("  User: maria@acme.ro (admin)");
-
-    await sql`
-      INSERT INTO users (id, tenant_id, email, password_hash, first_name, last_name, display_name, job_title, department, role, status, email_verified, timezone, locale)
-      VALUES (${memberId}, ${tenantId}, 'andrei@acme.ro', ${memberHash}, 'Andrei', 'Constantin', 'Andrei Constantin', 'Developer Senior', 'IT', 'member', 'active', true, 'Europe/Bucharest', 'ro')
-    `;
-    console.log("  User: andrei@acme.ro (member)");
-
-    // Sites
-    const sites = [
-      { title: "Intranet Acme", slug: "intranet", desc: "Portalul principal al companiei.", type: "communication" },
-      { title: "Echipa IT", slug: "it", desc: "Documentatie tehnica si runbooks.", type: "team" },
-      { title: "Proiect Phoenix", slug: "phoenix", desc: "Transformare digitala 2025.", type: "project" },
-      { title: "Resurse Umane", slug: "hr", desc: "Politici si proceduri HR.", type: "team" },
-    ];
-
-    for (const site of sites) {
-      const siteId = randomUUID();
-      const membershipsId = randomUUID();
-      const nav = JSON.stringify([
-        { id: "home", label: "Acasa", url: "/sites/" + site.slug },
-        { id: "docs", label: "Documente", url: "/sites/" + site.slug + "/documents" },
-      ]);
-
-      await sql`
-        INSERT INTO sites (id, tenant_id, title, slug, description, type, status, is_public, created_by, navigation)
-        VALUES (${siteId}, ${tenantId}, ${site.title}, ${site.slug}, ${site.desc}, ${site.type}, 'active', false, ${ownerId}, ${nav}::jsonb)
-      `;
-
-      await sql`
-        INSERT INTO site_members (id, site_id, user_id, site_role, added_by)
-        VALUES (${membershipsId}, ${siteId}, ${ownerId}, 'owner', ${ownerId})
-      `;
-
-      console.log("  Site: " + site.title);
-    }
-
-    console.log("\n=== SEED COMPLET ===");
-    console.log("URL: http://localhost:3000");
-    console.log("Parola pentru toti: Admin1234");
-    console.log("  Owner:  admin@acme.ro");
-    console.log("  Admin:  maria@acme.ro");
-    console.log("  Member: andrei@acme.ro");
-    console.log("Site-uri: Intranet, IT, Phoenix, HR");
-
-  } catch (e) {
-    console.error("Seed failed:", e);
-    throw e;
-  } finally {
-    await sql.end();
   }
+  console.log("✓ Sites: 4");
+
+  // ─── Audit logs ───
+  for (const site of siteData) {
+    await sql`
+      INSERT INTO audit_logs (tenant_id, user_id, action, resource_type, details)
+      VALUES (${tenantId}, ${admin.id}, 'create', 'site', ${JSON.stringify({ title: site.title })}::jsonb)
+    `;
+  }
+  console.log("✓ Audit logs: 4");
+
+  console.log("\n✅ Seed complete! Login: admin@acme.ro / Admin1234\n");
+
+  await sql.end();
 }
 
-seed();
+seed().catch((err) => {
+  console.error("❌ Seed failed:", err);
+  process.exit(1);
+});

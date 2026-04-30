@@ -1,0 +1,125 @@
+version: "3.9"
+
+# OpenPortal — Production Docker Compose
+# Usage: docker compose -f docker/docker-compose.prod.yml up -d
+
+services:
+  # ─── PostgreSQL ───
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: openportal
+      POSTGRES_USER: openportal
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_me_in_production}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openportal"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ─── Redis ───
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: redis-server --requirepass ${REDIS_PASSWORD:-change_me_redis}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-change_me_redis}", "ping"]
+      interval: 10s
+      timeout: 5s
+
+  # ─── MinIO (S3-compatible storage) ───
+  minio:
+    image: minio/minio:latest
+    restart: always
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-openportal}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-change_me_minio}
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 10s
+
+  # ─── Meilisearch (Full-text search) ───
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    restart: always
+    environment:
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-change_me_meili}
+      MEILI_ENV: production
+    volumes:
+      - meili_data:/meili_data
+    ports:
+      - "7700:7700"
+
+  # ─── Mailpit (Email in dev, replace with SMTP in prod) ───
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    profiles:
+      - dev
+
+  # ─── OpenPortal API ───
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://openportal:${DB_PASSWORD:-change_me_in_production}@postgres:5432/openportal
+      REDIS_URL: redis://:${REDIS_PASSWORD:-change_me_redis}@redis:6379
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-openportal}
+      S3_SECRET_KEY: ${S3_SECRET_KEY:-change_me_minio}
+      S3_BUCKET_DOCUMENTS: documents
+      MEILI_URL: http://meilisearch:7700
+      MEILI_MASTER_KEY: ${MEILI_MASTER_KEY:-change_me_meili}
+      JWT_SECRET: ${JWT_SECRET:-change_me_jwt_secret_min_32_chars}
+      API_PORT: 4000
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://openportal.app}
+    ports:
+      - "4000:4000"
+
+  # ─── OpenPortal Web ───
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.web
+    restart: always
+    depends_on:
+      - api
+    environment:
+      NEXT_PUBLIC_API_URL: ${API_URL:-http://api:4000}
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+  meili_data:

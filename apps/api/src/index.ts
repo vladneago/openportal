@@ -32,6 +32,7 @@ import { healthcareRoutes } from "./modules/healthcare/routes";
 import { realestateRoutes } from "./modules/realestate/routes";
 import { eventsRoutes } from "./modules/events/routes";
 import { itopsRoutes } from "./modules/itops/routes";
+import { apiDocsRoutes } from "./modules/api-docs/routes";
 import { healthRoutes } from "./modules/health";
 import { errorHandler } from "./middleware/error-handler";
 
@@ -41,8 +42,12 @@ app.use("*", logger());
 app.use("*", secureHeaders());
 app.use("*", cors({ origin: process.env.CORS_ORIGIN || "http://localhost:3000", credentials: true, allowMethods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"], allowHeaders: ["Content-Type","Authorization","X-Tenant-ID"], exposeHeaders: ["X-Request-Id"] }));
 app.onError(errorHandler);
-app.route("/api/health", healthRoutes);
 
+// Health & Docs (no auth)
+app.route("/api/health", healthRoutes);
+app.route("/api/docs", apiDocsRoutes);
+
+// API v1 (authenticated)
 const v1 = new Hono();
 v1.route("/auth", authRoutes); v1.route("/tenants", tenantRoutes); v1.route("/sites", siteRoutes);
 v1.route("/users", userRoutes); v1.route("/documents", documentRoutes); v1.route("/tables", tableRoutes);
@@ -58,11 +63,15 @@ app.route("/api/v1", v1);
 app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));
 const port = parseInt(process.env.API_PORT || "4000", 10);
 console.log(`
-╔══════════════════════════════════════════════╗
-║       OpenPortal API v1.2 COMPLETE           ║
-║   http://localhost:${port}                       ║
-║   27 modules · All verticals deployed        ║
-╚══════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════╗
+║         OpenPortal API v1.2 — COMPLETE           ║
+║                                                  ║
+║   API:   http://localhost:${port}                    ║
+║   Docs:  http://localhost:${port}/api/docs/ui        ║
+║   Spec:  http://localhost:${port}/api/docs           ║
+║                                                  ║
+║   27 modules · 15 verticals · All industries     ║
+╚══════════════════════════════════════════════════╝
 `);
 serve({ fetch: app.fetch, port });
 export default app;
