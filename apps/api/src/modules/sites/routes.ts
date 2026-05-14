@@ -80,8 +80,8 @@ siteRoutes.post(
     const body = c.req.valid("json");
     const [collection] = await db.insert(siteCollections).values({
       tenantId, name: body.name, description: body.description || null,
-      storageQuotaBytes: BigInt(body.storageQuotaGb) * BigInt(1073741824),
-      storageWarningBytes: (BigInt(body.storageQuotaGb) * BigInt(1073741824) * BigInt(9)) / BigInt(10),
+      storageQuotaBytes: body.storageQuotaGb * 1073741824,
+      storageWarningBytes: Math.floor((body.storageQuotaGb * 1073741824 * 9) / 10),
       sharingCapability: body.sharingCapability, sensitivityLabel: body.sensitivityLabel,
       geoLocation: body.geoLocation, createdBy: user.id,
     }).returning();

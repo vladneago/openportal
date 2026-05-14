@@ -106,15 +106,15 @@ export const siteCollections = pgTable(
     description: text("description"),
 
     // Quotas
-    storageQuotaBytes: bigint("storage_quota_bytes", { mode: "bigint" })
+    storageQuotaBytes: bigint("storage_quota_bytes", { mode: "number" })
       .notNull()
-      .default(BigInt(107374182400)), // 100 GB
-    storageWarningBytes: bigint("storage_warning_bytes", { mode: "bigint" })
+      .default(107374182400), // 100 GB
+    storageWarningBytes: bigint("storage_warning_bytes", { mode: "number" })
       .notNull()
-      .default(BigInt(96636764160)), // 90 GB
-    storageUsedBytes: bigint("storage_used_bytes", { mode: "bigint" })
+      .default(96636764160), // 90 GB
+    storageUsedBytes: bigint("storage_used_bytes", { mode: "number" })
       .notNull()
-      .default(BigInt(0)),
+      .default(0),
     serverResourceQuota: integer("server_resource_quota").default(300),
     serverResourceUsed: integer("server_resource_used").default(0),
 
@@ -335,9 +335,9 @@ export const sites = pgTable(
     auditLogEnabled: boolean("audit_log_enabled").notNull().default(true),
 
     // Storage tracking
-    storageUsedBytes: bigint("storage_used_bytes", { mode: "bigint" })
+    storageUsedBytes: bigint("storage_used_bytes", { mode: "number" })
       .notNull()
-      .default(BigInt(0)),
+      .default(0),
     documentCount: integer("document_count").notNull().default(0),
     pageCount: integer("page_count").notNull().default(0),
     listCount: integer("list_count").notNull().default(0),
