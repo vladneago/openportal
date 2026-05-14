@@ -31,6 +31,11 @@ import * as healthcareSchema from "./schema/healthcare";
 import * as realestateSchema from "./schema/realestate";
 import * as eventsSchema from "./schema/events";
 import * as itopsSchema from "./schema/itops";
+import * as bookingSchema from "./schema/booking";
+import * as billingSchema from "./schema/billing";
+import * as posSchema from "./schema/pos";
+import * as chatWidgetSchema from "./schema/chat_widget";
+import * as siteBuilderSchema from "./schema/site_builder";
 
 const schema: Record<string, unknown> = {
   ...tenantSchema, ...userSchema, ...siteSchema, ...listsSchema,
@@ -42,6 +47,11 @@ const schema: Record<string, unknown> = {
   ...projectSchema, ...supportSchema, ...crmSchema, ...financeSchema,
   ...governmentSchema, ...legalSchema, ...healthcareSchema,
   ...realestateSchema, ...eventsSchema, ...itopsSchema,
+  ...bookingSchema,
+  ...billingSchema,
+  ...posSchema,
+  ...chatWidgetSchema,
+  ...siteBuilderSchema,
 };
 
 const connectionString = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
@@ -78,6 +88,11 @@ export * from "./schema/healthcare";
 export * from "./schema/realestate";
 export * from "./schema/events";
 export * from "./schema/itops";
+export * from "./schema/booking";
+export * from "./schema/billing";
+export * from "./schema/pos";
+export * from "./schema/chat_widget";
+export * from "./schema/site_builder";
 
 export { schema };
 export type Database = typeof db;

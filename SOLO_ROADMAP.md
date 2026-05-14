@@ -1,0 +1,357 @@
+# OpenPortal Solo — Roadmap & Progress Tracker
+
+**Strategie**: Wedge "Solo + Beauty" — solo entrepreneurs (saloane, frizerii, cofetării, consultanți, PFA).
+**Target piață**: ~250k SRL + 500k PFA în RO + extindere internațională.
+**Target ARR Y1**: 2k–5k clienți × €25/lună = €600k–1.5M ARR.
+**Timeline**: 16 săptămâni (4 luni) până la launch comercial.
+
+**Cum citim acest fișier**:
+- `[ ]` = de făcut
+- `[x]` = finalizat
+- `[~]` = în lucru
+- `[-]` = amânat / decizie viitoare
+
+**Fundament deja existent** (nu retragem):
+- [x] 173 tabele Drizzle în Postgres
+- [x] ~80 endpoints Hono pe `apps/api`
+- [x] Skeleton Next.js 15 pe `apps/web`
+- [x] Auth + tenant + admin seed funcțional
+- [x] TypeScript zero erori cross-package
+
+---
+
+## Faza 0 — Foundation Upgrades (Săpt 1–2)
+
+### 0.1 i18n
+- [ ] Instalează `next-intl` în `apps/web`
+- [ ] Structură `/messages/ro.json` + `/messages/en.json`
+- [ ] Wrapper provider în root layout
+- [ ] Switcher RO/EN în header
+- [ ] Translate UI existent (sidebar, dashboard, auth pages)
+
+### 0.2 PostgreSQL RLS
+- [ ] Audit funcție `current_tenant_id()` în Postgres
+- [ ] Enable RLS pe tabelele core (users, sites, lists, documents, etc.)
+- [ ] Policy `tenant_isolation` per tabel
+- [ ] Setare `SET LOCAL app.tenant_id = '...'` în middleware Hono
+- [ ] Test integration: cross-tenant leak attempt → blocked
+- [ ] Documentează în `packages/db/README.md`
+
+### 0.3 tRPC + TanStack Query
+- [ ] Adaugă `@trpc/server`, `@trpc/client`, `@trpc/react-query`, `@tanstack/react-query` în `apps/web`
+- [ ] Setup `trpc` package partajat în `packages/trpc`
+- [ ] Migrează un endpoint pilot (de ex. `sites.list`) la tRPC
+- [ ] Provider QueryClient în `apps/web` root
+- [ ] Validare schema cu Zod end-to-end
+- [ ] Decide: tRPC ca standard pentru module noi (Solo wedge), Hono REST rămâne pentru module enterprise existente
+
+### 0.4 Dev tooling
+- [ ] Adaugă Playwright pentru E2E
+- [ ] Setup Vitest pentru unit tests în `packages/db`
+- [ ] CI workflow `.github/workflows/ci.yml` (typecheck + lint + test)
+- [ ] Pre-commit hook cu `lint-staged`
+
+---
+
+## Faza 1 — Data Model Solo (Săpt 2–3)
+
+### 1.1 Schema Booking
+- [x] `booking_resources` (staff, rooms, equipment)
+- [x] `booking_services` (servicii cu durată, preț, descriere)
+- [x] `booking_availability` (orar săptămânal + excepții)
+- [x] `booking_appointments` (programări cu status: pending/confirmed/done/cancelled/no_show)
+- [x] `booking_blocked_slots` (pauze, concedii)
+- [x] `booking_customers` (clienții finali, separați de users)
+- [x] Indexes pe (tenant_id, resource_id, start_at) + (tenant_id, customer_id)
+- [x] Migrare aplicată cu `drizzle-kit push` (DB are acum 198 tabele)
+
+### 1.2 Schema Invoicing + e-Factura
+- [x] `billing_invoice_series` (NIR-uri, serii numerotare)
+- [x] `billing_invoices` (header: customer, due_date, total, vat, status)
+- [x] `billing_invoice_lines` (item, qty, unit_price, vat_rate)
+- [x] `billing_payments` (cash, card, transfer, parțial)
+- [x] `efactura_submissions` (status ANAF, XML, response)
+- [x] Indexes pe (tenant_id, status) + (tenant_id, customer_id, issue_date)
+
+### 1.3 Schema POS + Stocks
+- [x] `products` (cod, nume, preț, stoc, categorie)
+- [x] `product_categories`
+- [x] `pos_transactions` (cash register, casier, total)
+- [x] `pos_transaction_lines` (produse vândute)
+- [x] `stock_movements` (in/out, motiv, ref doc)
+- [x] Indexes pentru raportare zilnică/lunară
+
+### 1.4 Schema AI Chat Widget
+- [x] `chat_widgets` (config per site: culori, mesaj welcome, knowledge base)
+- [x] `chat_widget_conversations` (session, customer, channel)
+- [x] `chat_widget_messages` (role, content, tokens)
+- [x] `chat_knowledge_sources` (docs / FAQ pentru context AI)
+- [x] Indexes pe (tenant_id, widget_id, created_at)
+
+### 1.5 Schema Site Builder
+- [x] `web_sites` (subdomain, custom_domain, theme_id, status)
+- [x] `web_pages` (slug, content_json, seo, published_at)
+- [x] `web_themes` (predefined + custom)
+- [x] `web_templates` (cele 40 template-uri)
+- [x] `web_assets` (imagini, fonturi, video uploads)
+
+---
+
+## Faza 2 — Site Builder Engine (Săpt 3–6)
+
+### 2.1 Page Builder Core
+- [ ] Structură JSON pentru pagini (sections > columns > blocks)
+- [ ] Bibliotecă blocks: Hero, Text, Image, Gallery, Services, Pricing, Contact, Map, Booking CTA, Testimonials, FAQ, Footer
+- [ ] Editor drag-and-drop (use `@dnd-kit`)
+- [ ] Live preview side-by-side
+- [ ] Mobile/Tablet/Desktop preview toggle
+- [ ] Undo/Redo
+- [ ] Save draft + Publish flow
+
+### 2.2 Theme System
+- [ ] Variables CSS pentru culori (primary, secondary, neutral, accent)
+- [ ] Tipografie (font primary + secondary)
+- [ ] Spacing scale + border radius scale
+- [ ] 10 teme predefinite (Beauty Modern, Beauty Vintage, Salon Lux, Barbershop Bold, etc.)
+- [ ] Theme picker în editor
+
+### 2.3 Publish & DNS
+- [ ] Subdomain automat: `clientname.openportal.app`
+- [ ] Endpoint serving static pages cu cache CDN
+- [ ] Custom domain: instrucțiuni DNS + verificare
+- [ ] SSL automat (Let's Encrypt sau Cloudflare)
+- [ ] Redirect rules (www → root, http → https)
+
+### 2.4 SEO + Analytics
+- [ ] Meta tags per pagină (title, description, OG image)
+- [ ] Sitemap.xml auto-generat
+- [ ] Robots.txt config
+- [ ] Schema.org JSON-LD pentru LocalBusiness
+- [ ] Integrare Plausible/Umami (privacy-first)
+
+---
+
+## Faza 3 — Booking & Calendar (Săpt 6–8)
+
+### 3.1 Admin UI
+- [ ] Pagină `/booking/resources` (staff/spații)
+- [ ] Pagină `/booking/services` (catalog servicii cu durată, preț)
+- [ ] Pagină `/booking/availability` (editor orar săptămânal)
+- [ ] Pagină `/booking/calendar` (vizualizare zilnică/săptămânală/lunară)
+- [ ] Drag-to-reschedule appointments
+
+### 3.2 Booking Widget (public)
+- [ ] Embed widget pentru site-uri externe + integrat în Site Builder
+- [ ] Flow: alege serviciu → alege staff → alege dată/oră → date client → confirmare
+- [ ] Validare disponibilitate real-time
+- [ ] Buffer time între programări (config)
+
+### 3.3 Notifications
+- [ ] Email confirmation la booking
+- [ ] SMS confirmation (integrare Twilio sau Vonage)
+- [ ] Reminder 24h + 2h înainte
+- [ ] Cancel/Reschedule link în email/SMS
+
+### 3.4 Customer self-service
+- [ ] Magic link în confirmare pentru self-reschedule
+- [ ] Mini-portal customer (istoric programări, anulare)
+
+---
+
+## Faza 4 — Invoicing + e-Factura (Săpt 8–10)
+
+### 4.1 Invoice UI
+- [ ] Pagină `/invoicing/new` (form factură cu linii)
+- [ ] Catalog clienți (CUI, CIF, adresă)
+- [ ] Calcul TVA (19% standard, 9% medical, 5%, 0%)
+- [ ] Preview PDF înainte de save
+- [ ] Storno + corecții
+
+### 4.2 ANAF e-Factura
+- [ ] OAuth ANAF (token + refresh)
+- [ ] Generare UBL 2.1 XML conform CIUS-RO
+- [ ] Submit la SPV
+- [ ] Polling status (acceptat/respins)
+- [ ] Download factură semnată
+
+### 4.3 Plăți + Recouvrement
+- [ ] Track plăți (manual + Stripe link)
+- [ ] Aging report (overdue)
+- [ ] Email reminder pentru facturi neplătite
+- [ ] Export Excel/CSV pentru contabil
+
+### 4.4 Integrare Stripe
+- [ ] Cont Stripe Connect per tenant
+- [ ] Link de plată unic per factură
+- [ ] Webhook payment.succeeded → mark paid
+
+---
+
+## Faza 5 — Email Server MVP (Săpt 10–12)
+
+### 5.1 Stalwart Setup
+- [ ] Deploy Stalwart Mail Server (Docker)
+- [ ] Config multi-tenant cu domain virtual
+- [ ] DKIM/SPF/DMARC auto pe domain custom
+- [ ] Antispam (Rspamd integrat)
+
+### 5.2 Provisioning
+- [ ] UI `/email/accounts` (creare mailbox-uri)
+- [ ] Aliase + redirecturi
+- [ ] Quotă storage per cont
+- [ ] Password reset flow
+
+### 5.3 Webmail UI
+- [ ] Inbox (list + read pane)
+- [ ] Compose cu rich editor
+- [ ] Folders (Inbox, Sent, Drafts, Trash, Spam, Archive)
+- [ ] Search full-text
+- [ ] Attachments (upload la storage S3-compatible)
+
+### 5.4 Mobile/IMAP
+- [ ] IMAP/SMTP credentials pentru clienti existenți (Outlook, Apple Mail)
+- [ ] Documentație setup
+
+---
+
+## Faza 6 — AI Chat Widget (Săpt 12–13)
+
+### 6.1 Widget Embeddable
+- [ ] Script `<script src="https://openportal.app/widget.js?id=...">` 
+- [ ] Floating bubble + chat window
+- [ ] Customizable colors, position, welcome message
+- [ ] Mobile responsive
+
+### 6.2 AI Backend
+- [ ] Integrare Claude API
+- [ ] Sistem prompts per industrie (saloane vs restaurante etc.)
+- [ ] Context din `chat_knowledge_base`
+- [ ] Function calling: book appointment, get price list, escalate to human
+
+### 6.3 Admin Inbox
+- [ ] Pagină `/chat/inbox` (toate conversațiile)
+- [ ] Live takeover (preluare conversație de la AI)
+- [ ] Tagging + customer assignment
+- [ ] Export conversații
+
+### 6.4 Knowledge Base UI
+- [ ] Upload docs (PDF, DOCX, MD)
+- [ ] FAQ editor inline
+- [ ] Re-index automat la modificare
+
+---
+
+## Faza 7 — POS + Stocks (Săpt 13–14)
+
+### 7.1 POS UI
+- [ ] Touch-friendly grid produse
+- [ ] Coș + reducere + voucher
+- [ ] Plată cash/card/transfer + restitu
+- [ ] Print bon (browser print API + future printer integration)
+- [ ] Z-report end of day
+
+### 7.2 Stocks
+- [ ] Receptie marfă (NIR)
+- [ ] Transfer între gestiuni
+- [ ] Inventariere
+- [ ] Alerte stoc minim
+- [ ] Rapoarte mișcări
+
+---
+
+## Faza 8 — Templates + AI Generator (Săpt 14–15)
+
+### 8.1 40 Industry Templates
+- [ ] Salon de înfrumusețare (3 variante)
+- [ ] Frizerie/Barbershop (3 variante)
+- [ ] Cofetărie/Patiserie (2 variante)
+- [ ] Restaurant/Bistro (3 variante)
+- [ ] Consultant asigurări (2 variante)
+- [ ] Cabinet medical (3 variante)
+- [ ] Stomatolog
+- [ ] Avocat / Notar (2 variante)
+- [ ] Contabil
+- [ ] Psiholog / Coach
+- [ ] Personal trainer / Sala fitness
+- [ ] Studio yoga / pilates
+- [ ] Florărie
+- [ ] Atelier auto
+- [ ] Curățătorie chimică
+- [ ] Pet shop / Veterinar
+- [ ] Fotograf
+- [ ] DJ / Evenimente
+- [ ] Tatuaj / Piercing
+- [ ] Hotel mic / Pensiune
+- [ ] Cazare turistică / Airbnb host
+- [ ] Total: 40 template-uri responsive
+
+### 8.2 AI Site Generator
+- [ ] Wizard: "Spune-mi despre business-ul tău" (industry, locatie, USP)
+- [ ] Generare automată texte (Claude)
+- [ ] Generare imagini placeholder (DALL-E sau Stable Diffusion sau biblioteca curată de stock)
+- [ ] Site complet în <60 secunde
+- [ ] Editare post-generare
+
+---
+
+## Faza 9 — Launch Prep (Săpt 15–16)
+
+### 9.1 Stripe Connect + Billing
+- [ ] Onboarding Stripe per tenant
+- [ ] Plan Solo €25/lună
+- [ ] Plan Solo Pro €50/lună
+- [ ] Trial 14 zile
+- [ ] Cancel anytime
+- [ ] Failed payment retry + dunning
+
+### 9.2 Onboarding Flow
+- [ ] Signup → choose industry → AI generates site → preview → publish
+- [ ] Empty states cu CTA-uri clare
+- [ ] Tutorial interactiv (Shepherd.js sau Intro.js)
+- [ ] Video tour 2 min
+
+### 9.3 Marketing Site
+- [ ] Landing page `openportal.app`
+- [ ] Pagini per industrie (`/saloane`, `/frizerii`, `/cofetarii`)
+- [ ] Pricing page
+- [ ] Blog (10 articole SEO de start)
+- [ ] Comparison vs Wix/Squarespace/Booksy
+
+### 9.4 Beta Program
+- [ ] Recrutare 10 beta clienți
+- [ ] Discount lifetime 50% pentru feedback
+- [ ] Telegram/Slack group privat
+- [ ] Weekly feedback calls
+- [ ] Bug bash session
+
+### 9.5 Compliance & Polish
+- [ ] GDPR cookie banner + politica de confidențialitate
+- [ ] ToS + Acceptable Use Policy
+- [ ] DPA template pentru clienți
+- [ ] Status page (uptime.openportal.app)
+- [ ] Help center (Mintlify sau propriu)
+
+### 9.6 Launch
+- [ ] Soft launch beta (Săpt 16, ziua 1)
+- [ ] Public launch (Săpt 16, ziua 7)
+- [ ] Anunț LinkedIn / Facebook Groups RO
+- [ ] Product Hunt launch (EN audience)
+
+---
+
+## Decizii blocante (de luat)
+
+- [ ] **Domeniu final**: `openportal.app` / `openportal.io` / alt nume?
+- [ ] **Stripe Connect Romania**: cont activabil?
+- [ ] **Email server domain**: `mail.openportal.app` sau direct custom per client?
+- [ ] **Open source license**: AGPL v3 / BSL / proprietary?
+- [ ] **Branding**: logo + nume final + culori
+- [ ] **Hosting prod**: Hetzner / Railway / Vercel + Supabase?
+- [ ] **Primii 10 beta clienți**: cine sunt, când îi contactăm?
+
+---
+
+## Notă de tracking
+
+După fiecare sesiune, ultimul item bifat = unde am rămas.
+Pentru reluare, prima task = următorul `[ ]` din lista de mai sus.
