@@ -37,3 +37,10 @@ docker/data/
 
 # Uploads (local dev)
 uploads/
+
+# Local-only helper files (patches, bundles for manual transfer)
+.patches/
+*.tar.xz
+*.tar.gz
+*.bundle
+UPGRADE.*

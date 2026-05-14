@@ -8,13 +8,14 @@ import { api, getUser, clearAuth } from "@/lib/api";
 const NAV_ITEMS = [
   { id: "dashboard", label: "Dashboard", href: "/dashboard" },
   { id: "sites", label: "Site-uri", href: "/sites" },
-  { id: "documents", label: "Documente", href: "/documents" },
   { id: "pages", label: "Pagini", href: "/pages" },
-  { id: "tables", label: "Tabele", href: "/tables" },
+  { id: "documents", label: "Documente", href: "/documents" },
+  { id: "tables", label: "Liste & Tabele", href: "/tables" },
   { id: "forms", label: "Formulare", href: "/forms" },
   { id: "workflows", label: "Automatizări", href: "/workflows" },
   { id: "chat", label: "Mesaje", href: "/chat" },
   { id: "calendar", label: "Calendar", href: "/calendar" },
+  { id: "hr", label: "HR", href: "/hr" },
   { id: "search", label: "Căutare", href: "/search" },
 ];
 
@@ -203,6 +204,7 @@ function NavIcon({ id, active }: { id: string; active: boolean }) {
     case "workflows": return <svg {...p}><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M5 8v2a4 4 0 0 0 4 4h2M19 8v2a4 4 0 0 1-4 4h-2"/></svg>;
     case "chat": return <svg {...p}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
     case "calendar": return <svg {...p}><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>;
+    case "hr": return <svg {...p}><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="17" cy="7" r="3"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>;
     case "search": return <svg {...p}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
     default: return null;
   }

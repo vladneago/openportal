@@ -8,6 +8,7 @@ import { requestId } from "hono/request-id";
 import { authRoutes } from "./modules/auth/routes";
 import { tenantRoutes } from "./modules/tenants/routes";
 import { siteRoutes } from "./modules/sites/routes";
+import { listRoutes } from "./modules/lists/routes";
 import { userRoutes } from "./modules/users/routes";
 import { documentRoutes } from "./modules/documents/routes";
 import { tableRoutes } from "./modules/tables/routes";
@@ -50,6 +51,7 @@ app.route("/api/docs", apiDocsRoutes);
 // API v1 (authenticated)
 const v1 = new Hono();
 v1.route("/auth", authRoutes); v1.route("/tenants", tenantRoutes); v1.route("/sites", siteRoutes);
+v1.route("/lists", listRoutes);
 v1.route("/users", userRoutes); v1.route("/documents", documentRoutes); v1.route("/tables", tableRoutes);
 v1.route("/pages", pageRoutes); v1.route("/comments", commentRoutes); v1.route("/notifications", notificationRoutes);
 v1.route("/forms", formRoutes); v1.route("/workflows", workflowRoutes); v1.route("/analytics", analyticsRoutes);
