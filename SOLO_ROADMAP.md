@@ -99,6 +99,17 @@
 
 ## Faza 2 — Site Builder Engine (Săpt 3–6)
 
+### 2.0 Site Builder API (Hono routes)
+- [x] CRUD `/api/v1/site-builder/themes` (system + per-tenant)
+- [x] List/Get `/api/v1/site-builder/templates` (read-only catalog cu filter category/featured)
+- [x] CRUD `/api/v1/site-builder/sites` (cu subdomain unicity check global)
+- [x] Auto-scaffold pages din template la create site
+- [x] POST `/api/v1/site-builder/sites/:id/publish` + `/unpublish`
+- [x] CRUD `/api/v1/site-builder/pages` (cu home page enforcement single)
+- [x] POST `/api/v1/site-builder/pages/:id/publish` (cu snapshot blocks/title)
+- [x] CRUD `/api/v1/site-builder/assets` (media library cu folder + tags)
+- [x] Template install_count auto-bump
+
 ### 2.1 Page Builder Core
 - [ ] Structură JSON pentru pagini (sections > columns > blocks)
 - [ ] Bibliotecă blocks: Hero, Text, Image, Gallery, Services, Pricing, Contact, Map, Booking CTA, Testimonials, FAQ, Footer
