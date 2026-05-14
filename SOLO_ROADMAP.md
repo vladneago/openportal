@@ -133,6 +133,18 @@
 
 ## Faza 3 — Booking & Calendar (Săpt 6–8)
 
+### 3.0 Booking API (Hono routes)
+- [x] CRUD `/api/v1/booking/resources` (staff/rooms/equipment)
+- [x] CRUD `/api/v1/booking/services` (servicii cu durată/preț/buffer)
+- [x] CRUD `/api/v1/booking/availability` (orar săptămânal per resursă)
+- [x] CRUD `/api/v1/booking/blocked-slots` (vacanțe, pauze)
+- [x] CRUD `/api/v1/booking/customers` (search + paginare)
+- [x] CRUD `/api/v1/booking/appointments` (cu conflict detection)
+- [x] GET `/api/v1/booking/slots` (sloturi disponibile pentru widget public)
+- [x] Conflict detection: existing appointments + blocked slots + status filter
+- [x] Booking code generator unic
+- [x] Customer stats auto-increment la create
+
 ### 3.1 Admin UI
 - [ ] Pagină `/booking/resources` (staff/spații)
 - [ ] Pagină `/booking/services` (catalog servicii cu durată, preț)
