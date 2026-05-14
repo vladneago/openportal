@@ -266,6 +266,17 @@
 
 ## Faza 7 — POS + Stocks (Săpt 13–14)
 
+### 7.0 POS API (Hono routes)
+- [x] CRUD `/api/v1/pos/categories` (categorii produse)
+- [x] CRUD `/api/v1/pos/products` (cu search, lowStock filter, category)
+- [x] CRUD `/api/v1/pos/stock-movements` (purchase/sale/return/adjustment/loss/count)
+- [x] CRUD `/api/v1/pos/transactions` (POS sale cu line totals + payment)
+- [x] Stoc decrementat automat la `completed` + `stock_movements` audit
+- [x] POST `/api/v1/pos/transactions/:id/refund` (full + partial, restoreStock optional)
+- [x] GET `/api/v1/pos/reports/daily` (Z-Report: gross, VAT, discount, refunds, by payment method)
+- [x] Atomic stock updates via SELECT FOR UPDATE
+- [x] Auto status `out_of_stock` când stock_quantity ≤ 0
+
 ### 7.1 POS UI
 - [ ] Touch-friendly grid produse
 - [ ] Coș + reducere + voucher

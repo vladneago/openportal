@@ -35,6 +35,7 @@ import { eventsRoutes } from "./modules/events/routes";
 import { itopsRoutes } from "./modules/itops/routes";
 import { bookingRoutes } from "./modules/booking/routes";
 import { billingRoutes } from "./modules/billing/routes";
+import { posRoutes } from "./modules/pos/routes";
 import { apiDocsRoutes } from "./modules/api-docs/routes";
 import { healthRoutes } from "./modules/health";
 import { errorHandler } from "./middleware/error-handler";
@@ -64,6 +65,7 @@ v1.route("/government", governmentRoutes); v1.route("/legal", legalRoutes); v1.r
 v1.route("/realestate", realestateRoutes); v1.route("/events", eventsRoutes); v1.route("/itops", itopsRoutes);
 v1.route("/booking", bookingRoutes);
 v1.route("/billing", billingRoutes);
+v1.route("/pos", posRoutes);
 app.route("/api/v1", v1);
 
 app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));
