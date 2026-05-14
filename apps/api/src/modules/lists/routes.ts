@@ -336,8 +336,8 @@ listRoutes.get("/:id/items", async (c) => {
 
   const items = await db.select().from(listItems).where(and(...conds))
     .orderBy(ordering).limit(limit).offset(offset);
-  const [{ total }] = await db.select({ total: count() }).from(listItems).where(and(...conds));
-  return c.json({ success: true, data: items, meta: { total: Number(total), limit, offset } });
+  const totalRow = await db.select({ total: count() }).from(listItems).where(and(...conds));
+  return c.json({ success: true, data: items, meta: { total: Number(totalRow[0]?.total || 0), limit, offset } });
 });
 
 listRoutes.post("/:id/items", zValidator("json", z.object({
@@ -352,9 +352,10 @@ listRoutes.post("/:id/items", zValidator("json", z.object({
   const body = c.req.valid("json");
 
   // get next number for this list
-  const [{ next }] = await db.select({
+  const nextRow = await db.select({
     next: sql<number>`COALESCE(MAX(${listItems.listItemNumber}), 0) + 1`,
   }).from(listItems).where(eq(listItems.listId, id));
+  const next = nextRow[0]?.next ?? 1;
 
   const result = await db.transaction(async (tx) => {
     const [item] = await tx.insert(listItems).values({

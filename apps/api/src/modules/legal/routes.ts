@@ -1,5 +1,5 @@
 import { Hono } from "hono";
-import { db, legalCases, courtDeadlines, legalContracts, timeEntries } from "@openportal/db";
+import { db, legalCases, courtDeadlines, legalContracts, legalTimeEntries } from "@openportal/db";
 import { eq, and, desc, asc, count, sum } from "drizzle-orm";
 import { requireAuth } from "../../middleware/auth";
 
@@ -12,7 +12,7 @@ legalRoutes.get("/cases", async (c) => {
   const results = await db.select().from(legalCases).where(eq(legalCases.tenantId, tenantId)).orderBy(desc(legalCases.createdAt));
   const withStats = await Promise.all(results.map(async (cs) => {
     const [dc] = await db.select({ count: count() }).from(courtDeadlines).where(eq(courtDeadlines.caseId, cs.id));
-    const [te] = await db.select({ total: sum(timeEntries.minutes) }).from(timeEntries).where(eq(timeEntries.caseId, cs.id));
+    const [te] = await db.select({ total: sum(legalTimeEntries.minutes) }).from(legalTimeEntries).where(eq(legalTimeEntries.caseId, cs.id));
     return { ...cs, deadlineCount: dc?.count || 0, totalMinutes: Number(te?.total || 0) };
   }));
   return c.json({ success: true, data: withStats });
@@ -86,13 +86,13 @@ legalRoutes.post("/contracts", async (c) => {
 // Time Entries
 legalRoutes.get("/time-entries", async (c) => {
   const tenantId = c.get("tenantId");
-  const results = await db.select().from(timeEntries).where(eq(timeEntries.tenantId, tenantId)).orderBy(desc(timeEntries.date));
+  const results = await db.select().from(legalTimeEntries).where(eq(legalTimeEntries.tenantId, tenantId)).orderBy(desc(legalTimeEntries.date));
   return c.json({ success: true, data: results });
 });
 
 legalRoutes.post("/time-entries", async (c) => {
   const tenantId = c.get("tenantId"); const user = c.get("user"); const body = await c.req.json();
-  const [te] = await db.insert(timeEntries).values({
+  const [te] = await db.insert(legalTimeEntries).values({
     tenantId, caseId: body.caseId || null, userId: user.id, description: body.description,
     minutes: body.minutes, hourlyRate: body.hourlyRate || 0, billable: body.billable !== false,
     date: body.date ? new Date(body.date) : new Date(),

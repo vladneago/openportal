@@ -373,7 +373,7 @@ export default function DocumentsPage() {
                 {item.type === "folder" ? "—" : formatSize((item.data as DocItem).sizeBytes)}
               </span>
               <span className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                {timeAgo(item.data.createdAt || item.data.updatedAt)}
+                {timeAgo(item.data.createdAt || (item.data as DocItem).updatedAt)}
               </span>
               <div className="flex items-center justify-end">
                 <button onClick={(e) => { e.stopPropagation(); handleDelete(item); }}

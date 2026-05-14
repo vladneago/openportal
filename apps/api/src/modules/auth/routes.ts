@@ -134,8 +134,12 @@ const loginSchema = z.object({
 authRoutes.post("/login", zValidator("json", loginSchema), async (c) => {
   const body = c.req.valid("json");
 
-  // Find user by email
-  const userQuery = db
+  // Find user by email (optionally filtered by tenantSlug)
+  const whereClause = body.tenantSlug
+    ? and(eq(users.email, body.email.toLowerCase()), eq(tenants.slug, body.tenantSlug))
+    : eq(users.email, body.email.toLowerCase());
+
+  const results = await db
     .select({
       id: users.id,
       tenantId: users.tenantId,
@@ -152,12 +156,7 @@ authRoutes.post("/login", zValidator("json", loginSchema), async (c) => {
     })
     .from(users)
     .innerJoin(tenants, eq(users.tenantId, tenants.id))
-    .where(eq(users.email, body.email.toLowerCase()));
-
-  // If tenantSlug is provided, filter by it
-  const results = body.tenantSlug
-    ? await userQuery.where(and(eq(users.email, body.email.toLowerCase()), eq(tenants.slug, body.tenantSlug)))
-    : await userQuery;
+    .where(whereClause);
 
   if (results.length === 0) {
     throw new AppError(401, "INVALID_CREDENTIALS", "Invalid email or password");

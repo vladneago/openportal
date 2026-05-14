@@ -96,7 +96,7 @@ export type ContentType = typeof contentTypes.$inferSelect;
 // (when used by content types or lists, they become "fields")
 // ─────────────────────────────────────────────
 
-export const columnTypeEnum = pgEnum("column_type", [
+export const listColumnTypeEnum = pgEnum("list_column_type", [
   "single_line_text",
   "multi_line_text",
   "rich_text",
@@ -162,7 +162,7 @@ export const siteColumns = pgTable(
     description: text("description"),
     group: varchar("group", { length: 100 }).default("Custom"),
 
-    type: columnTypeEnum("type").notNull(),
+    type: listColumnTypeEnum("type").notNull(),
     isRequired: boolean("is_required").notNull().default(false),
     isUnique: boolean("is_unique").notNull().default(false),
     isHidden: boolean("is_hidden").notNull().default(false),
@@ -425,7 +425,7 @@ export const listColumns = pgTable(
     displayName: varchar("display_name", { length: 200 }).notNull(),
     description: text("description"),
 
-    type: columnTypeEnum("type").notNull(),
+    type: listColumnTypeEnum("type").notNull(),
     config: jsonb("config").$type<Record<string, unknown>>().default({}),
 
     isRequired: boolean("is_required").notNull().default(false),

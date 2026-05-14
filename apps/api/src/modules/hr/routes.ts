@@ -13,7 +13,7 @@ import {
   payrollRuns, payslips,
   performanceCycles, goals, goalUpdates, reviewTemplates, reviews,
   feedbackRequests, calibrationSessions,
-  learningCourses, learningPaths, enrollments, certifications,
+  learningCourses, learningPaths, learningEnrollments, certifications,
   skills, employeeSkills,
   jobRequisitions, jobPostings, candidates, applications,
   interviews, interviewFeedback, offers,
@@ -273,8 +273,8 @@ hrRoutes.get("/employees", async (c) => {
     .orderBy(employees.lastName, employees.firstName)
     .limit(limit).offset(offset);
 
-  const [{ total }] = await db.select({ total: count() }).from(employees).where(and(...conds));
-  return c.json({ success: true, data: list, meta: { total: Number(total), limit, offset } });
+  const totalRow = await db.select({ total: count() }).from(employees).where(and(...conds));
+  return c.json({ success: true, data: list, meta: { total: Number(totalRow[0]?.total || 0), limit, offset } });
 });
 
 hrRoutes.post("/employees", zValidator("json", z.object({
@@ -1046,7 +1046,7 @@ hrRoutes.post("/learning/courses", zValidator("json", z.object({
 
 hrRoutes.get("/employees/:id/enrollments", async (c) => {
   const id = c.req.param("id");
-  const list = await db.select().from(enrollments).where(eq(enrollments.employeeId, id));
+  const list = await db.select().from(learningEnrollments).where(eq(learningEnrollments.employeeId, id));
   return c.json({ success: true, data: list });
 });
 
@@ -1060,7 +1060,7 @@ hrRoutes.post("/learning/enroll", zValidator("json", z.object({
   const tenantId = c.get("tenantId");
   const user = c.get("user");
   const body = c.req.valid("json");
-  const [e] = await db.insert(enrollments).values({
+  const [e] = await db.insert(learningEnrollments).values({
     tenantId, ...body, dueDate: body.dueDate as any, assignedBy: user.id,
   }).returning();
   return c.json({ success: true, data: e }, 201);
@@ -1072,11 +1072,11 @@ hrRoutes.post("/learning/enrollments/:id/complete", zValidator("json", z.object(
 })), async (c) => {
   const id = c.req.param("id");
   const body = c.req.valid("json");
-  const [e] = await db.update(enrollments).set({
+  const [e] = await db.update(learningEnrollments).set({
     status: "completed", completedAt: new Date(),
     score: body.score?.toString(), passed: body.passed,
     progressPercent: 100,
-  }).where(eq(enrollments.id, id)).returning();
+  }).where(eq(learningEnrollments.id, id)).returning();
   return c.json({ success: true, data: e });
 });
 
@@ -1143,8 +1143,8 @@ hrRoutes.get("/recruiting/jobs", async (c) => {
   const tenantId = c.get("tenantId");
   const list = await db.select().from(jobPostings).where(eq(jobPostings.tenantId, tenantId)).orderBy(desc(jobPostings.createdAt));
   const withCounts = await Promise.all(list.map(async (j) => {
-    const [{ cnt }] = await db.select({ cnt: count() }).from(applications).where(eq(applications.jobPostingId, j.id));
-    return { ...j, applicationCount: Number(cnt) };
+    const cntRow = await db.select({ cnt: count() }).from(applications).where(eq(applications.jobPostingId, j.id));
+    return { ...j, applicationCount: Number(cntRow[0]?.cnt || 0) };
   }));
   return c.json({ success: true, data: withCounts });
 });
@@ -1495,9 +1495,10 @@ hrRoutes.post("/employees/:id/documents", zValidator("json", z.object({
 
 hrRoutes.get("/analytics/headcount", async (c) => {
   const tenantId = c.get("tenantId");
-  const [{ total }] = await db.select({ total: count() }).from(employees).where(and(
+  const totalRow = await db.select({ total: count() }).from(employees).where(and(
     eq(employees.tenantId, tenantId), eq(employees.status, "active"),
   ));
+  const total = totalRow[0]?.total || 0;
   const byDept = await db.select({
     departmentId: employees.currentDepartmentId,
     count: count(),
@@ -1520,13 +1521,15 @@ hrRoutes.get("/analytics/turnover", async (c) => {
   const tenantId = c.get("tenantId");
   const months = parseInt(c.req.query("months") || "12");
   const cutoff = new Date(Date.now() - months * 30 * 86400000);
-  const [{ terminated }] = await db.select({ terminated: count() }).from(employees).where(and(
+  const terminatedRow = await db.select({ terminated: count() }).from(employees).where(and(
     eq(employees.tenantId, tenantId), eq(employees.status, "terminated"),
     gte(employees.terminationDate, cutoff.toISOString().slice(0, 10)),
   ));
-  const [{ active }] = await db.select({ active: count() }).from(employees).where(and(
+  const activeRow = await db.select({ active: count() }).from(employees).where(and(
     eq(employees.tenantId, tenantId), eq(employees.status, "active"),
   ));
+  const terminated = terminatedRow[0]?.terminated || 0;
+  const active = activeRow[0]?.active || 0;
   const turnoverRate = active > 0 ? (Number(terminated) / Number(active)) * 100 : 0;
   return c.json({
     success: true,

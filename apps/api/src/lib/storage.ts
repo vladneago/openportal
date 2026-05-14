@@ -26,7 +26,7 @@ export async function uploadFile(
       "Content-Type": contentType,
       "Content-Length": body.length.toString(),
     },
-    body,
+    body: body as BodyInit,
   });
 
   if (!res.ok) {

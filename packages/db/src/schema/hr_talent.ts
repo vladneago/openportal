@@ -366,7 +366,7 @@ export const learningPaths = pgTable("learning_paths", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-export const enrollments = pgTable("enrollments", {
+export const learningEnrollments = pgTable("learning_enrollments", {
   id: uuid("id").defaultRandom().primaryKey(),
   tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
   employeeId: uuid("employee_id").notNull().references(() => employees.id, { onDelete: "cascade" }),
@@ -405,7 +405,7 @@ export const enrollments = pgTable("enrollments", {
   index("enrollments_course_idx").on(table.courseId),
 ]);
 
-export type Enrollment = typeof enrollments.$inferSelect;
+export type LearningEnrollment = typeof learningEnrollments.$inferSelect;
 
 // Certifications (external & internal)
 export const certifications = pgTable("certifications", {

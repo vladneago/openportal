@@ -67,7 +67,8 @@ export default function WorkflowDetailPage() {
   if (loading) return <div className="py-20 text-center text-[12px]" style={{ color: "var(--text-tertiary)" }}>Se încarcă...</div>;
   if (!wf) return null;
 
-  const triggerLabel = { manual: "Manual", on_create: "La creare", on_update: "La modificare", scheduled: "Programat", form_submit: "Submit formular", document_upload: "Upload document" }[wf.trigger?.type] || "Manual";
+  const triggerLabels: Record<string, string> = { manual: "Manual", on_create: "La creare", on_update: "La modificare", scheduled: "Programat", form_submit: "Submit formular", document_upload: "Upload document" };
+  const triggerLabel = triggerLabels[wf.trigger?.type] || "Manual";
 
   return (
     <div>

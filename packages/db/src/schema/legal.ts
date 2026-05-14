@@ -61,8 +61,8 @@ export const legalContracts = pgTable("legal_contracts", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
-// Time Entries (Billing)
-export const timeEntries = pgTable("time_entries", {
+// Time Entries (Legal Billing)
+export const legalTimeEntries = pgTable("legal_time_entries", {
   id: uuid("id").defaultRandom().primaryKey(),
   tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
   caseId: uuid("case_id").references(() => legalCases.id, { onDelete: "cascade" }),

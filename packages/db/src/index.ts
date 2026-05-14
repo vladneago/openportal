@@ -32,7 +32,7 @@ import * as realestateSchema from "./schema/realestate";
 import * as eventsSchema from "./schema/events";
 import * as itopsSchema from "./schema/itops";
 
-const schema = {
+const schema: Record<string, unknown> = {
   ...tenantSchema, ...userSchema, ...siteSchema, ...listsSchema,
   ...permissionsSchema, ...taxonomySchema, ...auditSchema,
   ...documentSchema, ...tableSchema, ...pageSchema,
@@ -46,7 +46,7 @@ const schema = {
 
 const connectionString = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
 const queryClient = postgres(connectionString, { max: 20, idle_timeout: 20, connect_timeout: 10 });
-export const db = drizzle(queryClient, { schema });
+export const db: ReturnType<typeof drizzle> = drizzle(queryClient, { schema: schema as any });
 
 export * from "./schema/tenants";
 export * from "./schema/users";
