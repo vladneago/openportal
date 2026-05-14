@@ -172,6 +172,17 @@
 
 ## Faza 4 — Invoicing + e-Factura (Săpt 8–10)
 
+### 4.0 Billing API (Hono routes)
+- [x] CRUD `/api/v1/billing/series` (cu enforcement single-default per tenant)
+- [x] CRUD `/api/v1/billing/invoices` (cu calcul linii: subtotal, TVA, discount, total)
+- [x] Allocate next document number atomic (SELECT FOR UPDATE pe series)
+- [x] Auto-snapshot customer + tenant pe header factură
+- [x] Status workflow (draft → issued → sent → paid + cancelled)
+- [x] POST `/api/v1/billing/payments` (cu update automat status factură)
+- [x] DELETE payment reverse (recalculează amount_due + status)
+- [x] POST `/api/v1/billing/efactura/queue` (semnal pentru worker ANAF)
+- [x] Drafts deletable, finalized invoices must be cancelled
+
 ### 4.1 Invoice UI
 - [ ] Pagină `/invoicing/new` (form factură cu linii)
 - [ ] Catalog clienți (CUI, CIF, adresă)

@@ -34,6 +34,7 @@ import { realestateRoutes } from "./modules/realestate/routes";
 import { eventsRoutes } from "./modules/events/routes";
 import { itopsRoutes } from "./modules/itops/routes";
 import { bookingRoutes } from "./modules/booking/routes";
+import { billingRoutes } from "./modules/billing/routes";
 import { apiDocsRoutes } from "./modules/api-docs/routes";
 import { healthRoutes } from "./modules/health";
 import { errorHandler } from "./middleware/error-handler";
@@ -62,6 +63,7 @@ v1.route("/support", supportRoutes); v1.route("/crm", crmRoutes); v1.route("/fin
 v1.route("/government", governmentRoutes); v1.route("/legal", legalRoutes); v1.route("/healthcare", healthcareRoutes);
 v1.route("/realestate", realestateRoutes); v1.route("/events", eventsRoutes); v1.route("/itops", itopsRoutes);
 v1.route("/booking", bookingRoutes);
+v1.route("/billing", billingRoutes);
 app.route("/api/v1", v1);
 
 app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));
