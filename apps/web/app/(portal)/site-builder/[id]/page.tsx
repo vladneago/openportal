@@ -207,7 +207,10 @@ export default function SiteDetailPage() {
     );
   }
 
-  const publicUrl = `https://${site.customDomain || `${site.subdomain}.openportal.app`}`;
+  const publicUrl = site.status === "published" ? `/s/${site.subdomain}` : `/preview/${site.id}`;
+  const publicLabel = site.customDomain
+    ? site.customDomain
+    : `${site.subdomain}.openportal.app`;
 
   return (
     <div>
@@ -245,7 +248,7 @@ export default function SiteDetailPage() {
               className="text-xs hover:underline"
               style={{ color: "var(--text-tertiary)" }}
             >
-              {publicUrl}
+              {publicLabel}
             </a>
           </div>
         </div>
@@ -256,8 +259,18 @@ export default function SiteDetailPage() {
             rel="noopener"
             className="btn-secondary text-sm no-underline"
           >
-            Preview
+            Preview ciornă
           </a>
+          {site.status === "published" && (
+            <a
+              href={`/s/${site.subdomain}`}
+              target="_blank"
+              rel="noopener"
+              className="btn-secondary text-sm no-underline"
+            >
+              Vezi public ↗
+            </a>
+          )}
           {site.status === "published" ? (
             <button onClick={unpublishSite} className="btn-secondary text-sm">
               Depublică

@@ -143,7 +143,12 @@
 - [x] Block renderer system (11 blocks: hero, featuresGrid, servicesPreview, servicesList, textImage, testimonials, ctaBanner, contactInfo, contactForm, bookingWidget, team)
 - [x] Theme CSS variables injectate prin `<SiteThemeStyle>`
 - [x] Preview route `/preview/[siteId]/[[...slug]]` care randează ciornele + buton "Preview" în site detail
-- [ ] Endpoint serving static pages public pe subdomain.openportal.app (necesită middleware Next.js pentru host-based routing)
+- [x] Public route `/s/[subdomain]/[[...slug]]` pentru site-uri publicate (status="published") — funcționează imediat fără DNS
+- [x] Resolve site via `/api/v1/public/site-builder/sites/by-host` (acceptă atât subdomain.openportal.app cât și custom domain)
+- [x] Sticky header, footer dedicat cu social links + business name, GDPR cookie banner client component cu persistență localStorage
+- [x] SEO complete via `generateMetadata` (title/description/og:image/favicon din site config + page seoTitle override)
+- [x] Admin link "Vezi public ↗" pe pagina detail când e publicat, listing-ul afișează external icon doar pentru publicate
+- [ ] Host-based routing prin Next.js middleware (când DNS-ul subdomain.openportal.app există)
 - [ ] Custom domain: instrucțiuni DNS + verificare automată
 - [ ] SSL automat (Let's Encrypt sau Cloudflare)
 - [ ] Redirect rules (www → root, http → https)

@@ -308,19 +308,21 @@ export default function SitesListPage() {
                     Publică
                   </button>
                 )}
-                <a
-                  href={`https://${s.customDomain || `${s.subdomain}.openportal.app`}`}
-                  target="_blank"
-                  rel="noopener"
-                  className="text-xs p-1.5 rounded no-underline"
-                  style={{ color: "var(--text-tertiary)" }}
-                  title="Vizualizează"
-                >
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                    <path d="M15 3h6v6M10 14L21 3" />
-                  </svg>
-                </a>
+                {s.status === "published" && (
+                  <a
+                    href={`/s/${s.subdomain}`}
+                    target="_blank"
+                    rel="noopener"
+                    className="text-xs p-1.5 rounded no-underline"
+                    style={{ color: "var(--text-tertiary)" }}
+                    title="Deschide site publicat"
+                  >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <path d="M15 3h6v6M10 14L21 3" />
+                    </svg>
+                  </a>
+                )}
                 <button
                   onClick={() => handleDelete(s.id)}
                   className="text-xs p-1.5 rounded ml-auto"
