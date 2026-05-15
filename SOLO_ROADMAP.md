@@ -179,10 +179,17 @@
 - [x] Item nav lateral "Programări"
 
 ### 3.2 Booking Widget (public)
-- [ ] Embed widget pentru site-uri externe + integrat în Site Builder
-- [ ] Flow: alege serviciu → alege staff → alege dată/oră → date client → confirmare
-- [ ] Validare disponibilitate real-time
-- [ ] Buffer time între programări (config)
+- [x] Public API endpoints (`/api/v1/public/booking/...`): slots, appointments, lookup
+- [x] Pagină publică `/book/[siteId]` cu flow 4 pași: serviciu → dată/oră → detalii → confirmare
+- [x] Integrat în Site Builder prin block `bookingWidget` (link spre /book/...)
+- [x] Validare disponibilitate real-time (slots se reîncarcă la schimbare data/staff)
+- [x] Buffer time între programări (din service.bufferBeforeMinutes + bufferAfterMinutes)
+- [x] Min advance booking hours enforcement (din service.minAdvanceBookingHours)
+- [x] Auto-find or create customer (după telefon, fallback email)
+- [x] Booking code unic generat (8 caractere) afișat la confirmare
+- [x] GDPR consents (SMS/email/marketing) în formular client
+- [x] Theme-aware UI (folosește culorile din tema site-ului)
+- [ ] Embed widget JS pentru site-uri externe (separat de pagina full)
 
 ### 3.3 Notifications
 - [ ] Email confirmation la booking
