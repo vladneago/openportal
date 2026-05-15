@@ -111,13 +111,18 @@
 - [x] Template install_count auto-bump
 
 ### 2.1 Page Builder Core
-- [ ] Structură JSON pentru pagini (sections > columns > blocks)
+- [x] Pagină `/site-builder` (listă site-uri cu status badge, publish/unpublish/delete)
+- [x] Modal "Site nou" cu picker template + temă + business info
+- [x] Pagină `/site-builder/[id]` (split: setări site stânga, listă pagini dreapta)
+- [x] CRUD pagini (titlu, slug, home flag) cu publish + delete inline
+- [x] Item nav lateral "Site Builder"
+- [ ] Structură JSON pentru pagini (sections > columns > blocks) — block schema definit, editor de adăugat
 - [ ] Bibliotecă blocks: Hero, Text, Image, Gallery, Services, Pricing, Contact, Map, Booking CTA, Testimonials, FAQ, Footer
 - [ ] Editor drag-and-drop (use `@dnd-kit`)
 - [ ] Live preview side-by-side
 - [ ] Mobile/Tablet/Desktop preview toggle
 - [ ] Undo/Redo
-- [ ] Save draft + Publish flow
+- [ ] Save draft + Publish flow (publish endpoint deja funcțional — UI publishing buton există)
 
 ### 2.2 Theme System
 - [ ] Variables CSS pentru culori (primary, secondary, neutral, accent)
