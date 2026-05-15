@@ -201,9 +201,13 @@
 - [x] Drafts deletable, finalized invoices must be cancelled
 
 ### 4.1 Invoice UI
-- [ ] Pagină `/invoicing/new` (form factură cu linii)
-- [ ] Catalog clienți (CUI, CIF, adresă)
-- [ ] Calcul TVA (19% standard, 9% medical, 5%, 0%)
+- [x] Pagină `/billing` (listă facturi cu filter status, badges ANAF, quick "Emite" + "→ ANAF")
+- [x] Modal "Factură nouă" cu linii dinamice (add/remove)
+- [x] Calcul live subtotal/TVA/total în formular
+- [x] TVA selector (19% standard, 9% medical, 5%, 0%)
+- [x] Pick from existing customer + manual override
+- [x] Pagină `/billing/series` (CRUD serii cu numerotare, prefix/sufix, reset policy)
+- [x] Item nav lateral "Facturi"
 - [ ] Preview PDF înainte de save
 - [ ] Storno + corecții
 
