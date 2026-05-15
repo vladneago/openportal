@@ -278,27 +278,37 @@
 - [x] PUBLIC GET `/public/conversations/:id/messages?since=...` (long-poll fără WS în MVP)
 
 ### 6.1 Widget Embeddable
-- [ ] Script `<script src="https://openportal.app/widget.js?id=...">` 
-- [ ] Floating bubble + chat window
-- [ ] Customizable colors, position, welcome message
-- [ ] Mobile responsive
+- [x] Pagină `/chat-widget` (cards widgets cu stats conv/messages + buton "Cod embed")
+- [x] Modal "Widget nou" (site asociat, culori, poziție, industrie AI, agent name, greeting)
+- [x] Buton copy embed code (`<script src="...?id=cw_..." async>`)
+- [ ] Floating bubble + chat window client-side (widget.js — runtime separat)
+- [ ] Mobile responsive (când e creat widget.js)
 
 ### 6.2 AI Backend
-- [ ] Integrare Claude API
-- [ ] Sistem prompts per industrie (saloane vs restaurante etc.)
-- [ ] Context din `chat_knowledge_base`
+- [x] Schema completă cu config AI (model, temperature, tools, industry)
+- [x] PUBLIC API endpoints (start session, send message, poll messages)
+- [x] System prompts per industrie (industry field în widget config)
+- [x] Context din `chat_knowledge_sources` (sha256 hash + status workflow)
+- [ ] Integrare efectivă Claude API (worker care procesează mesajele)
 - [ ] Function calling: book appointment, get price list, escalate to human
 
 ### 6.3 Admin Inbox
-- [ ] Pagină `/chat/inbox` (toate conversațiile)
-- [ ] Live takeover (preluare conversație de la AI)
-- [ ] Tagging + customer assignment
+- [x] Pagină `/chat-widget/conversations` (split inbox: lista stânga + thread dreapta)
+- [x] Filter widget + status
+- [x] Live takeover prin "Trimite ca agent" (status flip auto la human_handling)
+- [x] Acțiuni status (Rezolvă / Spam) per conversație
+- [ ] Tagging multi-select + customer assignment UI (API există)
 - [ ] Export conversații
 
 ### 6.4 Knowledge Base UI
-- [ ] Upload docs (PDF, DOCX, MD)
-- [ ] FAQ editor inline
-- [ ] Re-index automat la modificare
+- [x] Pagină `/chat-widget/knowledge` (listă surse cu badge tip + status indexare)
+- [x] CRUD surse: manual/url/pdf/docx/markdown/csv/faq/service_catalog/product_catalog
+- [x] Editor FAQ inline (textarea cu format Q:/A:)
+- [x] Tag-uri + asociere per widget (sau global pentru toate)
+- [x] Status auto reset la "pending" la editare conținut
+- [ ] Upload efectiv fișiere (PDF/DOCX parser) — UI există, runtime de adăugat
+- [ ] Re-index automat la modificare (worker)
+- [x] Item nav lateral "Chat Widget"
 
 ---
 
