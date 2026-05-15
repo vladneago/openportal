@@ -192,10 +192,16 @@
 - [ ] Embed widget JS pentru site-uri externe (separat de pagina full)
 
 ### 3.3 Notifications
-- [ ] Email confirmation la booking
+- [x] Email confirmation la booking (admin + public widget)
+- [x] Email cancellation la status change
+- [x] Templates HTML responsive cu branding RO (Romanian formatare dată/oră)
+- [x] SMTP setup via Mailpit (port 1025) — Mailpit UI la localhost:8025
+- [x] Best-effort delivery (fire-and-forget, nu blochează booking flow)
+- [x] Respectă `emailConsent` din customer record (GDPR)
+- [x] Marchează `confirmationSentAt` la trimitere
 - [ ] SMS confirmation (integrare Twilio sau Vonage)
-- [ ] Reminder 24h + 2h înainte
-- [ ] Cancel/Reschedule link în email/SMS
+- [ ] Reminder 24h + 2h înainte (cron job sau Inngest)
+- [ ] Cancel/Reschedule link cu magic token în email
 
 ### 3.4 Customer self-service
 - [ ] Magic link în confirmare pentru self-reschedule

@@ -13,6 +13,7 @@ import {
 } from "@openportal/db";
 import { and, eq, gte, lte, lt, gt, inArray, or, sql } from "drizzle-orm";
 import { AppError } from "../../middleware/error-handler";
+import { notifyBookingConfirmed } from "../../lib/booking-notifications";
 
 export const bookingPublicRoutes = new Hono();
 
@@ -376,6 +377,9 @@ bookingPublicRoutes.post(
 
       return [inserted!];
     });
+
+    // Fire-and-forget email confirmation
+    notifyBookingConfirmed(appointment.id).catch(() => {});
 
     return c.json(
       {

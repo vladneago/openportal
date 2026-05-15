@@ -13,6 +13,7 @@ import {
 import { and, eq, gte, lte, lt, gt, ne, sql, desc, asc, count, inArray, or } from "drizzle-orm";
 import { requireAuth } from "../../middleware/auth";
 import { AppError } from "../../middleware/error-handler";
+import { notifyBookingConfirmed, notifyBookingCancelled } from "../../lib/booking-notifications";
 
 export const bookingRoutes = new Hono();
 bookingRoutes.use("*", requireAuth);
@@ -757,6 +758,11 @@ bookingRoutes.post("/appointments", zValidator("json", appointmentCreateSchema),
     return [inserted!];
   });
 
+  // Fire-and-forget email notification (only for confirmed bookings)
+  if (row.status === "confirmed") {
+    notifyBookingConfirmed(row.id).catch(() => {});
+  }
+
   return c.json({ success: true, data: row }, 201);
 });
 
@@ -829,6 +835,13 @@ bookingRoutes.patch("/appointments/:id", zValidator("json", appointmentUpdateSch
     .set(updates)
     .where(and(eq(bookingAppointments.tenantId, tenantId), eq(bookingAppointments.id, id)))
     .returning();
+
+  // Fire-and-forget notifications based on status transition
+  if (body.status === "cancelled" && current.status !== "cancelled") {
+    notifyBookingCancelled(id, body.cancellationReason ?? null).catch(() => {});
+  } else if (body.status === "confirmed" && current.status === "pending") {
+    notifyBookingConfirmed(id).catch(() => {});
+  }
 
   return c.json({ success: true, data: row });
 });
