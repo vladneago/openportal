@@ -40,6 +40,8 @@ export async function notifyBookingConfirmed(appointmentId: string): Promise<voi
 
     const customerName = `${row.customer.firstName}${row.customer.lastName ? " " + row.customer.lastName : ""}`;
 
+    const webBaseUrl = process.env.WEB_BASE_URL || "http://localhost:3000";
+
     const { subject, html } = renderBookingConfirmation({
       customerName,
       bookingCode: row.appointment.bookingCode,
@@ -53,6 +55,7 @@ export async function notifyBookingConfirmed(appointmentId: string): Promise<voi
       businessPhone: tenantSettings.contactPhone || null,
       businessAddress: tenantSettings.contactAddress || null,
       customerNote: row.appointment.customerNote,
+      cancellationUrl: `${webBaseUrl}/b/${row.appointment.bookingCode}`,
       brandColor: tenantSettings.brandColor,
     });
 

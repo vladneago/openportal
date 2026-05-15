@@ -13,7 +13,7 @@ import {
 } from "@openportal/db";
 import { and, eq, gte, lte, lt, gt, inArray, or, sql } from "drizzle-orm";
 import { AppError } from "../../middleware/error-handler";
-import { notifyBookingConfirmed } from "../../lib/booking-notifications";
+import { notifyBookingConfirmed, notifyBookingCancelled } from "../../lib/booking-notifications";
 
 export const bookingPublicRoutes = new Hono();
 
@@ -420,16 +420,21 @@ bookingPublicRoutes.get("/lookup", async (c) => {
       resource: {
         name: bookingResources.name,
       },
+      customer: {
+        firstName: bookingCustomers.firstName,
+        lastName: bookingCustomers.lastName,
+      },
     })
     .from(bookingAppointments)
     .innerJoin(bookingServices, eq(bookingAppointments.serviceId, bookingServices.id))
     .innerJoin(bookingResources, eq(bookingAppointments.resourceId, bookingResources.id))
+    .innerJoin(bookingCustomers, eq(bookingAppointments.customerId, bookingCustomers.id))
     .where(eq(bookingAppointments.bookingCode, code.toUpperCase()))
     .limit(1);
 
   if (result.length === 0) throw new AppError(404, "NOT_FOUND", "Programarea nu a fost găsită");
 
-  const { appointment, service, resource } = result[0];
+  const { appointment, service, resource, customer } = result[0];
   return c.json({
     success: true,
     data: {
@@ -442,6 +447,62 @@ bookingPublicRoutes.get("/lookup", async (c) => {
       durationMinutes: service.durationMinutes,
       price: appointment.priceSnapshot,
       currency: appointment.currencySnapshot,
+      customerFirstName: customer.firstName,
+      customerLastName: customer.lastName,
+      cancellationReason: appointment.cancellationReason,
     },
   });
+});
+
+// ─────────────────────────────────────────────
+// POST /public/booking/cancel
+// Customer-facing cancellation by booking code.
+// Anyone with the code can cancel (32 bits of entropy; code only sent to
+// verified contact info via email/SMS).
+// ─────────────────────────────────────────────
+
+const cancelSchema = z.object({
+  code: z.string().min(4).max(16),
+  reason: z.string().max(500).optional(),
+});
+
+bookingPublicRoutes.post("/cancel", zValidator("json", cancelSchema), async (c) => {
+  const { code, reason } = c.req.valid("json");
+
+  const [appt] = await db
+    .select()
+    .from(bookingAppointments)
+    .where(eq(bookingAppointments.bookingCode, code.toUpperCase()))
+    .limit(1);
+
+  if (!appt) throw new AppError(404, "NOT_FOUND", "Programarea nu a fost găsită");
+
+  if (appt.status === "cancelled") {
+    return c.json({ success: true, data: { alreadyCancelled: true } });
+  }
+
+  if (appt.status === "completed" || appt.status === "no_show") {
+    throw new AppError(400, "CANNOT_CANCEL", "Această programare nu mai poate fi anulată");
+  }
+
+  // Enforce min cancellation window (e.g. can't cancel less than 2h before)
+  const hoursBefore = (appt.startAt.getTime() - Date.now()) / (60 * 60 * 1000);
+  if (hoursBefore < 2 && hoursBefore > 0) {
+    throw new AppError(400, "TOO_LATE", "Anularea online se poate face cu cel puțin 2 ore înainte. Te rugăm sună-ne.");
+  }
+
+  await db
+    .update(bookingAppointments)
+    .set({
+      status: "cancelled",
+      cancelledAt: new Date(),
+      cancellationReason: reason ?? "Anulat de client",
+      updatedAt: new Date(),
+    })
+    .where(eq(bookingAppointments.id, appt.id));
+
+  // Fire-and-forget cancellation email
+  notifyBookingCancelled(appt.id, reason ?? "Anulat de client").catch(() => {});
+
+  return c.json({ success: true, data: { cancelled: true } });
 });

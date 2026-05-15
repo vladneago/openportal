@@ -212,8 +212,14 @@
 - [ ] Cancel/Reschedule link cu magic token în email
 
 ### 3.4 Customer self-service
-- [ ] Magic link în confirmare pentru self-reschedule
-- [ ] Mini-portal customer (istoric programări, anulare)
+- [x] Pagină publică `/b/[code]` cu lookup + detalii programare
+- [x] Cancel endpoint public `POST /api/v1/public/booking/cancel`
+- [x] UI cancel cu confirmation dialog + motiv opțional
+- [x] Min cancellation window: 2h înainte (configurabil)
+- [x] Trigger email notification de anulare automat
+- [x] Link în email-ul de confirmare către `/b/[code]`
+- [ ] Self-reschedule (în viitor — necesită new slot picker)
+- [ ] Istoric programări per customer (lookup multiple by phone/email)
 
 ---
 
