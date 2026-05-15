@@ -18,6 +18,7 @@ interface Resource {
 
 const TABS = [
   { href: "/booking", label: "Programări" },
+  { href: "/booking/calendar", label: "Calendar" },
   { href: "/booking/services", label: "Servicii" },
   { href: "/booking/resources", label: "Personal & Spații" },
   { href: "/booking/availability", label: "Program" },

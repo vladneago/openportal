@@ -180,8 +180,10 @@
 - [x] Pagină `/booking/resources` (CRUD staff/rooms/equipment cu culoare + capacitate)
 - [x] Pagină `/booking/customers` (CRUD cu search debounce + consents GDPR)
 - [x] Pagină `/booking/availability` (editor orar săptămânal cu grid 7 zile, preset-uri rapide L-V, multi-interval per zi pentru pauze)
-- [ ] Pagină `/booking/calendar` (vizualizare zilnică/săptămânală/lunară)
-- [ ] Drag-to-reschedule appointments
+- [x] Pagină `/booking/calendar` (vedere săptămână + zi cu grid orar 07-22, programări ca blocuri colorate, click → modal cu acțiuni status)
+- [x] Resource filter în calendar + navigare prev/today/next
+- [x] Modal detail cu state machine complet (pending→confirmed→checked_in→in_progress→completed, sau cancelled/no_show)
+- [ ] Drag-to-reschedule appointments (în viitor)
 - [x] Item nav lateral "Programări"
 
 ### 3.2 Booking Widget (public)

@@ -208,6 +208,7 @@ export default function BookingPage() {
       <div className="flex items-center gap-1 mb-6">
         {[
           { href: "/booking", label: "Programări" },
+          { href: "/booking/calendar", label: "Calendar" },
           { href: "/booking/services", label: "Servicii" },
           { href: "/booking/resources", label: "Personal & Spații" },
           { href: "/booking/availability", label: "Program" },
