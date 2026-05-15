@@ -15,6 +15,11 @@ const NAV_ITEMS = [
   { id: "workflows", label: "Automatizări", href: "/workflows" },
   { id: "chat", label: "Mesaje", href: "/chat" },
   { id: "calendar", label: "Calendar", href: "/calendar" },
+  { id: "booking", label: "Programări", href: "/booking" },
+  { id: "billing", label: "Facturi", href: "/billing" },
+  { id: "pos", label: "POS / Magazin", href: "/pos" },
+  { id: "site-builder", label: "Site Builder", href: "/site-builder" },
+  { id: "chat-widget", label: "Chat Widget", href: "/chat-widget" },
   { id: "hr", label: "HR", href: "/hr" },
   { id: "search", label: "Căutare", href: "/search" },
 ];
@@ -204,6 +209,11 @@ function NavIcon({ id, active }: { id: string; active: boolean }) {
     case "workflows": return <svg {...p}><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M5 8v2a4 4 0 0 0 4 4h2M19 8v2a4 4 0 0 1-4 4h-2"/></svg>;
     case "chat": return <svg {...p}><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>;
     case "calendar": return <svg {...p}><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>;
+    case "booking": return <svg {...p}><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 16l2 2 4-4"/></svg>;
+    case "billing": return <svg {...p}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5M8 9h2"/></svg>;
+    case "pos": return <svg {...p}><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M2 17l3 4h14l3-4M8 7h8M8 11h8"/></svg>;
+    case "site-builder": return <svg {...p}><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v18"/></svg>;
+    case "chat-widget": return <svg {...p}><circle cx="12" cy="12" r="9"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></svg>;
     case "hr": return <svg {...p}><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><circle cx="17" cy="7" r="3"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>;
     case "search": return <svg {...p}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>;
     default: return null;

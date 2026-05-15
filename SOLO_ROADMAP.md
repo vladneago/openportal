@@ -157,11 +157,17 @@
 - [x] Customer stats auto-increment la create
 
 ### 3.1 Admin UI
-- [ ] Pagină `/booking/resources` (staff/spații)
-- [ ] Pagină `/booking/services` (catalog servicii cu durată, preț)
+- [x] Pagină `/booking` (listă programări cu filter scope: azi/mâine/săptămână/lună + status)
+- [x] Stats cards (total, confirmate, în așteptare, încasări estimate)
+- [x] Modal "Programare nouă" (customer + serviciu + resursă + dată + oră)
+- [x] Quick actions (Confirmă / Finalizează / Anulează / Șterge) din listă
+- [x] Pagină `/booking/services` (CRUD cu durată/buffer/preț/TVA)
+- [x] Pagină `/booking/resources` (CRUD staff/rooms/equipment cu culoare + capacitate)
+- [x] Pagină `/booking/customers` (CRUD cu search debounce + consents GDPR)
 - [ ] Pagină `/booking/availability` (editor orar săptămânal)
 - [ ] Pagină `/booking/calendar` (vizualizare zilnică/săptămânală/lunară)
 - [ ] Drag-to-reschedule appointments
+- [x] Item nav lateral "Programări"
 
 ### 3.2 Booking Widget (public)
 - [ ] Embed widget pentru site-uri externe + integrat în Site Builder
