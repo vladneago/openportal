@@ -250,6 +250,14 @@ export default function SiteDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <a
+            href={`/preview/${site.id}`}
+            target="_blank"
+            rel="noopener"
+            className="btn-secondary text-sm no-underline"
+          >
+            Preview
+          </a>
           {site.status === "published" ? (
             <button onClick={unpublishSite} className="btn-secondary text-sm">
               Depublică

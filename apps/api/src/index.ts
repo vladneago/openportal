@@ -37,6 +37,7 @@ import { bookingRoutes } from "./modules/booking/routes";
 import { billingRoutes } from "./modules/billing/routes";
 import { posRoutes } from "./modules/pos/routes";
 import { siteBuilderRoutes } from "./modules/site-builder/routes";
+import { siteBuilderPublicRoutes } from "./modules/site-builder/public";
 import { chatWidgetRoutes } from "./modules/chat-widget/routes";
 import { apiDocsRoutes } from "./modules/api-docs/routes";
 import { healthRoutes } from "./modules/health";
@@ -71,6 +72,9 @@ v1.route("/pos", posRoutes);
 v1.route("/site-builder", siteBuilderRoutes);
 v1.route("/chat-widget", chatWidgetRoutes);
 app.route("/api/v1", v1);
+
+// Public (no-auth) routes for serving websites
+app.route("/api/v1/public/site-builder", siteBuilderPublicRoutes);
 
 app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));
 const port = parseInt(process.env.API_PORT || "4000", 10);

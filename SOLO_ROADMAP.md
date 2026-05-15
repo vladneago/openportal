@@ -125,16 +125,20 @@
 - [ ] Save draft + Publish flow (publish endpoint deja funcțional — UI publishing buton există)
 
 ### 2.2 Theme System
-- [ ] Variables CSS pentru culori (primary, secondary, neutral, accent)
-- [ ] Tipografie (font primary + secondary)
-- [ ] Spacing scale + border radius scale
-- [ ] 10 teme predefinite (Beauty Modern, Beauty Vintage, Salon Lux, Barbershop Bold, etc.)
-- [ ] Theme picker în editor
+- [x] Variables CSS pentru culori (primary, secondary, accent, background, surface, text + 4 stări)
+- [x] Tipografie (heading + body fonts, baseFontSize, headingScale, lineHeight)
+- [x] Spacing scale + border radius scale (cu default-uri în schema)
+- [x] **10 teme predefinite seed-uite în DB**: Beauty Modern, Beauty Vintage, Salon Lux, Barbershop Bold, Spa Wellness, Cafe Cozy, Restaurant Elegant, Medical Trust, Fitness Energy, Professional Clean
+- [x] Theme picker în UI (la creare site, alegi din dropdown)
 
 ### 2.3 Publish & DNS
-- [ ] Subdomain automat: `clientname.openportal.app`
-- [ ] Endpoint serving static pages cu cache CDN
-- [ ] Custom domain: instrucțiuni DNS + verificare
+- [x] Schema cu subdomain + customDomain + customDomainStatus
+- [x] Public API endpoints (`/api/v1/public/site-builder/...`) — by-host, by-id, page, pages, services, resources
+- [x] Block renderer system (11 blocks: hero, featuresGrid, servicesPreview, servicesList, textImage, testimonials, ctaBanner, contactInfo, contactForm, bookingWidget, team)
+- [x] Theme CSS variables injectate prin `<SiteThemeStyle>`
+- [x] Preview route `/preview/[siteId]/[[...slug]]` care randează ciornele + buton "Preview" în site detail
+- [ ] Endpoint serving static pages public pe subdomain.openportal.app (necesită middleware Next.js pentru host-based routing)
+- [ ] Custom domain: instrucțiuni DNS + verificare automată
 - [ ] SSL automat (Let's Encrypt sau Cloudflare)
 - [ ] Redirect rules (www → root, http → https)
 
