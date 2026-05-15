@@ -25,6 +25,7 @@ const TABS = [
   { href: "/booking", label: "Programări" },
   { href: "/booking/services", label: "Servicii" },
   { href: "/booking/resources", label: "Personal & Spații" },
+  { href: "/booking/availability", label: "Program" },
   { href: "/booking/customers", label: "Clienți" },
 ];
 

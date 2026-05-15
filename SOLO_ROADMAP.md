@@ -173,7 +173,7 @@
 - [x] Pagină `/booking/services` (CRUD cu durată/buffer/preț/TVA)
 - [x] Pagină `/booking/resources` (CRUD staff/rooms/equipment cu culoare + capacitate)
 - [x] Pagină `/booking/customers` (CRUD cu search debounce + consents GDPR)
-- [ ] Pagină `/booking/availability` (editor orar săptămânal)
+- [x] Pagină `/booking/availability` (editor orar săptămânal cu grid 7 zile, preset-uri rapide L-V, multi-interval per zi pentru pauze)
 - [ ] Pagină `/booking/calendar` (vizualizare zilnică/săptămânală/lunară)
 - [ ] Drag-to-reschedule appointments
 - [x] Item nav lateral "Programări"
