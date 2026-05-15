@@ -304,9 +304,15 @@
 ### 6.2 AI Backend
 - [x] Schema completă cu config AI (model, temperature, tools, industry)
 - [x] PUBLIC API endpoints (start session, send message, poll messages)
-- [x] System prompts per industrie (industry field în widget config)
+- [x] System prompts per industrie (26 industrii, salvate în `chat-ai.ts`)
 - [x] Context din `chat_knowledge_sources` (sha256 hash + status workflow)
-- [ ] Integrare efectivă Claude API (worker care procesează mesajele)
+- [x] **Integrare efectivă Claude API** (`@anthropic-ai/sdk` 0.32.1)
+- [x] Fire-and-forget AI reply trigger după fiecare mesaj user
+- [x] Prompt caching cu `cache_control: ephemeral` pe blocul static (industry+tenant+services+knowledge) — reduce cost ~90% după primul mesaj
+- [x] Default model: `claude-haiku-4-5-20251001` (rapid + ieftin pentru chat widget)
+- [x] Token tracking per conversation + per widget
+- [x] Skip AI dacă status = `human_handling` (takeover funcționează)
+- [x] Auto-skip dacă `ANTHROPIC_API_KEY` lipsește (graceful degradation)
 - [ ] Function calling: book appointment, get price list, escalate to human
 
 ### 6.3 Admin Inbox

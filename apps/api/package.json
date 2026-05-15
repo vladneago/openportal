@@ -22,7 +22,8 @@
     "jose": "^5.9.6",
     "nanoid": "^5.0.9",
     "dayjs": "^1.11.13",
-    "nodemailer": "^6.9.16"
+    "nodemailer": "^6.9.16",
+    "@anthropic-ai/sdk": "^0.32.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

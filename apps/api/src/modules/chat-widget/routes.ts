@@ -12,6 +12,7 @@ import { and, eq, sql, desc, asc, count } from "drizzle-orm";
 import { requireAuth } from "../../middleware/auth";
 import { AppError } from "../../middleware/error-handler";
 import { randomBytes, createHash } from "crypto";
+import { generateAIReply, isAIAvailable } from "../../lib/chat-ai";
 
 export const chatWidgetRoutes = new Hono();
 
@@ -619,6 +620,13 @@ publicRoutes.post(
 
       return msg;
     });
+
+    // Trigger AI reply asynchronously (fire-and-forget) if AI is enabled + available
+    if (widget.aiEnabled && isAIAvailable() && conv.status !== "human_handling") {
+      generateAIReply(id).catch((err) => {
+        console.error("[chat-widget] AI reply failed:", err);
+      });
+    }
 
     return c.json({ success: true, data: result }, 201);
   },
