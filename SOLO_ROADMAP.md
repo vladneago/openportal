@@ -311,11 +311,16 @@
 - [x] Auto status `out_of_stock` când stock_quantity ≤ 0
 
 ### 7.1 POS UI
-- [ ] Touch-friendly grid produse
-- [ ] Coș + reducere + voucher
-- [ ] Plată cash/card/transfer + restitu
+- [x] Pagină `/pos` (terminal touch-friendly: grid produse + coș lateral)
+- [x] Filter categorii + search SKU/nume/barcode
+- [x] Cart: add/remove, +/- quantity, subtotal/TVA/total live
+- [x] Plată cash/card/transfer/voucher + suma primită + rest auto
+- [x] Pagină `/pos/products` (CRUD produse cu search, lowStock filter, categorii inline)
+- [x] Modal "Categorie nouă" în pagina produse
+- [x] Pagină `/pos/reports` (Z-Report zilnic: vânzări, TVA, storno, defalcare per metoda plată)
+- [x] Item nav lateral "POS / Magazin"
 - [ ] Print bon (browser print API + future printer integration)
-- [ ] Z-report end of day
+- [ ] Inventariere fizică / scanare barcode
 
 ### 7.2 Stocks
 - [ ] Receptie marfă (NIR)
