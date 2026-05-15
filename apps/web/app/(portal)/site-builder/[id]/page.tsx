@@ -435,6 +435,12 @@ export default function SiteDetailPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
+                    <Link
+                      href={`/site-builder/${site.id}/pages/${p.id}/edit`}
+                      className="btn-primary text-xs no-underline"
+                    >
+                      Editează
+                    </Link>
                     {p.status !== "published" && (
                       <button onClick={() => publishPage(p.id)} className="btn-secondary text-xs">
                         Publică

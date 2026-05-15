@@ -116,13 +116,19 @@
 - [x] Pagină `/site-builder/[id]` (split: setări site stânga, listă pagini dreapta)
 - [x] CRUD pagini (titlu, slug, home flag) cu publish + delete inline
 - [x] Item nav lateral "Site Builder"
-- [ ] Structură JSON pentru pagini (sections > columns > blocks) — block schema definit, editor de adăugat
-- [ ] Bibliotecă blocks: Hero, Text, Image, Gallery, Services, Pricing, Contact, Map, Booking CTA, Testimonials, FAQ, Footer
-- [ ] Editor drag-and-drop (use `@dnd-kit`)
-- [ ] Live preview side-by-side
+- [x] Structură JSON pentru pagini (block list cu type + data per block)
+- [x] **Bibliotecă blocks** (11): Hero, FeaturesGrid, ServicesPreview, ServicesList, TextImage, Testimonials, CtaBanner, ContactInfo, ContactForm, BookingWidget, Team
+- [x] Editor `/site-builder/[id]/pages/[pageId]/edit` cu split layout (listă blocuri stânga, editor formular dreapta)
+- [x] Block palette modal cu 11 tipuri (icon + descriere)
+- [x] Per-block forms cu field types: text, textarea, url, image (cu preview), select, boolean, color, number, list, cta
+- [x] Reorder cu ↑/↓ buttons (drag-drop de adăugat în viitor cu @dnd-kit)
+- [x] List fields cu add/remove items (features, testimoniale, team members)
+- [x] Save draft + Publish buttons cu dirty state indicator
+- [x] Editare SEO title + description + slug + page title în același editor
+- [x] Link "Editează" pe fiecare pagină din site detail
+- [ ] Live preview side-by-side (momentan link "Preview" separat în tab nou)
 - [ ] Mobile/Tablet/Desktop preview toggle
 - [ ] Undo/Redo
-- [ ] Save draft + Publish flow (publish endpoint deja funcțional — UI publishing buton există)
 
 ### 2.2 Theme System
 - [x] Variables CSS pentru culori (primary, secondary, accent, background, surface, text + 4 stări)
