@@ -37,6 +37,7 @@ import { bookingRoutes } from "./modules/booking/routes";
 import { billingRoutes } from "./modules/billing/routes";
 import { posRoutes } from "./modules/pos/routes";
 import { siteBuilderRoutes } from "./modules/site-builder/routes";
+import { chatWidgetRoutes } from "./modules/chat-widget/routes";
 import { apiDocsRoutes } from "./modules/api-docs/routes";
 import { healthRoutes } from "./modules/health";
 import { errorHandler } from "./middleware/error-handler";
@@ -68,6 +69,7 @@ v1.route("/booking", bookingRoutes);
 v1.route("/billing", billingRoutes);
 v1.route("/pos", posRoutes);
 v1.route("/site-builder", siteBuilderRoutes);
+v1.route("/chat-widget", chatWidgetRoutes);
 app.route("/api/v1", v1);
 
 app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));

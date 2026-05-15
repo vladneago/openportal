@@ -250,6 +250,18 @@
 
 ## Faza 6 — AI Chat Widget (Săpt 12–13)
 
+### 6.0 Chat Widget API (Hono routes)
+- [x] CRUD `/api/v1/chat-widget/widgets` (config: colors, AI model, tools, hours, domains)
+- [x] POST `/api/v1/chat-widget/widgets/:id/regenerate-key` (security rotation)
+- [x] GET `/api/v1/chat-widget/conversations` (admin inbox cu filter status/widget)
+- [x] PATCH `/api/v1/chat-widget/conversations/:id` (assign, status, tags, sentiment)
+- [x] POST `/api/v1/chat-widget/conversations/:id/messages` (admin takeover de la AI)
+- [x] CRUD `/api/v1/chat-widget/knowledge` (sources: manual/url/pdf/faq pentru RAG context)
+- [x] PUBLIC GET `/api/v1/chat-widget/public/widget?key=cw_...` (config pentru embed)
+- [x] PUBLIC POST `/public/conversations` (start/resume session)
+- [x] PUBLIC POST `/public/conversations/:id/messages` (visitor → message)
+- [x] PUBLIC GET `/public/conversations/:id/messages?since=...` (long-poll fără WS în MVP)
+
 ### 6.1 Widget Embeddable
 - [ ] Script `<script src="https://openportal.app/widget.js?id=...">` 
 - [ ] Floating bubble + chat window
