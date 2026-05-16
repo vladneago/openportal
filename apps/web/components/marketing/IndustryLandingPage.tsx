@@ -401,13 +401,18 @@ export function IndustryLandingPage({ data }: { data: IndustryLandingData }) {
                 <li><Link href="/saloane" style={footerLinkStyle}>Saloane</Link></li>
                 <li><Link href="/frizerii" style={footerLinkStyle}>Frizerii</Link></li>
                 <li><Link href="/spa-wellness" style={footerLinkStyle}>SPA & wellness</Link></li>
+                <li><Link href="/yoga" style={footerLinkStyle}>Yoga / pilates</Link></li>
+                <li><Link href="/fitness" style={footerLinkStyle}>Fitness / PT</Link></li>
                 <li><Link href="/cabinete-medicale" style={footerLinkStyle}>Cabinete medicale</Link></li>
                 <li><Link href="/stomatologi" style={footerLinkStyle}>Stomatologi</Link></li>
-                <li><Link href="/fitness" style={footerLinkStyle}>Fitness / PT</Link></li>
-                <li><Link href="/fotografie" style={footerLinkStyle}>Fotografi</Link></li>
+                <li><Link href="/psihologi" style={footerLinkStyle}>Psihologi</Link></li>
+                <li><Link href="/avocati" style={footerLinkStyle}>Avocați / notari</Link></li>
+                <li><Link href="/contabili" style={footerLinkStyle}>Contabili</Link></li>
                 <li><Link href="/consultanti" style={footerLinkStyle}>Consultanți</Link></li>
+                <li><Link href="/fotografie" style={footerLinkStyle}>Fotografi</Link></li>
                 <li><Link href="/cofetarii" style={footerLinkStyle}>Cofetării</Link></li>
                 <li><Link href="/florarii" style={footerLinkStyle}>Florării</Link></li>
+                <li><Link href="/restaurante" style={footerLinkStyle}>Restaurante</Link></li>
               </ul>
             </div>
             <div>

@@ -785,6 +785,421 @@ export const INDUSTRY_LANDINGS: Record<string, IndustryLandingData> = {
     ],
   },
 
+  yoga: {
+    slug: "yoga",
+    title: "Site pentru studio yoga / pilates — Rezervări online + abonamente | OpenPortal",
+    description:
+      "Site pentru studiouri yoga, pilates, meditație. Rezervări clase cu capacitate limitată, abonamente recurente, instructori multipli. €25/lună.",
+    ogTitle: "OpenPortal pentru studiouri yoga și pilates",
+    heroBadge: "🧘 Pentru studiouri yoga, pilates, meditație",
+    heroTitle: "Studio-ul tău,",
+    heroHighlight: "fără locuri pierdute",
+    heroSubtitle:
+      "Cursanții rezervă clasele singuri, primesc reminder, plătesc abonament recurent. Capacitate limitată per clasă, niciun chaos la sala plină.",
+    accentHex: "#7A9F7A",
+    painPoints: [
+      {
+        problem: "Cursanții vin nerezervați și sala e plină la refuz",
+        solution: "Capacitate per clasă (ex. max 12). Sistemul închide rezervările când e plin.",
+      },
+      {
+        problem: "Plățile pe Revolut pentru abonament 8 ședințe/lună sunt o bătaie de cap",
+        solution: "Abonament recurent automat Stripe. Banii vin lunar fără reminder de la tine.",
+      },
+      {
+        problem: "Cursanții uită clasele și pierzi venit",
+        solution: "Reminder cu 24h și 2h. Self-cancel online, alți cursanți pot prinde locul liber.",
+      },
+      {
+        problem: "Tracking abonamente cu ce ședințe au rămas e haotic",
+        solution: "Dashboard per cursant cu ședințe rămase din pachet. Alertă când expiră.",
+      },
+    ],
+    features: [
+      {
+        icon: "🧘‍♀️",
+        title: "Capacitate per clasă",
+        body: "Yoga 12 oameni, Pilates Reformer 6, Meditație 20. Sistemul respectă limita pe fiecare clasă în parte.",
+      },
+      {
+        icon: "💳",
+        title: "Abonamente Stripe recurente",
+        body: "8 ședințe/lună la 250 lei, plată automată în prima zi. Cancel anytime din dashboard.",
+      },
+      {
+        icon: "📅",
+        title: "Orar săptămânal vizibil",
+        body: "Public pe site cu nume instructor, durată, capacitate disponibilă. Cursanții văd ce-i așteaptă.",
+      },
+      {
+        icon: "🎯",
+        title: "Pachete cu expirare",
+        body: "10 ședințe valabile 3 luni, sau abonament nelimitat. Tracking automat pe fiecare cursant.",
+      },
+      {
+        icon: "👥",
+        title: "Workshop-uri & retreat-uri",
+        body: "Evenimente speciale cu avans Stripe, listă invitați, comunicare prin email automat.",
+      },
+      {
+        icon: "🌐",
+        title: "Site cu atmosferă",
+        body: "Template-uri cu paleta naturală, fotografie atmosferică. Comunici liniștea înainte ca oamenii să intre.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Yoga Studio Zen — Cluj",
+      quote:
+        "Abonamentele recurente mi-au dat liniștea financiară. Știu exact câți cursanți am, câți bani intră lunar, fără telefoane.",
+    },
+    faq: [
+      {
+        q: "Cum gestionez listele de așteptare la clasele pline?",
+        a: "Sistemul afișează automat lista de așteptare. Când cineva anulează, primul în waitlist primește email automat cu link de rezervare.",
+      },
+      {
+        q: "Pot oferi clase online + în studio simultan?",
+        a: "Da. Setezi clase ca având două variante: în studio (cu locație) și online (cu link Zoom auto-generat). Cursanții aleg formatul.",
+      },
+      {
+        q: "Funcționează cu Wellhub / Multisport / 7Card?",
+        a: "Da. Cursanții cu acele carduri se rezervă normal, fără plată. Tu marchezi prezența la sfârșitul lunii pentru raport.",
+      },
+    ],
+  },
+
+  restaurante: {
+    slug: "restaurante",
+    title: "Site pentru restaurant / bistro — Rezervări mese online | OpenPortal",
+    description:
+      "Site pentru restaurante și bistrouri cu rezervări mese, meniu online, gestiune mese, comenzi pentru evenimente. e-Factura ANAF. €25/lună.",
+    ogTitle: "OpenPortal pentru restaurante și bistrouri",
+    heroBadge: "🍽️ Pentru restaurante, bistrouri, fine-dining",
+    heroTitle: "Restaurantul tău,",
+    heroHighlight: "rezervat la timp",
+    heroSubtitle:
+      "Site cu meniu, rezervări mese online, evenimente private, facturare conformă ANAF. Nu mai pierzi mese pentru că suni-mă-mai-târziu durează prea mult.",
+    accentHex: "#92400E",
+    painPoints: [
+      {
+        problem: "Telefonul sună non-stop pentru rezervări — chelnerii nu mai pot lucra",
+        solution: "Rezervări online 24/7. Telefonul se liniștește, oamenii își rezervă singuri.",
+      },
+      {
+        problem: "Mesele rezervate care nu mai vin — pierzi venit de week-end",
+        solution: "Reminder cu 24h și 2h + cerere confirmare. No-show-uri reduse cu 60%.",
+      },
+      {
+        problem: "Comenzile pentru evenimente private în Excel se pierd",
+        solution: "Dosar dedicat per eveniment cu meniu, invitați, plăți, comunicare. Toate într-un loc.",
+      },
+      {
+        problem: "Facturare către firme cu deviz, restanțe — durează ore",
+        solution: "Factură în 10 secunde. e-Factura ANAF automat. Aging report pentru restanțe.",
+      },
+    ],
+    features: [
+      {
+        icon: "🍷",
+        title: "Rezervări mese online",
+        body: "Clientul alege ziua, ora, nr. persoane. Sistemul îți spune dacă ai loc, fără ciocniri.",
+      },
+      {
+        icon: "📋",
+        title: "Meniu online actualizabil",
+        body: "Update prețuri, alergeni, disponibilitate în 30 secunde. Schimbi meniul sezonier instant.",
+      },
+      {
+        icon: "🎉",
+        title: "Evenimente private",
+        body: "Formular dedicat pentru aniversări, nunți, corporate. Avans Stripe, plan eveniment, comunicare clienți.",
+      },
+      {
+        icon: "🇷🇴",
+        title: "ANAF e-Factura nativ",
+        body: "Facturi pentru firme cu deduceri TVA + raportare CASMB. Trimis automat în SPV.",
+      },
+      {
+        icon: "🔔",
+        title: "Confirmări automate",
+        body: "Email la rezervare, reminder cu 24h și 2h. Cancel/reschedule online direct de către client.",
+      },
+      {
+        icon: "📊",
+        title: "Rapoarte încasări",
+        body: "Z-Report zilnic, top mese, top zile săptămânii, încasări per categorie meniu.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Bistro La Mama — București",
+      quote:
+        "Vinerea sunt 80 de rezervări. Înainte ne sunau 80 de telefoane. Acum tăcere și sala plină.",
+    },
+    faq: [
+      {
+        q: "Cum gestionez mesele cu capacități diferite?",
+        a: "Configurezi mese cu numere și capacități individuale (2, 4, 6 persoane). Sistemul atribuie automat masa potrivită fiecărei rezervări.",
+      },
+      {
+        q: "Pot suspenda rezervările pentru zile speciale?",
+        a: "Da. Programări → Blocked Slots → blochezi ore sau zile întregi pentru evenimente private sau închidere.",
+      },
+      {
+        q: "Cum cer avans pentru rezervări mari sau evenimente?",
+        a: "Setezi avans pentru mese de 8+ sau evenimente. Link Stripe trimis automat, rezervarea se confirmă doar după plată.",
+      },
+    ],
+  },
+
+  avocati: {
+    slug: "avocati",
+    title: "Site pentru cabinet avocatură — Programări online + facturare | OpenPortal",
+    description:
+      "Site profesional pentru cabinete avocatură și notariate. Programări consultații online, facturare onorarii ANAF, contracte digitale, dosare clienți. €25/lună.",
+    ogTitle: "OpenPortal pentru avocați și notari",
+    heroBadge: "⚖️ Pentru cabinete avocatură și notariate",
+    heroTitle: "Cabinetul tău juridic,",
+    heroHighlight: "fără birocrație internă",
+    heroSubtitle:
+      "Site sobru care comunică expertiză, programări consultații online, facturare onorarii direct la ANAF, dosare digitale criptate. Time-tracking pe ore facturate.",
+    accentHex: "#1E40AF",
+    painPoints: [
+      {
+        problem: "Negocierea de onorarii și plăți te face să pari prețios",
+        solution: "Tarif vizibil pe site, link plată după consultație. Profesional și transparent, ca avocații din UK.",
+      },
+      {
+        problem: "Calendarul amestecat între consultații, instanță, deep work",
+        solution: "Tipuri de slot dedicate. Buffer-uri între consultații. Sistemul respectă boundaries.",
+      },
+      {
+        problem: "Facturare onorarii cu deviz, retainer, restanțe — birocrație",
+        solution: "Factură în 10 secunde, e-Factura ANAF automat. Track plăți + retainer recurent.",
+      },
+      {
+        problem: "Dosarele Word + emailuri sunt o bătaie de cap când vin auditele",
+        solution: "Dosar digital per client cu istoric complet. Search instant pentru orice document.",
+      },
+    ],
+    features: [
+      {
+        icon: "📚",
+        title: "Dosare clienți criptate",
+        body: "Istoric consultații, contracte, plăți, comunicare. Acces strict bazat pe rol în cabinet.",
+      },
+      {
+        icon: "💼",
+        title: "Retainer recurent",
+        body: "Client cu retainer 5000 lei/lună? Factură + plată automată în prima zi. Zero intervenție manuală.",
+      },
+      {
+        icon: "📞",
+        title: "Apel video integrat",
+        body: "Link Zoom/Meet generat automat la rezervare consultație. Pacient primește invitația prin email.",
+      },
+      {
+        icon: "⚖️",
+        title: "Specialități per avocat",
+        body: "Fiecare avocat din cabinet are propriile specialități + calendar + tarife. Clienții aleg specialistul potrivit.",
+      },
+      {
+        icon: "🇷🇴",
+        title: "ANAF e-Factura",
+        body: "Onorarii facturate conform legii, trimise automat în SPV. TVA-uri 0/9/19% configurabile.",
+      },
+      {
+        icon: "🔐",
+        title: "Contracte digitale",
+        body: "Template-uri editabile + semnătură electronică conformă eIDAS. Valid juridic în RO + UE.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Cabinet Av. Maria Ionescu — București",
+      quote:
+        "Înainte petreceam joi întreaga zi cu facturarea. Acum durează 30 minute. Timpul recâștigat e timp cu clienții.",
+    },
+    faq: [
+      {
+        q: "Funcționează pentru cabinet cu 2-3 avocați?",
+        a: "Pe planul Solo Pro €50/lună ai utilizatori nelimitați. Fiecare avocat are propriile dosare, calendar, facturi. Permisiuni granulate.",
+      },
+      {
+        q: "Pot importa dosarele existente din Word/Excel?",
+        a: "Da. Import gratuit din CSV/Excel pentru contacte clienți + atașamente PDF. Migrarea complete asistată de echipa noastră în 48h.",
+      },
+      {
+        q: "Cum funcționează cu firme care plătesc retainer lunar?",
+        a: "Setezi factură recurentă automată pentru retainer. Sistemul emite + trimite în SPV lunar. Track ore facturate vs retainer.",
+      },
+    ],
+  },
+
+  contabili: {
+    slug: "contabili",
+    title: "Site pentru contabili / experți contabili — Portal clienți | OpenPortal",
+    description:
+      "Site pentru cabinete contabilitate cu portal clienți, schimb documente, facturare lunară recurentă, integrare ANAF. €25/lună.",
+    ogTitle: "OpenPortal pentru contabili și experți contabili",
+    heroBadge: "📊 Pentru cabinete contabilitate",
+    heroTitle: "Contabilitatea ta,",
+    heroHighlight: "fără hârtii pierdute",
+    heroSubtitle:
+      "Portal clienți pentru upload documente, programări consultații, facturare recurentă automată, integrare directă ANAF pentru declarații. Timp recâștigat pentru muncă reală.",
+    accentHex: "#0F766E",
+    painPoints: [
+      {
+        problem: "Clienții îți trimit facturi pe WhatsApp, pe email, pe Drive — chaos",
+        solution: "Portal dedicat per client cu upload securizat. Toate documentele într-un loc, organizate.",
+      },
+      {
+        problem: "Facturarea lunară către 20 de clienți durează 2 zile",
+        solution: "Factură recurentă automată per client. Lunar emisă + trimisă în SPV + reminder plată.",
+      },
+      {
+        problem: "Întâlnirile pentru explicare bilanț se aglomerează prost",
+        solution: "Programări online cu slot-uri pre-aprobate. Clienții aleg ora, tu primești agenda clară.",
+      },
+      {
+        problem: "Termenele ANAF te stresează — uiți date, plătești penalizări",
+        solution: "Calendar integrat cu deadline-urile ANAF + reminder pe email. Niciodată mai târziu.",
+      },
+    ],
+    features: [
+      {
+        icon: "📁",
+        title: "Portal clienți",
+        body: "Fiecare client are propriul portal cu istoric documente, facturi, declarații. Login dedicat, securitate maximă.",
+      },
+      {
+        icon: "🔁",
+        title: "Facturare recurentă",
+        body: "Setezi onorariu lunar per client (ex. 500 lei SRL mic). Sistemul emite + trimite în SPV automat.",
+      },
+      {
+        icon: "📅",
+        title: "Calendar ANAF",
+        body: "Toate deadline-urile (D100, D112, bilanț, etc.) pre-populate. Reminder cu o săptămână înainte.",
+      },
+      {
+        icon: "💰",
+        title: "Track restanțe",
+        body: "Aging report pentru clienții care întârzie. Reminder automat pe email + suspend la 60 zile.",
+      },
+      {
+        icon: "🤝",
+        title: "Onboarding clienți noi",
+        body: "Wizard pentru preluare contabilitate: documente necesare, ofertă auto-generată, semnătură online.",
+      },
+      {
+        icon: "📈",
+        title: "Rapoarte business",
+        body: "Vezi câți clienți activi, MRR, top servicii. Date pentru deciziile tale de business.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Expert Contabil Andrei R. — Brașov",
+      quote:
+        "Portalul clienți mi-a redus la jumătate timpul pierdut cu căutarea documentelor. Plus, retainer recurent automat — venit predictibil.",
+    },
+    faq: [
+      {
+        q: "Funcționează cu Saga, Smartbill sau alte programe contabile?",
+        a: "Pentru moment exportăm CSV compatibil cu Saga + Smartbill pentru import. Integrare directă cu Saga este în roadmap pentru Q3 2026.",
+      },
+      {
+        q: "Cum gestionez documentele primite de la clienți?",
+        a: "Portal client → secțiunea Documente → upload PDF/imagine. Tu vezi notificare la fiecare upload nou + organizat pe luni.",
+      },
+      {
+        q: "Pot avea ajutoare în cabinet cu acces limitat?",
+        a: "Da. Pe planul Solo Pro adaugi utilizatori cu roluri: contabil senior (acces complet), junior (anumite firme), receptionist (doar programări).",
+      },
+    ],
+  },
+
+  psihologi: {
+    slug: "psihologi",
+    title: "Site pentru psiholog / psihoterapeut — Programări online | OpenPortal",
+    description:
+      "Site cald pentru psihologi, psihoterapeuți, coaches. Programări online, ședințe video securizate, fișa pacient confidențială. GDPR-compliant. €25/lună.",
+    ogTitle: "OpenPortal pentru psihologi și terapeuți",
+    heroBadge: "🧠 Pentru psihologi, terapeuți, coaches",
+    heroTitle: "Practica ta de terapie,",
+    heroHighlight: "fără friction",
+    heroSubtitle:
+      "Pacienții se programează online cu un click, primesc reminder, ședințe video securizate. Tu te concentrezi pe persoană, nu pe administrare.",
+    accentHex: "#7C3AED",
+    painPoints: [
+      {
+        problem: "Pacienții cu anxietate evită să sune pentru programare",
+        solution: "Rezervare online complet anonimă până la confirmare. Bariera psihologică dispare.",
+      },
+      {
+        problem: "Apel video pe Zoom personal, link generat manual, parolă uitată",
+        solution: "Link video securizat generat automat la rezervare. Pacient primește în email + parolă unică.",
+      },
+      {
+        problem: "Notițele de ședință pe hârtie sau Word — nesigure GDPR",
+        solution: "Note ședință în fișa pacient criptată end-to-end. Acces doar tu, log de modificări.",
+      },
+      {
+        problem: "Pacienții care pleacă fără să plătească după ședință",
+        solution: "Plată în avans cu Stripe Link sau direct după ședință. Niciodată jenant.",
+      },
+    ],
+    features: [
+      {
+        icon: "🔐",
+        title: "Confidențialitate strictă",
+        body: "Fișa pacient criptată end-to-end. Codul deontologic respectat tehnic, nu doar pe hârtie.",
+      },
+      {
+        icon: "💻",
+        title: "Sesiuni video securizate",
+        body: "Link generat automat la rezervare, valabil doar pentru ședința aceea. Compatibil cu Jitsi, Zoom, Meet.",
+      },
+      {
+        icon: "📝",
+        title: "Note de ședință",
+        body: "Câmpuri structurate per ședință: stare, teme abordate, obiective, plan. Tracking longitudinal al evoluției.",
+      },
+      {
+        icon: "🌿",
+        title: "Site cu atmosferă caldă",
+        body: "Template cald, fără efecte distrage. Bariera primului contact e cât mai joasă.",
+      },
+      {
+        icon: "💳",
+        title: "Plăți la ședință",
+        body: "Stripe Link în email la confirmare. Plata se face înainte, te concentrezi pe ședință.",
+      },
+      {
+        icon: "📅",
+        title: "Programări periodice",
+        body: "Pacient cu ședințe săptămânale? Auto-rezervă slot-ul aceleași zile timp de 8 săptămâni.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Psihoterapeut Cristina T. — București",
+      quote:
+        "Rezervările online au crescut cu 70% după ce am pus link-ul pe Instagram. Bariera contactului telefonic dispărea.",
+    },
+    faq: [
+      {
+        q: "Funcționează cu Casa Sănătate sau alte asigurări?",
+        a: "Da. În fișa pacient salvezi datele asigurării. Facturile generate sunt conforme cu cerințele CASMB și asigurărilor private.",
+      },
+      {
+        q: "Cum protejez confidențialitatea pacienților online?",
+        a: "Datele sunt criptate end-to-end în UE. Notițele tale nu sunt accesibile nimănui în afară de tine. Audit log complet, conform Colegiului Psihologilor.",
+      },
+      {
+        q: "Pot oferi ședințe pentru grupuri (terapie de grup)?",
+        a: "Da. Configurezi capacitate per ședință (ex. 8 persoane). Sistemul închide rezervările când e plin. Confidențialitate respectată în UI.",
+      },
+    ],
+  },
+
   florarii: {
     slug: "florarii",
     title: "Site pentru florărie — Comenzi online + livrare | OpenPortal",
