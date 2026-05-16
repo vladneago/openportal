@@ -154,10 +154,11 @@
 - [ ] Redirect rules (www → root, http → https)
 
 ### 2.4 SEO + Analytics
-- [ ] Meta tags per pagină (title, description, OG image)
-- [ ] Sitemap.xml auto-generat
-- [ ] Robots.txt config
-- [ ] Schema.org JSON-LD pentru LocalBusiness
+- [x] Meta tags per pagină (title, description, OG image) — via `generateMetadata` în public page
+- [x] Sitemap.xml auto-generat (`/s/[subdomain]/sitemap.xml`) cu lastmod + priority per pagină publicată
+- [x] Robots.txt per site (`/s/[subdomain]/robots.txt`) cu link la sitemap și disallow `/api/`
+- [x] Schema.org JSON-LD pentru LocalBusiness (component `<LocalBusinessJsonLd>`) — include address, telephone, openingHoursSpecification, sameAs (social), makesOffer (servicii)
+- [x] Canonical URL switching între `subdomain.openportal.app` și `/s/[subdomain]` din `headers()`
 - [ ] Integrare Plausible/Umami (privacy-first)
 
 ---

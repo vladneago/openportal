@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
+import { headers } from "next/headers";
 import Link from "next/link";
 import { BlockRenderer, type Block, type RenderContext } from "@/components/site-blocks/BlockRenderer";
 import { SiteThemeStyle } from "@/components/site-blocks/SiteThemeStyle";
 import { CookieBanner } from "@/components/site-blocks/CookieBanner";
+import { LocalBusinessJsonLd } from "@/components/site-blocks/StructuredData";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -137,9 +139,38 @@ export default async function PublicSitePage({
 
   const siteName = sitePayload.site.name;
 
+  // Build canonical URL for schema.org / OG
+  const hdrs = await headers();
+  const host = hdrs.get("host") || `${subdomain}.openportal.app`;
+  const proto = hdrs.get("x-forwarded-proto") || "https";
+  const isCustomHost = host.startsWith(subdomain + ".") && host.includes("openportal.app");
+  const sitePathPrefix = isCustomHost ? "" : `/s/${subdomain}`;
+  const siteUrl = `${proto}://${host.replace(/\/$/, "")}${sitePathPrefix || "/"}`;
+
   return (
     <>
       <SiteThemeStyle theme={sitePayload.theme} />
+
+      <LocalBusinessJsonLd
+        business={{
+          name: sitePayload.site.businessName || sitePayload.site.name,
+          description: sitePayload.site.defaultDescription || null,
+          url: siteUrl,
+          address: sitePayload.site.businessAddress,
+          city: sitePayload.site.businessCity,
+          phone: sitePayload.site.businessPhone,
+          email: sitePayload.site.businessEmail,
+          logoUrl: sitePayload.site.logoUrl,
+          hours: sitePayload.site.businessHours || [],
+          socialLinks: sitePayload.site.socialLinks || {},
+          services: (services || []).map((s) => ({
+            name: s.name,
+            description: s.description,
+            price: s.price,
+            currency: s.currency,
+          })),
+        }}
+      />
 
       {/* Header / Nav */}
       <header
