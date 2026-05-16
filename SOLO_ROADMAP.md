@@ -466,11 +466,12 @@
 - [x] Pagini Legal: `/legal/terms` (Termeni și condiții), `/legal/privacy` (Politică de confidențialitate cu GDPR), `/legal/dpa` (Data Processing Agreement)
 - [x] Layout dedicat `/legal/*` cu header simplu + back link
 - [x] Copy Romanian targeted la solo entrepreneurs (saloane, frizerii, cofetării, consultanți)
-- [x] Pagini per industrie SEO-targeted: `/saloane`, `/frizerii`, `/cabinete-medicale`, `/cofetarii`, `/florarii` — fiecare cu pain-points + features + testimonial + FAQ specific industriei
-- [x] Component template `<IndustryLandingPage>` + data registry în `components/marketing/industry-data.ts` — un singur fișier de menținut pentru toate landing-urile
-- [x] Accent color per industrie (pink saloane, orange frizerii, blue medical, brown cofetării, pink florării)
-- [x] Link-uri cross-referenced între main landing și industrii (target-business chip cloud)
-- [x] Root `/sitemap.xml` + `/robots.txt` cu Disallow pentru rute auth (dashboard, onboarding, booking, billing, etc)
+- [x] **10 pagini per industrie SEO-targeted**: `/saloane`, `/frizerii`, `/spa-wellness`, `/cabinete-medicale`, `/stomatologi`, `/fitness`, `/fotografie`, `/consultanti`, `/cofetarii`, `/florarii` — fiecare cu pain-points + features + testimonial + FAQ specific industriei
+- [x] Component template `<IndustryLandingPage>` + data registry în `components/marketing/industry-data.ts` — un singur fișier de menținut pentru toate landing-urile, fiecare nouă industrie = 1 entry + 1 route file de 10 linii
+- [x] Accent color per industrie (pink saloane, amber frizerii, green spa, sky medical, cyan dental, orange fitness, purple foto, blue consultanți, amber cofetării, pink florării)
+- [x] Link-uri cross-referenced între main landing și industrii (target-business chip cloud cu 10 link-uri active)
+- [x] Footer cu coloană dedicată Soluții (10 industrii listate) pe toate landing-urile
+- [x] Root `/sitemap.xml` (cu toate cele 10 industrii) + `/robots.txt` cu Disallow pentru rute auth
 - [ ] Blog (10 articole SEO de start)
 - [ ] Comparison vs Wix/Squarespace/Booksy
 

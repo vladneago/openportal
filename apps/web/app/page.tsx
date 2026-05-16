@@ -154,12 +154,13 @@ const TARGET_BUSINESSES: Array<{ label: string; href?: string }> = [
   { label: "🧁 Cofetării / patiserii", href: "/cofetarii" },
   { label: "💐 Florării", href: "/florarii" },
   { label: "🩺 Cabinete medicale", href: "/cabinete-medicale" },
-  { label: "🧖 Spa / wellness" },
-  { label: "🦷 Stomatologi" },
-  { label: "💼 Consultanți / coach" },
+  { label: "🦷 Stomatologi", href: "/stomatologi" },
+  { label: "🧖 Spa / wellness", href: "/spa-wellness" },
+  { label: "💪 Personal trainer / fitness", href: "/fitness" },
+  { label: "📸 Fotografi", href: "/fotografie" },
+  { label: "💼 Consultanți / avocați", href: "/consultanti" },
+  { label: "🧘 Yoga / pilates" },
   { label: "🐶 Veterinari" },
-  { label: "📸 Fotografi" },
-  { label: "🧘 Yoga / fitness" },
 ];
 
 export default function LandingPage() {
@@ -607,6 +608,23 @@ export default function LandingPage() {
               <p style={{ fontSize: "0.85rem", margin: 0, lineHeight: 1.6 }}>
                 Platforma all-in-one pentru solo entrepreneurs din România.
               </p>
+            </div>
+            <div>
+              <h4 style={{ color: "#FFFFFF", fontSize: "0.85rem", fontWeight: 700, marginBottom: 12, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                Soluții
+              </h4>
+              <ul style={footerListStyle}>
+                <li><Link href="/saloane" style={footerLinkStyle}>Saloane</Link></li>
+                <li><Link href="/frizerii" style={footerLinkStyle}>Frizerii</Link></li>
+                <li><Link href="/spa-wellness" style={footerLinkStyle}>SPA & wellness</Link></li>
+                <li><Link href="/cabinete-medicale" style={footerLinkStyle}>Cabinete medicale</Link></li>
+                <li><Link href="/stomatologi" style={footerLinkStyle}>Stomatologi</Link></li>
+                <li><Link href="/fitness" style={footerLinkStyle}>Fitness / PT</Link></li>
+                <li><Link href="/fotografie" style={footerLinkStyle}>Fotografi</Link></li>
+                <li><Link href="/consultanti" style={footerLinkStyle}>Consultanți</Link></li>
+                <li><Link href="/cofetarii" style={footerLinkStyle}>Cofetării</Link></li>
+                <li><Link href="/florarii" style={footerLinkStyle}>Florării</Link></li>
+              </ul>
             </div>
             <div>
               <h4 style={{ color: "#FFFFFF", fontSize: "0.85rem", fontWeight: 700, marginBottom: 12, textTransform: "uppercase", letterSpacing: 0.5 }}>

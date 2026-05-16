@@ -370,6 +370,421 @@ export const INDUSTRY_LANDINGS: Record<string, IndustryLandingData> = {
     ],
   },
 
+  "spa-wellness": {
+    slug: "spa-wellness",
+    title: "Site pentru SPA & wellness — Programări online + reminder | OpenPortal",
+    description:
+      "Site pentru centre SPA și wellness cu rezervări online, calendar terapeuți, abonamente clienți. Atmosferă premium, control complet. €25/lună.",
+    ogTitle: "OpenPortal pentru SPA — programări online + site premium",
+    heroBadge: "🧖 Pentru centre SPA și wellness",
+    heroTitle: "Centrul tău SPA,",
+    heroHighlight: "într-o oază digitală",
+    heroSubtitle:
+      "Site cu atmosferă premium, programări online pentru fiecare terapeut, abonamente pentru clienții fideli. Plus reminder care reduce no-show-ul.",
+    accentHex: "#7A9F7A",
+    painPoints: [
+      {
+        problem: "Programări complicate cu mai multe încăperi și terapeuți",
+        solution: "Sistem inteligent care alocă automat camerele libere și terapeutul potrivit.",
+      },
+      {
+        problem: "Clientele cu abonament uită să rezerve ședințele incluse",
+        solution: "Reminder automat + dashboard cu ședințe rămase. Clientele vin mai des.",
+      },
+      {
+        problem: "Pierzi clienți pentru că nu sună niciodată noaptea",
+        solution: "Rezervări online 24/7. Vin clienți noi în orele când tu dormi.",
+      },
+      {
+        problem: "Vouchere și cadouri pierdute în notițe pe hârtie",
+        solution: "Sistem de vouchere digitale cu cod unic + redemption tracking.",
+      },
+    ],
+    features: [
+      {
+        icon: "🧖‍♀️",
+        title: "Calendar pentru fiecare terapeut",
+        body: "Adaugă echipa, fiecare cu specializările și orarele lor. Sistemul nu permite suprapuneri.",
+      },
+      {
+        icon: "🎫",
+        title: "Abonamente și pachete",
+        body: "Vinde abonamente (4 ședințe/lună) sau pachete (10 masaje). Tracking automat al utilizării.",
+      },
+      {
+        icon: "🎁",
+        title: "Vouchere cadou",
+        body: "Generează vouchere cu coduri unice. Clienții îți cumpără cadouri de Crăciun sau aniversări.",
+      },
+      {
+        icon: "🌿",
+        title: "Site cu look premium",
+        body: "Template-uri cu paleta de culori naturale, fotografie atmosferică. Comunici exclusivitate.",
+      },
+      {
+        icon: "📲",
+        title: "Reminder + reprogramare",
+        body: "Email cu 24h și 2h. Clientul reprograma online — nu mai blochezi terapeutul degeaba.",
+      },
+      {
+        icon: "💼",
+        title: "Pachete corporate",
+        body: "Onboarding rapid pentru contracte cu firme. Facturare lunară către HR, conform ANAF.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "SPA Aurora — Brașov",
+      quote:
+        "Abonamentele lunare ne-au dat predictibilitate. Știm exact ce încasări avem la începutul lunii.",
+    },
+    faq: [
+      {
+        q: "Pot integra cu sistemul de plată al hotelului?",
+        a: "Da, exportăm facturile în format compatibil cu majoritatea PMS-urilor (Opera, Mews, Cloudbeds). Integrare directă pentru hoteluri partener.",
+      },
+      {
+        q: "Cum funcționează cu abonamentele nelimitate?",
+        a: "Setezi limita per ciclu (ex. 4 ședințe/lună). Sistemul te alertează când clienta atinge limita, ca să negociezi extensie.",
+      },
+      {
+        q: "Pot bloca o cameră pentru evenimente private?",
+        a: "Da, prin modulul „blocked slots” excluzi camere sau terapeuți pentru evenimente. Calendarul se reactivează automat după.",
+      },
+    ],
+  },
+
+  fitness: {
+    slug: "fitness",
+    title: "Site pentru personal trainer / fitness — Programări online | OpenPortal",
+    description:
+      "Site pentru antrenori personali, săli fitness, studio yoga și pilates. Rezervări ședințe, abonamente lunare, tracking progres. €25/lună.",
+    ogTitle: "OpenPortal pentru personal trainers și fitness",
+    heroBadge: "💪 Pentru personal trainers și fitness",
+    heroTitle: "Antrenamentele tale,",
+    heroHighlight: "fără ședințe pierdute",
+    heroSubtitle:
+      "Clienții rezervă ședințele singuri, primesc reminder, plătesc abonament recurent. Tu te concentrezi pe rezultate, nu pe administrare.",
+    accentHex: "#FF5722",
+    painPoints: [
+      {
+        problem: "Clienții uită ședințele și pierzi venit",
+        solution: "Reminder automat cu 24h și 2h. No-show-uri reduse cu 50%.",
+      },
+      {
+        problem: "Plata pentru abonamente cu transferuri pe Revolut e haos",
+        solution: "Plată recurentă automată Stripe. Banii vin lunar fără să-i ceri.",
+      },
+      {
+        problem: "Programări de grup vs. 1-la-1 amestecate",
+        solution: "Sistem separat pentru grupuri și PT. Setezi capacitate per ședință de grup.",
+      },
+      {
+        problem: "Nu ai timp să răspunzi la întrebări de la 10 clienți diferiți",
+        solution: "Chat AI care răspunde la întrebări frecvente despre programe, prețuri, locație.",
+      },
+    ],
+    features: [
+      {
+        icon: "🏋️",
+        title: "Sesiuni 1-la-1 și grup",
+        body: "Setezi capacitate per ședință. Yoga = 10 oameni, PT = 1. Sistemul închide automat când e plin.",
+      },
+      {
+        icon: "💳",
+        title: "Abonamente Stripe",
+        body: "8 ședințe/lună, plată recurentă automată. Cancel anytime din dashboard-ul tău.",
+      },
+      {
+        icon: "📊",
+        title: "Tracking progres clienți",
+        body: "Notele și măsurătorile per client. Vezi exact cum evoluează fiecare.",
+      },
+      {
+        icon: "📱",
+        title: "Rezervare pe mobil",
+        body: "Clienții rezervă din vestiar înainte să iasă. Optimizat pentru mobile-first.",
+      },
+      {
+        icon: "🎯",
+        title: "Programe personalizate",
+        body: "Atașează PDF cu planul de antrenament la fiecare client. Update facil din dashboard.",
+      },
+      {
+        icon: "🏆",
+        title: "Punctuație și gamification",
+        body: "Streak de ședințe consecutive, badges la milestone-uri. Motivează clienții să revină.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Personal Trainer Vlad — Cluj",
+      quote:
+        "În prima lună am dublat numărul de clienți. Sistemul de abonamente recurente îmi dă stabilitate.",
+    },
+    faq: [
+      {
+        q: "Cum gestionez clienții cu abonament care vin neînregistrați?",
+        a: "Marchezi prezența manual din calendar. Sesiunea se scade din contul lor. Dacă au sărit limita, nu pot rezerva noi ședințe.",
+      },
+      {
+        q: "Pot organiza challenge-uri (ex. 30 zile fitness)?",
+        a: "Da, creezi un program cu durată și ședințe incluse. Clienții se înscriu, văd progresul, primesc badge la final.",
+      },
+      {
+        q: "Cum integrez cu Apple Watch / Garmin?",
+        a: "Pentru moment exportezi date manual. Integrare directă cu Apple HealthKit + Garmin Connect e în roadmap pentru Q3 2026.",
+      },
+    ],
+  },
+
+  stomatologi: {
+    slug: "stomatologi",
+    title: "Site pentru cabinet stomatologic — Programări online + e-Factura | OpenPortal",
+    description:
+      "Site pentru cabinete stomatologice. Programări online, fișa pacient digitală, plan de tratament cu deviz, e-Factura ANAF. GDPR-compliant. €25/lună.",
+    ogTitle: "OpenPortal pentru stomatologi — programări + fișa pacient",
+    heroBadge: "🦷 Pentru cabinete stomatologice",
+    heroTitle: "Cabinetul tău dentar,",
+    heroHighlight: "fără carnețele",
+    heroSubtitle:
+      "Programări online, fișa pacient digitală, plan de tratament cu deviz transparent, facturare e-Factura. Pacienții vin la timp, fără telefoane.",
+    accentHex: "#06B6D4",
+    painPoints: [
+      {
+        problem: "Pacienții lipsesc fără să anunțe",
+        solution: "Reminder cu 24h și 2h. Self-cancel online — știi exact cine vine.",
+      },
+      {
+        problem: "Devizele se pierd în Word și nu sunt actualizate",
+        solution: "Plan de tratament digital atașat la fișa pacient. Update cu un click.",
+      },
+      {
+        problem: "Acoperirea de la asigurări nu e clară",
+        solution: "Câmpuri dedicate în fișa pacient pentru asigurare + procent acoperit. Calcul automat în deviz.",
+      },
+      {
+        problem: "Pacienții cu fobie nu cer informații pentru că le e jenă",
+        solution: "Chat AI care răspunde la întrebări sensibile (durere, costuri, etape) fără jenă.",
+      },
+    ],
+    features: [
+      {
+        icon: "🦷",
+        title: "Fișa pacient cu odontogramă",
+        body: "Toate dinții pe schemă vizuală. Click pe dinte → istoric tratamente, planuri, vizualizări.",
+      },
+      {
+        icon: "💵",
+        title: "Devize transparente",
+        body: "Plan de tratament cu fazele, costuri, asigurare. Pacientul aprobă online înainte de începere.",
+      },
+      {
+        icon: "📷",
+        title: "Imagini radiologice",
+        body: "Atașează RX, panoramice, scanări 3D direct în fișa pacient. Acces criptat, GDPR-compliant.",
+      },
+      {
+        icon: "🔒",
+        title: "GDPR + asigurări",
+        body: "Consents semnate digital. Export pentru CASMB sau asigurări private în 1 click.",
+      },
+      {
+        icon: "🇷🇴",
+        title: "ANAF e-Factura nativ",
+        body: "Facturi conforme cu CIUS-RO, trimise automat în SPV. Status acceptat direct în dashboard.",
+      },
+      {
+        icon: "📲",
+        title: "Reminder pacienți",
+        body: "Email cu 24h și 2h. Pacientul poate reprograma online — nu mai pierzi ore goale în cabinet.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Cabinet Dr. Andrei Popescu — Cluj",
+      quote:
+        "De când folosim OpenPortal, no-show-urile au scăzut la sub 5%. Programul cabinetului e mult mai eficient.",
+    },
+    faq: [
+      {
+        q: "Cum import pacienții existenți din Word/Excel?",
+        a: "Oferim import gratuit din CSV. Echipa noastră asistă cu migrarea în primele 14 zile, fără cost suplimentar.",
+      },
+      {
+        q: "Funcționează cu CNAS / CASMB?",
+        a: "Datele se exportă în format compatibil cu raportările CASMB. Integrare directă cu CASMB este în roadmap pentru 2026.",
+      },
+      {
+        q: "Pot avea mai mulți medici în același cabinet?",
+        a: "Da. Pe planul Solo Pro €50/lună ai utilizatori nelimitați. Fiecare medic vede doar pacienții săi (sau toți, dacă alegi).",
+      },
+    ],
+  },
+
+  fotografie: {
+    slug: "fotografie",
+    title: "Site pentru fotograf / studio foto — Portofoliu + rezervări | OpenPortal",
+    description:
+      "Site portofoliu cu galerie spectaculoasă, rezervări sesiuni foto, contracte digitale și plăți online. Pentru fotografi de eveniment și portret. €25/lună.",
+    ogTitle: "OpenPortal pentru fotografi — portofoliu + rezervări",
+    heroBadge: "📸 Pentru fotografi și studiouri foto",
+    heroTitle: "Portofoliul tău,",
+    heroHighlight: "convingător din prima",
+    heroSubtitle:
+      "Site cu galerie premium, rezervare ședință direct de la potențiali clienți, contract digital + avans Stripe. Te concentrezi pe artă, nu pe administrare.",
+    accentHex: "#8B5CF6",
+    painPoints: [
+      {
+        problem: "Pierzi 80% din lead-urile de pe Instagram pentru că negocierea durează 3 zile",
+        solution: "Site cu prețuri vizibile + rezervare directă cu avans. Lead-uri calificate, nu interogări.",
+      },
+      {
+        problem: "Contractele Word sunt confuze și clienții nu le citesc",
+        solution: "Contract digital semnat online. Stocat lângă proiect. Toți știu ce s-a agreat.",
+      },
+      {
+        problem: "Livrarea pozelor durează săptămâni",
+        solution: "Galerie privată pentru fiecare proiect. Clientul vede pozele când vrea, descarcă cu cod.",
+      },
+      {
+        problem: "Avansurile cu transferuri pe Revolut sunt o bătaie de cap",
+        solution: "Link Stripe pentru avans la confirmare. Vezi imediat dacă a plătit.",
+      },
+    ],
+    features: [
+      {
+        icon: "🖼️",
+        title: "Portofoliu cu galerie",
+        body: "Template cu grid masonry, lightbox full-screen, organizat pe categorii. SEO-ready.",
+      },
+      {
+        icon: "📅",
+        title: "Rezervare ședință",
+        body: "Clientul alege ziua, ora, pachetul. Tu primești notificare cu detalii, plătit avans inclus.",
+      },
+      {
+        icon: "📄",
+        title: "Contract digital",
+        body: "Template editabil, semnat online cu IP + timestamp. Valid juridic conform legii române.",
+      },
+      {
+        icon: "🔐",
+        title: "Galerii private clienți",
+        body: "Link unic cu parolă pentru fiecare proiect. Clienții descarcă pozele lor, fără să vadă alte proiecte.",
+      },
+      {
+        icon: "💳",
+        title: "Plăți Stripe",
+        body: "Avans la rezervare, restul la livrare. Bani direct în contul tău, fără comisioane intermediare.",
+      },
+      {
+        icon: "📦",
+        title: "Pachete diversificate",
+        body: "Portret, nuntă, eveniment corporate — fiecare cu prețuri, durată, livrabile. Clienții aleg singuri.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Foto Andrei — București",
+      quote:
+        "Site-ul mă vinde 24/7. Înainte negociam cu 10 clienți și acceptam 2. Acum vin gata convinși și plătesc avans.",
+    },
+    faq: [
+      {
+        q: "Pot integra cu Adobe Lightroom sau Pixieset?",
+        a: "Galeriile private OpenPortal sunt comparabile cu Pixieset. Pentru moment, importul din Lightroom se face manual.",
+      },
+      {
+        q: "Cum funcționează cu nunțile (avans + restul la eveniment)?",
+        a: "Setezi 30% avans la rezervare + 70% factură emisă cu termen plată = ziua nunții. Reminder automat la pacient.",
+      },
+      {
+        q: "Pot avea un blog pe site pentru SEO?",
+        a: "Da, site-ul include modul blog cu editor visual. Publicare la programare, SEO meta automat, optimizat Google.",
+      },
+    ],
+  },
+
+  consultanti: {
+    slug: "consultanti",
+    title: "Site pentru consultanți / avocați / contabili — Programări + facturare | OpenPortal",
+    description:
+      "Site profesional pentru consultanți, avocați, contabili, asigurări, PFA. Programări 1-la-1, facturare onorarii e-Factura, contracte digitale. €25/lună.",
+    ogTitle: "OpenPortal pentru consultanți și PFA",
+    heroBadge: "💼 Pentru consultanți, avocați, contabili",
+    heroTitle: "Practica ta,",
+    heroHighlight: "fără birocrație",
+    heroSubtitle:
+      "Site curat care comunică expertiză, programări 1-la-1 online, facturare onorarii direct la ANAF. Mai mult timp pentru clienți, mai puțin pentru administrare.",
+    accentHex: "#1E40AF",
+    painPoints: [
+      {
+        problem: "Negocierea de fee-uri și plăți te face să pari neserios",
+        solution: "Tarif vizibil pe site, link de plată după consultație. Profesional și transparent.",
+      },
+      {
+        problem: "Calendarul tău e amestecat între întâlniri și deep work",
+        solution: "Bucket-uri de timp pentru clienți noi, follow-up, deep work. Sistemul respectă boundaries.",
+      },
+      {
+        problem: "Facturarea către firme durează ore — devize, factură, emisie SPV",
+        solution: "Factură în 10 secunde, trimisă în SPV automat. Track plăți restante cu aging report.",
+      },
+      {
+        problem: "Clienții cer documente vechi după 2 ani",
+        solution: "Tot istoricul digital într-un loc. Search instant pentru facturi, contracte, note.",
+      },
+    ],
+    features: [
+      {
+        icon: "👔",
+        title: "Site care comunică încredere",
+        body: "Template-uri minimaliste, profesionale, fără efecte distrage. Focus pe expertiza ta.",
+      },
+      {
+        icon: "🗓️",
+        title: "Programări 1-la-1",
+        body: "Clienții aleg slot-uri pre-aprobate. Buffer-uri între întâlniri. Tu controlezi când ești disponibil.",
+      },
+      {
+        icon: "🧾",
+        title: "Facturare onorarii",
+        body: "Template pentru servicii intelectuale. e-Factura ANAF automat. TVA-uri configurabile (0%, 9%, 19%).",
+      },
+      {
+        icon: "📂",
+        title: "Dosare clienți",
+        body: "Toate informațiile despre fiecare client într-un loc. Note, contracte, facturi, plăți — istoric complet.",
+      },
+      {
+        icon: "📞",
+        title: "Apel video integrat",
+        body: "Link Zoom/Meet generat automat la rezervare. Pacientul primește invitația prin email.",
+      },
+      {
+        icon: "💵",
+        title: "Plăți Stripe + transfer",
+        body: "Acceptă plăți online la consultație sau pe factură. Tracking automat al status-ului plății.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Avocat Maria Ionescu — București",
+      quote:
+        "Înainte petreceam o zi pe săptămână cu facturarea. Acum durează 30 minute. Timpul recâștigat îl folosesc cu clienții.",
+    },
+    faq: [
+      {
+        q: "Cum funcționează pentru un avocat care lucrează cu retainer (onorariu lunar)?",
+        a: "Setezi factură recurentă automată pentru clienții cu retainer. Sistemul emite + trimite în SPV lunar fără să intervii.",
+      },
+      {
+        q: "Pot atașa contracte semnate la fișa clientului?",
+        a: "Da. Upload PDF, semnătură digitală cu certificat calificat (compatibil cu eIDAS), arhivare automată.",
+      },
+      {
+        q: "Există integrare cu CSV-ul de la Saga sau Smartbill?",
+        a: "Export complet în format compatibil. Integrare nativă cu Saga e în roadmap pentru Q3 2026.",
+      },
+    ],
+  },
+
   florarii: {
     slug: "florarii",
     title: "Site pentru florărie — Comenzi online + livrare | OpenPortal",
