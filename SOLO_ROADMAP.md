@@ -264,11 +264,18 @@
 - [ ] Storno + corecții
 
 ### 4.2 ANAF e-Factura
-- [ ] OAuth ANAF (token + refresh)
-- [ ] Generare UBL 2.1 XML conform CIUS-RO
-- [ ] Submit la SPV
-- [ ] Polling status (acceptat/respins)
-- [ ] Download factură semnată
+- [x] Schema `tenant_anaf_credentials` (OAuth tokens + issuer fiscal identity) + migrate aplicat
+- [x] OAuth ANAF (authorize URL + token exchange + auto-refresh la expirare)
+- [x] Generare UBL 2.1 XML conform CIUS-RO (Invoice + CreditNote, multi-rate TVA, county codes RO-XX)
+- [x] Submit la SPV (POST /upload?standard=UBL&cif=...) cu Bearer token
+- [x] Polling status (GET /stareMesaj?id_incarcare=...) cu state mapping (processing/accepted/rejected)
+- [x] Download factură semnată (GET /descarcare?id=...) — base64 wrap
+- [x] Worker endpoints `/api/v1/internal/efactura/{submit,poll}/tick` cu WORKER_TOKEN auth
+- [x] Cron script `scripts/efactura-cron.mjs` (3 minute interval suggested)
+- [x] Settings UI `/settings/anaf` (date fiscale + status conexiune + connect/disconnect)
+- [x] Dev fallback stub (fără ANAF_CLIENT_ID): auto-accept + fake uploadId pentru testare locală
+- [x] OAuth callback `/api/v1/billing/anaf/oauth/callback` unauthenticated (state-encoded tenantId)
+- [x] Preview XML endpoint (GET /preview-xml/:invoiceId) pentru debug + verificare CIUS-RO
 
 ### 4.3 Plăți + Recouvrement
 - [ ] Track plăți (manual + Stripe link)

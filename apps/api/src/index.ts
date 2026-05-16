@@ -41,7 +41,9 @@ import { siteBuilderPublicRoutes } from "./modules/site-builder/public";
 import { bookingPublicRoutes } from "./modules/booking/public";
 import { bookingWorkerRoutes } from "./modules/workers/booking";
 import { stripeWebhookRoutes } from "./modules/workers/stripe";
+import { efacturaWorkerRoutes } from "./modules/workers/efactura";
 import { platformBillingRoutes } from "./modules/billing/platform";
+import { anafRoutes } from "./modules/billing/anaf";
 import { chatWidgetRoutes } from "./modules/chat-widget/routes";
 import { apiDocsRoutes } from "./modules/api-docs/routes";
 import { healthRoutes } from "./modules/health";
@@ -73,6 +75,7 @@ v1.route("/realestate", realestateRoutes); v1.route("/events", eventsRoutes); v1
 v1.route("/booking", bookingRoutes);
 v1.route("/billing", billingRoutes);
 v1.route("/billing/platform", platformBillingRoutes);
+v1.route("/billing/anaf", anafRoutes);
 v1.route("/pos", posRoutes);
 v1.route("/site-builder", siteBuilderRoutes);
 v1.route("/chat-widget", chatWidgetRoutes);
@@ -84,6 +87,7 @@ app.route("/api/v1/public/booking", bookingPublicRoutes);
 
 // Internal worker endpoints (cron-driven, secured by WORKER_TOKEN)
 app.route("/api/v1/internal/booking", bookingWorkerRoutes);
+app.route("/api/v1/internal/efactura", efacturaWorkerRoutes);
 // Stripe webhook (signature-verified, not WORKER_TOKEN)
 app.route("/api/v1/internal/stripe", stripeWebhookRoutes);
 
