@@ -1086,6 +1086,446 @@ const templates = [
       },
     ],
   },
+  // ─────────────────────────────────────────────
+  // Template 11: Studio yoga / pilates
+  // ─────────────────────────────────────────────
+  {
+    slug: "yoga-studio-zen",
+    name: "Studio Yoga & Pilates",
+    description: "Site liniștit pentru studio yoga, pilates, meditație, breathwork.",
+    category: "yoga_pilates",
+    industryTags: ["yoga", "pilates", "meditație", "breathwork", "mindfulness"],
+    themeSlug: "spa-wellness",
+    isFeatured: true,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Respiră. Mișcă. Conectează.",
+            subtitle: "Clase de yoga și pilates pentru toate nivelurile, într-un spațiu liniștit",
+            ctaPrimary: { text: "Rezervă o clasă", href: "/programari" },
+            ctaSecondary: { text: "Vezi orarul", href: "/orar" },
+            backgroundImage: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "Filozofia studio-ului",
+            features: [
+              { icon: "🧘", title: "Instructori certificați", text: "Toți instructorii au minim 200h pregătire RYT" },
+              { icon: "🌿", title: "Grupuri mici", text: "Maxim 12 cursanți per clasă, atenție individuală" },
+              { icon: "💫", title: "Toate nivelurile", text: "De la începători la avansați, fiecare găsește locul lui" },
+              { icon: "🕯️", title: "Atmosferă autentică", text: "Spațiu cu lumină naturală, parfum lavandă, fără telefoane" },
+            ],
+          }),
+          block("servicesPreview", { title: "Tipuri de clase", ctaText: "Vezi orarul complet", ctaHref: "/orar" }),
+          block("testimonials", {
+            title: "Ce spun cursanții",
+            items: [
+              { author: "Andreea L.", text: "Mi-am găsit echilibrul după 3 luni. Studio-ul e o oază în mijlocul orașului.", rating: 5 },
+              { author: "Cristian M.", text: "Pilates m-a ajutat cu durerile de spate mai mult decât 10 sesiuni de kinetoterapie.", rating: 5 },
+            ],
+          }),
+          block("ctaBanner", {
+            title: "Prima clasă e GRATUITĂ",
+            subtitle: "Vino să încerci. Niciun angajament, niciun stres.",
+            ctaText: "Rezervă clasa gratis",
+            ctaHref: "/programari",
+          }),
+        ],
+      },
+      {
+        slug: "orar",
+        title: "Orar clase",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Orar săptămânal", subtitle: "Alege clasa care îți potrivește" }),
+          block("servicesList", { displayMode: "list" }),
+        ],
+      },
+      {
+        slug: "instructori",
+        title: "Instructori",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Echipa de instructori", subtitle: "Profesioniști dedicați practicii tale" }),
+          block("team", {
+            title: "Cunoaște-i",
+            members: [
+              { name: "Ana Stoica", role: "Yoga Vinyasa & Hatha", avatarUrl: "" },
+              { name: "Mihai Radu", role: "Pilates Reformer & Mat", avatarUrl: "" },
+              { name: "Elena Pop", role: "Yin Yoga & Meditație", avatarUrl: "" },
+            ],
+          }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Programări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Rezervă-ți locul", subtitle: "Clase cu locuri limitate (max 12)" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: true }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Vino să ne cunoști" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: true }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 12: Restaurant / Bistro
+  // ─────────────────────────────────────────────
+  {
+    slug: "restaurant-bistro",
+    name: "Restaurant Bistro",
+    description: "Site cu meniu, rezervări mese și comenzi pentru restaurante și bistrouri.",
+    category: "restaurant",
+    industryTags: ["restaurant", "bistro", "bucătărie", "meniu", "rezervări mese"],
+    themeSlug: "restaurant-elegant",
+    isFeatured: true,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Bucătărie cu suflet, atmosferă caldă",
+            subtitle: "Restaurant cu meniu sezonier, ingrediente locale, rețete autentice",
+            ctaPrimary: { text: "Rezervă o masă", href: "/rezervari" },
+            ctaSecondary: { text: "Vezi meniul", href: "/meniu" },
+            backgroundImage: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce noi",
+            features: [
+              { icon: "🍷", title: "Cartă de vinuri curată", text: "Selecție de vinuri din podgorii românești premium" },
+              { icon: "🌱", title: "Ingrediente locale", text: "Lucrăm cu producători locali și fermieri din zonă" },
+              { icon: "👨‍🍳", title: "Bucătar-șef premiat", text: "Echipa noastră are stagii la restaurante Michelin" },
+              { icon: "🎶", title: "Atmosferă", text: "Live jazz vineri seara, brunch sâmbătă, taste menu duminică" },
+            ],
+          }),
+          block("servicesPreview", { title: "Specialitățile casei", ctaText: "Vezi meniul complet", ctaHref: "/meniu" }),
+          block("testimonials", {
+            title: "Recenzii",
+            items: [
+              { author: "George B.", text: "Cel mai bun bistro din oraș. Atenție la detalii, mâncare excelentă, atmosferă perfectă.", rating: 5 },
+              { author: "Diana M.", text: "Brunch-ul de duminică e un must. Rezervați din timp, e plin mereu.", rating: 5 },
+            ],
+          }),
+          block("ctaBanner", {
+            title: "Eveniment privat?",
+            subtitle: "Închiriere integrală pentru aniversări, evenimente corporate, mese mari",
+            ctaText: "Cere ofertă",
+            ctaHref: "/contact",
+          }),
+        ],
+      },
+      {
+        slug: "meniu",
+        title: "Meniu",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Meniul nostru", subtitle: "Schimbat sezonier, mereu proaspăt" }),
+          block("servicesList", { displayMode: "list" }),
+        ],
+      },
+      {
+        slug: "rezervari",
+        title: "Rezervări mese",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Rezervă o masă", subtitle: "Alege ziua, ora, numărul de persoane" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: false }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact & locație",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Vino să ne cunoști" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: true }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 13: Avocat / Notar
+  // ─────────────────────────────────────────────
+  {
+    slug: "lawyer-classic",
+    name: "Cabinet Avocatură",
+    description: "Site sobru pentru avocați, notari, cabinete juridice — profesionalism și încredere.",
+    category: "legal",
+    industryTags: ["avocat", "notar", "drept", "consultanță juridică", "cabinet"],
+    themeSlug: "professional-clean",
+    isFeatured: true,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Drept aplicat. Soluții concrete.",
+            subtitle: "Cabinet de avocatură cu peste 15 ani de experiență în domeniile comercial, civil, fiscal",
+            ctaPrimary: { text: "Programează consultație", href: "/programari" },
+            ctaSecondary: { text: "Domenii de practică", href: "/specialitati" },
+            backgroundImage: "https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce să ne alegi",
+            features: [
+              { icon: "⚖️", title: "Experiență dovedită", text: "Peste 500 de dosare câștigate în instanță și mediere" },
+              { icon: "📋", title: "Transparență totală", text: "Onorarii clare comunicate înainte de angajare" },
+              { icon: "🤝", title: "Comunicare empatică", text: "Îți explicăm orice noțiune juridică fără jargon" },
+              { icon: "🔒", title: "Confidențialitate strictă", text: "Toate datele tale criptate și protejate GDPR" },
+            ],
+          }),
+          block("servicesPreview", { title: "Domenii de practică", ctaText: "Vezi toate specialitățile", ctaHref: "/specialitati" }),
+          block("testimonials", {
+            title: "Clienții noștri",
+            items: [
+              { author: "SC. Tehnică Plus SRL", text: "Ne-a câștigat un proces complex de drept comercial. Profesionist absolut.", rating: 5 },
+              { author: "Familia Popescu", text: "Procesul de divorț s-a încheiat mediat, fără traume. Apreciem empatia.", rating: 5 },
+            ],
+          }),
+        ],
+      },
+      {
+        slug: "specialitati",
+        title: "Domenii de practică",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Domenii de practică", subtitle: "Servicii juridice complete" }),
+          block("servicesList", { displayMode: "list" }),
+        ],
+      },
+      {
+        slug: "despre",
+        title: "Despre cabinet",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Despre noi", subtitle: "Cabinet fondat în 2010" }),
+          block("textImage", {
+            title: "Misiunea noastră",
+            text: "Credem că dreptul nu trebuie să fie o barieră. Lucrăm să-l facem accesibil, transparent și aliniat cu interesele clienților, indiferent că sunt firme mari sau persoane fizice cu probleme cotidiene.",
+            imageUrl: "https://images.unsplash.com/photo-1505664194779-8beaceb93744?w=800",
+            imagePosition: "right",
+          }),
+          block("team", {
+            title: "Echipa",
+            members: [
+              { name: "Av. Andrei Constantin", role: "Avocat coordonator — Drept comercial", avatarUrl: "" },
+              { name: "Av. Ioana Marin", role: "Drept civil & familial", avatarUrl: "" },
+              { name: "Av. Mihai Tudor", role: "Drept fiscal & administrativ", avatarUrl: "" },
+            ],
+          }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Programări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Programează o consultație", subtitle: "Prima consultație: 30 min, fix 300 lei" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: true }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Hai să discutăm cazul tău" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: false }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 14: Contabil
+  // ─────────────────────────────────────────────
+  {
+    slug: "accountant-precise",
+    name: "Cabinet Contabilitate",
+    description: "Site profesional pentru contabili, experți contabili, evidență fiscală.",
+    category: "accounting",
+    industryTags: ["contabil", "expert contabil", "evidență fiscală", "salarizare", "ANAF"],
+    themeSlug: "professional-clean",
+    isFeatured: false,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Contabilitate fără bătăi de cap",
+            subtitle: "Servicii complete de evidență contabilă pentru SRL, PFA, II — la termen, în conformitate cu ANAF",
+            ctaPrimary: { text: "Cere ofertă", href: "/contact" },
+            ctaSecondary: { text: "Servicii", href: "/servicii" },
+            backgroundImage: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce noi",
+            features: [
+              { icon: "📊", title: "Contabilitate completă", text: "Înregistrare facturi, jurnale, balanță, bilanț — totul digital" },
+              { icon: "🇷🇴", title: "Specialist ANAF", text: "Declarații lunare/trimestriale depuse la timp, fără penalizări" },
+              { icon: "💼", title: "Salarizare", text: "State de plată, declarații Casa Sănătate, contribuții — totul calculat automat" },
+              { icon: "📱", title: "Acces 24/7", text: "Vezi balanță, încasări, profit în timp real prin portalul clienților" },
+            ],
+          }),
+          block("servicesPreview", { title: "Servicii oferite", ctaText: "Vezi tot", ctaHref: "/servicii" }),
+          block("testimonials", {
+            title: "Recomandări",
+            items: [
+              { author: "SC. IT Solutions SRL", text: "Cei mai serioși contabili cu care am lucrat. Răspunde rapid, raportează totul la zi.", rating: 5 },
+              { author: "PFA Vlad Stancu", text: "Am scăpat de stresul deadline-urilor ANAF. Recomand 100%.", rating: 5 },
+            ],
+          }),
+          block("ctaBanner", {
+            title: "Schimbi contabilul?",
+            subtitle: "Preluare gratuită a evidenței existente. Tu te ocupi de business, noi de contabilitate.",
+            ctaText: "Cere ofertă",
+            ctaHref: "/contact",
+          }),
+        ],
+      },
+      {
+        slug: "servicii",
+        title: "Servicii",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Servicii oferite", subtitle: "Pachete adaptate dimensiunii firmei tale" }),
+          block("servicesList", { displayMode: "grid" }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Programări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Programează o consultație", subtitle: "30 minute pentru a discuta nevoile firmei tale" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: false }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Contactează-ne" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: false }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 15: Psiholog / Coach
+  // ─────────────────────────────────────────────
+  {
+    slug: "psychology-coach",
+    name: "Cabinet Psihologie / Coaching",
+    description: "Site cald pentru psihologi, psihoterapeuți, coaches, consilieri.",
+    category: "consulting",
+    industryTags: ["psiholog", "psihoterapeut", "coach", "consilier", "terapie"],
+    themeSlug: "spa-wellness",
+    isFeatured: true,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Un spațiu sigur pentru tine",
+            subtitle: "Terapie individuală, de cuplu, familială. Online sau în cabinet, în timp ce-ți convine ție.",
+            ctaPrimary: { text: "Programează o ședință", href: "/programari" },
+            ctaSecondary: { text: "Cum lucrez", href: "/abordare" },
+            backgroundImage: "https://images.unsplash.com/photo-1573497019418-b400bb3ab074?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "Cum te pot ajuta",
+            features: [
+              { icon: "🧠", title: "Acreditat clinician", text: "Psiholog clinician autorizat de Colegiul Psihologilor din România" },
+              { icon: "🌱", title: "Abordare integrativă", text: "Combin CBT, terapie centrată pe persoană și mindfulness" },
+              { icon: "💬", title: "Confidențialitate absolută", text: "Tot ce discutăm rămâne între tine și mine. Codul deontologic e sacru." },
+              { icon: "💻", title: "Online sau în cabinet", text: "Ședințe video securizate sau față-în-față, în funcție de ce-ți convine" },
+            ],
+          }),
+          block("servicesPreview", { title: "Servicii", ctaText: "Vezi toate serviciile", ctaHref: "/servicii" }),
+          block("testimonials", {
+            title: "Mesaje de la oameni reali (anonimizate)",
+            items: [
+              { author: "C., 34 ani", text: "Mi-a schimbat felul în care îmi privesc viața. Sunt recunoscător profund.", rating: 5 },
+              { author: "M., 28 ani", text: "Nu credeam că terapia online funcționează. Acum nu mai pot fără ședințele săptămânale.", rating: 5 },
+            ],
+          }),
+          block("ctaBanner", {
+            title: "Primul pas e cel mai greu",
+            subtitle: "Programează o ședință de cunoaștere, 30 min, fără angajament",
+            ctaText: "Rezervă acum",
+            ctaHref: "/programari",
+          }),
+        ],
+      },
+      {
+        slug: "abordare",
+        title: "Abordare",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Cum lucrez", subtitle: "Filozofia mea ca terapeut" }),
+          block("textImage", {
+            title: "Terapia ca proces colaborativ",
+            text: "Nu vin cu rețete. Lucrez împreună cu tine să înțelegem ce te aduce aici, să identificăm tipare, să găsim resurse interne. Cred că fiecare persoană are deja răspunsurile, eu doar te ajut să le accesezi.",
+            imageUrl: "https://images.unsplash.com/photo-1531983412531-1f49a365ffed?w=800",
+            imagePosition: "left",
+          }),
+        ],
+      },
+      {
+        slug: "servicii",
+        title: "Servicii",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Servicii oferite" }),
+          block("servicesList", { displayMode: "list" }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Programări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Programează o ședință", subtitle: "Online sau în cabinet" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: false }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Hai să vorbim" }),
+          block("contactInfo", { showMap: false, showHours: true, showSocial: false }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
 ];
 
 // ─────────────────────────────────────────────

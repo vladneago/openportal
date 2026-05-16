@@ -401,7 +401,7 @@
 
 ## Faza 8 — Templates + AI Generator (Săpt 14–15)
 
-### 8.1 40 Industry Templates (10/40 done)
+### 8.1 40 Industry Templates (15/40 done)
 - [x] Salon de înfrumusețare — `beauty-modern-salon` (5 pagini)
 - [x] Frizerie/Barbershop — `barbershop-classic` (4 pagini)
 - [x] SPA & Wellness — `spa-wellness-retreat` (4 pagini)
@@ -412,16 +412,20 @@
 - [x] Personal trainer / Fitness — `fitness-personal-trainer` (5 pagini)
 - [x] Fotograf / Studio foto — `photographer-portfolio` (5 pagini, cu portofoliu)
 - [x] Florărie — `florist-boutique` (4 pagini)
+- [x] Studio yoga / pilates — `yoga-studio-zen` (5 pagini, cu instructori)
+- [x] Restaurant / Bistro — `restaurant-bistro` (4 pagini)
+- [x] Avocat / Notar — `lawyer-classic` (5 pagini, cu domenii practică)
+- [x] Contabil / Expert contabil — `accountant-precise` (4 pagini)
+- [x] Psiholog / Coach / Terapeut — `psychology-coach` (5 pagini, cu abordare)
+- [x] Onboarding presets: 16 industrii total (beauty, barbershop, spa, consulting, medical, fitness, bakery, dental, photographer, florist, yoga_pilates, restaurant, legal, accounting, psychology, general)
 - [ ] Salon înfrumusețare — variantă vintage + lux (2 mai)
 - [ ] Frizerie — variantă modern + retro (2 mai)
 - [ ] Cofetărie — variantă modern (1 mai)
-- [ ] Restaurant/Bistro (3 variante)
+- [ ] Restaurant — variante fine-dining + fast-casual (2 mai)
 - [ ] Consultant asigurări (variantă dedicată)
 - [ ] Cabinet medical — variantă pediatrie + ginecologie
-- [ ] Avocat / Notar (variantă dedicată)
-- [ ] Contabil (variantă dedicată)
-- [ ] Psiholog / Coach
-- [ ] Studio yoga / pilates
+- [ ] Avocat / Notar — variantă boutique
+- [ ] Contabil — variantă firme mari
 - [ ] Atelier auto
 - [ ] Curățătorie chimică
 - [ ] Pet shop / Veterinar
@@ -429,7 +433,8 @@
 - [ ] Tatuaj / Piercing
 - [ ] Hotel mic / Pensiune
 - [ ] Cazare turistică / Airbnb host
-- [ ] Onboarding presets updated cu noi industrii: dental, photographer, florist (11 presets total)
+- [ ] Education / cursuri online
+- [ ] Real estate / agenții imobiliare
 
 ### 8.2 AI Site Generator
 - [ ] Wizard: "Spune-mi despre business-ul tău" (industry, locatie, USP)
