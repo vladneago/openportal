@@ -40,6 +40,8 @@ import { siteBuilderRoutes } from "./modules/site-builder/routes";
 import { siteBuilderPublicRoutes } from "./modules/site-builder/public";
 import { bookingPublicRoutes } from "./modules/booking/public";
 import { bookingWorkerRoutes } from "./modules/workers/booking";
+import { stripeWebhookRoutes } from "./modules/workers/stripe";
+import { platformBillingRoutes } from "./modules/billing/platform";
 import { chatWidgetRoutes } from "./modules/chat-widget/routes";
 import { apiDocsRoutes } from "./modules/api-docs/routes";
 import { healthRoutes } from "./modules/health";
@@ -70,6 +72,7 @@ v1.route("/government", governmentRoutes); v1.route("/legal", legalRoutes); v1.r
 v1.route("/realestate", realestateRoutes); v1.route("/events", eventsRoutes); v1.route("/itops", itopsRoutes);
 v1.route("/booking", bookingRoutes);
 v1.route("/billing", billingRoutes);
+v1.route("/billing/platform", platformBillingRoutes);
 v1.route("/pos", posRoutes);
 v1.route("/site-builder", siteBuilderRoutes);
 v1.route("/chat-widget", chatWidgetRoutes);
@@ -81,6 +84,8 @@ app.route("/api/v1/public/booking", bookingPublicRoutes);
 
 // Internal worker endpoints (cron-driven, secured by WORKER_TOKEN)
 app.route("/api/v1/internal/booking", bookingWorkerRoutes);
+// Stripe webhook (signature-verified, not WORKER_TOKEN)
+app.route("/api/v1/internal/stripe", stripeWebhookRoutes);
 
 app.notFound((c) => c.json({ success: false, error: { code: "NOT_FOUND", message: "Not found" } }, 404));
 const port = parseInt(process.env.API_PORT || "4000", 10);

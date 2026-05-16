@@ -453,12 +453,24 @@
 ## Faza 9 — Launch Prep (Săpt 15–16)
 
 ### 9.1 Stripe Connect + Billing
-- [ ] Onboarding Stripe per tenant
-- [ ] Plan Solo €25/lună
-- [ ] Plan Solo Pro €50/lună
-- [ ] Trial 14 zile
-- [ ] Cancel anytime
-- [ ] Failed payment retry + dunning
+- [x] Schema `tenant_subscriptions` (planSlug, stripeCustomerId, stripeSubscriptionId, status, trial/period dates, monthlyAmount) + index unic per tenant
+- [x] Schema `stripe_webhook_events` cu idempotency pe stripeEventId pentru replay-safety
+- [x] PLANS constants în code: Solo €25/lună (€240/an) cu max 3 resurse + 500 chat AI + 100 e-Factura; Solo Pro €50/lună (€480/an) cu nelimitat
+- [x] Stripe SDK 17.x instalat + helper `getStripe()` + flag `stripeEnabled` cu fallback graceful când STRIPE_SECRET_KEY lipsește
+- [x] GET `/api/v1/billing/platform/subscription` — status + plan limits + trial countdown
+- [x] GET `/api/v1/billing/platform/plans` — catalog planuri pentru UI
+- [x] POST `/api/v1/billing/platform/checkout` — Stripe Checkout session cu trial_period_days, client_reference_id=tenantId, metadata pentru webhook routing
+- [x] POST `/api/v1/billing/platform/portal` — Stripe Customer Portal pentru self-service (update card, cancel, view invoices)
+- [x] POST `/api/v1/internal/stripe/webhook` — semnătură verificată cu STRIPE_WEBHOOK_SECRET, handlers pentru checkout.completed, customer.subscription.created/updated/deleted, invoice.payment_succeeded/failed
+- [x] Idempotent webhook processing via stripe_webhook_events table cu unique constraint
+- [x] Plan Solo €25/lună
+- [x] Plan Solo Pro €50/lună
+- [x] Trial 14 zile (implicit via tenant.createdAt + 14d când nu există subscription)
+- [x] Cancel anytime (via Portal Stripe)
+- [x] Failed payment retry + dunning (handled de Stripe Smart Retries; webhook marchează past_due)
+- [x] Pagina `/settings/abonament` cu plan curent, status colorat, trial countdown, lista planuri cu toggle lunar/anual, butoane upgrade/portal
+- [x] Dev mode: checkout local stub când STRIPE_SECRET_KEY lipsește (simulează upgrade activ în DB pentru testing)
+- [ ] Onboarding Stripe per tenant — așteptăm activarea contului Stripe Connect Romania
 
 ### 9.2 Onboarding Flow
 - [x] Pagină `/onboarding` cu wizard 6 pași (industry → business → services → staff → program → site)
