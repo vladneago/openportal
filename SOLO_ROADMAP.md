@@ -473,7 +473,11 @@
 - [x] Footer cu coloană dedicată Soluții (10 industrii listate) pe toate landing-urile
 - [x] Root `/sitemap.xml` (cu toate cele 10 industrii) + `/robots.txt` cu Disallow pentru rute auth
 - [ ] Blog (10 articole SEO de start)
-- [ ] Comparison vs Wix/Squarespace/Booksy
+- [x] Pagină standalone preț `/preturi` cu tabel comparativ Solo vs Solo Pro (32 funcționalități grupate pe 7 categorii), discount anual, FAQ specific facturare
+- [x] Pagini comparison `/vs/booksy` și `/vs/wix` cu tabel side-by-side (24 funcționalități), why-switch grid, migration FAQ
+- [x] Component `<ComparisonPage>` reuzabil + `comparison-data.ts` registry — adăugat un competitor nou = 1 entry + 1 route file de 10 linii
+- [x] Sitemap.xml extins automat cu /preturi + COMPARISON_SLUGS
+- [x] Footer cross-link: /preturi, /vs/booksy, /vs/wix pe toate landing-urile
 
 ### 9.4 Beta Program
 - [ ] Recrutare 10 beta clienți

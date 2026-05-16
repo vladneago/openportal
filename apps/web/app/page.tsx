@@ -195,7 +195,7 @@ export default function LandingPage() {
             <Link href="#features" className="nav-link" style={navLinkStyle}>
               Funcționalități
             </Link>
-            <Link href="#pricing" className="nav-link" style={navLinkStyle}>
+            <Link href="/preturi" className="nav-link" style={navLinkStyle}>
               Preț
             </Link>
             <Link href="#faq" className="nav-link" style={navLinkStyle}>
@@ -632,7 +632,9 @@ export default function LandingPage() {
               </h4>
               <ul style={footerListStyle}>
                 <li><Link href="#features" style={footerLinkStyle}>Funcționalități</Link></li>
-                <li><Link href="#pricing" style={footerLinkStyle}>Prețuri</Link></li>
+                <li><Link href="/preturi" style={footerLinkStyle}>Prețuri</Link></li>
+                <li><Link href="/vs/booksy" style={footerLinkStyle}>vs Booksy</Link></li>
+                <li><Link href="/vs/wix" style={footerLinkStyle}>vs Wix</Link></li>
                 <li><Link href="#faq" style={footerLinkStyle}>FAQ</Link></li>
               </ul>
             </div>
