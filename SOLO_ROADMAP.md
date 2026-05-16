@@ -455,9 +455,12 @@
 - [ ] Tutorial interactiv (Shepherd.js sau Intro.js)
 
 ### 9.3 Marketing Site
-- [ ] Landing page `openportal.app`
+- [x] Landing page `/` cu hero + target businesses chip-cloud + 6 feature cards + 3-step "how it works" + 2 pricing plans + 6-Q FAQ + final CTA + footer
+- [x] Auth-aware header CTA (`<AuthAwareHeaderCTA>` client component) — logged-in users văd "Mergi la dashboard →", anonim văd "Conectează-te / Începe gratuit"
+- [x] Pagini Legal: `/legal/terms` (Termeni și condiții), `/legal/privacy` (Politică de confidențialitate cu GDPR), `/legal/dpa` (Data Processing Agreement)
+- [x] Layout dedicat `/legal/*` cu header simplu + back link
+- [x] Copy Romanian targeted la solo entrepreneurs (saloane, frizerii, cofetării, consultanți)
 - [ ] Pagini per industrie (`/saloane`, `/frizerii`, `/cofetarii`)
-- [ ] Pricing page
 - [ ] Blog (10 articole SEO de start)
 - [ ] Comparison vs Wix/Squarespace/Booksy
 
@@ -469,9 +472,10 @@
 - [ ] Bug bash session
 
 ### 9.5 Compliance & Polish
-- [ ] GDPR cookie banner + politica de confidențialitate
-- [ ] ToS + Acceptable Use Policy
-- [ ] DPA template pentru clienți
+- [x] GDPR cookie banner pe public sites (`<CookieBanner>` cu persistență localStorage)
+- [x] Politica de confidențialitate completă cu rights GDPR, data localization UE, retention period
+- [x] ToS în `/legal/terms` (cont, plată, conținut, AUP, disponibilitate, limită răspundere)
+- [x] DPA template în `/legal/dpa` (sub-procesatori listați, audit clause, SCCs pentru non-UE)
 - [ ] Status page (uptime.openportal.app)
 - [ ] Help center (Mintlify sau propriu)
 
