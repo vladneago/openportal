@@ -419,6 +419,8 @@ export function IndustryLandingPage({ data }: { data: IndustryLandingData }) {
                 <li><Link href="/preturi" style={footerLinkStyle}>Prețuri</Link></li>
                 <li><Link href="/vs/booksy" style={footerLinkStyle}>vs Booksy</Link></li>
                 <li><Link href="/vs/wix" style={footerLinkStyle}>vs Wix</Link></li>
+                <li><Link href="/ajutor" style={footerLinkStyle}>Ajutor</Link></li>
+                <li><Link href="/status" style={footerLinkStyle}>Status</Link></li>
                 <li><Link href="/login" style={footerLinkStyle}>Conectează-te</Link></li>
                 <li><Link href="/register" style={footerLinkStyle}>Începe gratuit</Link></li>
               </ul>

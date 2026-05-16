@@ -491,8 +491,9 @@
 - [x] Politica de confidențialitate completă cu rights GDPR, data localization UE, retention period
 - [x] ToS în `/legal/terms` (cont, plată, conținut, AUP, disponibilitate, limită răspundere)
 - [x] DPA template în `/legal/dpa` (sub-procesatori listați, audit clause, SCCs pentru non-UE)
-- [ ] Status page (uptime.openportal.app)
-- [ ] Help center (Mintlify sau propriu)
+- [x] Status page `/status` — 8 componente (API, Web, DB, Email, Chat AI, Storage, ANAF, Stripe) cu indicator real-time + uptime 30 zile + istoric incidente + abonare email notificări
+- [x] Help center `/ajutor` — 8 categorii (Primii pași, Site builder, Programări, Facturare, POS, Chat AI, Cont, GDPR), 42 articole, jump-link chips, contact box
+- [x] Cross-link footer: Status + Ajutor pe toate landing-urile
 
 ### 9.6 Launch
 - [ ] Soft launch beta (Săpt 16, ziua 1)

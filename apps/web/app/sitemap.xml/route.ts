@@ -5,6 +5,8 @@ import { COMPARISON_SLUGS } from "@/components/marketing/comparison-data";
 const MARKETING_PATHS = [
   { path: "/", priority: "1.0", changefreq: "weekly" },
   { path: "/preturi", priority: "0.9", changefreq: "monthly" },
+  { path: "/ajutor", priority: "0.7", changefreq: "weekly" },
+  { path: "/status", priority: "0.5", changefreq: "always" },
   { path: "/login", priority: "0.5", changefreq: "monthly" },
   { path: "/register", priority: "0.7", changefreq: "monthly" },
   { path: "/legal/terms", priority: "0.3", changefreq: "yearly" },

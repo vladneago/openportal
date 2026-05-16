@@ -645,6 +645,8 @@ export default function LandingPage() {
               <ul style={footerListStyle}>
                 <li><Link href="/login" style={footerLinkStyle}>Conectează-te</Link></li>
                 <li><Link href="/register" style={footerLinkStyle}>Începe gratuit</Link></li>
+                <li><Link href="/ajutor" style={footerLinkStyle}>Centru de ajutor</Link></li>
+                <li><Link href="/status" style={footerLinkStyle}>Status sistem</Link></li>
                 <li><a href="https://github.com/openportal" style={footerLinkStyle} rel="noopener noreferrer">GitHub</a></li>
               </ul>
             </div>
