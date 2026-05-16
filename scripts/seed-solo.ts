@@ -668,6 +668,424 @@ const templates = [
       },
     ],
   },
+  // ─────────────────────────────────────────────
+  // Template 6: Cabinet medical
+  // ─────────────────────────────────────────────
+  {
+    slug: "medical-clinic-trust",
+    name: "Cabinet Medical",
+    description: "Site profesional pentru cabinete medicale, clinici, medici de familie.",
+    category: "medical",
+    industryTags: ["medic", "cabinet", "clinică", "medicină de familie", "specialist"],
+    themeSlug: "medical-trust",
+    isFeatured: true,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Sănătatea ta, prioritatea noastră",
+            subtitle: "Servicii medicale de încredere, într-un cabinet modern și prietenos",
+            ctaPrimary: { text: "Programează consultație", href: "/programari" },
+            ctaSecondary: { text: "Vezi specialitățile", href: "/servicii" },
+            backgroundImage: "https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce ne aleg pacienții",
+            features: [
+              { icon: "🩺", title: "Medici specialiști", text: "Experiență de peste 15 ani în domeniu" },
+              { icon: "🔬", title: "Echipamente moderne", text: "Tehnologie medicală de ultimă generație" },
+              { icon: "⏱️", title: "Fără cozi", text: "Programare online, respectăm ora rezervată" },
+              { icon: "🤝", title: "Comunicare empatică", text: "Îți explicăm tot, fără jargon medical" },
+            ],
+          }),
+          block("servicesPreview", { title: "Specialități medicale", ctaText: "Vezi toate serviciile", ctaHref: "/servicii" }),
+          block("testimonials", {
+            title: "Pacienți mulțumiți",
+            items: [
+              { author: "Marian I.", text: "Doctor foarte atent, m-am simțit ascultat. Recomand cu drag.", rating: 5 },
+              { author: "Elena B.", text: "Programare online rapidă, fără așteptare. Excelent!", rating: 5 },
+            ],
+          }),
+          block("ctaBanner", {
+            title: "Ai nevoie de un consult?",
+            subtitle: "Programează-te online — fără telefoane, fără așteptări",
+            ctaText: "Rezervă acum",
+            ctaHref: "/programari",
+          }),
+        ],
+      },
+      {
+        slug: "servicii",
+        title: "Specialități",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Specialități medicale", subtitle: "O gamă completă de servicii medicale" }),
+          block("servicesList", { displayMode: "list" }),
+        ],
+      },
+      {
+        slug: "echipa",
+        title: "Echipa medicală",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Echipa medicală", subtitle: "Medici cu experiență, dedicați pacienților" }),
+          block("team", {
+            title: "Specialiștii noștri",
+            members: [
+              { name: "Dr. Andrei Popescu", role: "Medic primar Medicina Familiei", avatarUrl: "" },
+              { name: "Dr. Maria Ionescu", role: "Medic specialist Cardiologie", avatarUrl: "" },
+            ],
+          }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Programări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Programează o consultație", subtitle: "Alege specialitatea, data și ora" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: true }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Cum ne găsești" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: false }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 7: Stomatolog
+  // ─────────────────────────────────────────────
+  {
+    slug: "dental-care-modern",
+    name: "Cabinet Stomatologic",
+    description: "Site curat pentru cabinete stomatologice cu accent pe încredere și transparență.",
+    category: "dental",
+    industryTags: ["stomatolog", "dentist", "cabinet dentar", "ortodonție", "implanturi"],
+    themeSlug: "medical-trust",
+    isFeatured: true,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Zâmbetul tău, în mâini sigure",
+            subtitle: "Stomatologie modernă, fără durere, cu prețuri transparente",
+            ctaPrimary: { text: "Programează consult", href: "/programari" },
+            backgroundImage: "https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce noi",
+            features: [
+              { icon: "🦷", title: "Tratamente moderne", text: "Tehnologie laser, scanare 3D, materiale premium" },
+              { icon: "💉", title: "Anestezie computerizată", text: "Fără durere, fără frică" },
+              { icon: "💰", title: "Prețuri transparente", text: "Devizul îți este prezentat înainte de tratament" },
+              { icon: "📅", title: "Planificare pe etape", text: "Tratamente eșalonate, pe bugetul tău" },
+            ],
+          }),
+          block("servicesPreview", { title: "Servicii stomatologice", ctaText: "Vezi tot", ctaHref: "/servicii" }),
+          block("testimonials", {
+            title: "Pacienți care zâmbesc",
+            items: [
+              { author: "Ioana M.", text: "Mi-au făcut implant fără să simt nimic. Profesioniști!", rating: 5 },
+              { author: "Adrian D.", text: "Cei mai buni dentiști din oraș. Mereu mă întorc cu drag.", rating: 5 },
+              { author: "Carmen T.", text: "Prețuri corecte, calitate ireproșabilă. Recomand!", rating: 5 },
+            ],
+          }),
+        ],
+      },
+      {
+        slug: "servicii",
+        title: "Servicii",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Servicii stomatologice" }),
+          block("servicesList", { displayMode: "grid" }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Programări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Programează-te", subtitle: "Online, în mai puțin de 1 minut" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: true }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Contact" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: true }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 8: Personal trainer / Sala fitness
+  // ─────────────────────────────────────────────
+  {
+    slug: "fitness-personal-trainer",
+    name: "Personal Trainer",
+    description: "Site energic pentru antrenori personali, săli fitness, studio yoga și pilates.",
+    category: "fitness",
+    industryTags: ["fitness", "personal trainer", "antrenor", "yoga", "pilates", "sala"],
+    themeSlug: "fitness-energy",
+    isFeatured: true,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Transformă-ți corpul. Schimbă-ți viața.",
+            subtitle: "Antrenamente personalizate pentru rezultate reale",
+            ctaPrimary: { text: "Rezervă o ședință", href: "/programari" },
+            ctaSecondary: { text: "Vezi programele", href: "/servicii" },
+            backgroundImage: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "Cum lucrăm",
+            features: [
+              { icon: "💪", title: "Programe personalizate", text: "Plan adaptat obiectivelor și fizicului tău" },
+              { icon: "🥗", title: "Consiliere nutrițională", text: "Planul de alimentație complementar antrenamentelor" },
+              { icon: "📊", title: "Track progres", text: "Măsurători săptămânale, ajustăm strategia continuu" },
+              { icon: "🎯", title: "Rezultate garantate", text: "Dacă nu vezi progres în 3 luni, banii înapoi" },
+            ],
+          }),
+          block("servicesPreview", { title: "Pachete antrenament", ctaText: "Vezi toate pachetele", ctaHref: "/servicii" }),
+          block("testimonials", {
+            title: "Transformări reale",
+            items: [
+              { author: "Alex R.", text: "Am slăbit 15kg în 6 luni. Echipă excelentă!", rating: 5 },
+              { author: "Maria V.", text: "Mi-am redescoperit forța. Recomand 100%!", rating: 5 },
+            ],
+          }),
+          block("ctaBanner", {
+            title: "Prima ședință e GRATUITĂ",
+            subtitle: "Hai să discutăm obiectivele tale fără obligație",
+            ctaText: "Programează evaluare",
+            ctaHref: "/programari",
+          }),
+        ],
+      },
+      {
+        slug: "servicii",
+        title: "Pachete",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Pachete și prețuri", subtitle: "Alege programul potrivit pentru tine" }),
+          block("servicesList", { displayMode: "grid" }),
+        ],
+      },
+      {
+        slug: "despre",
+        title: "Despre",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Despre mine", subtitle: "Antrenor certificat cu 10+ ani experiență" }),
+          block("textImage", {
+            title: "Pasiune pentru transformare",
+            text: "Am ajutat peste 200 de clienți să-și atingă obiectivele de fitness. De la pierdere în greutate la pregătire pentru competiții, fiecare program e gândit individual.",
+            imageUrl: "https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800",
+            imagePosition: "right",
+          }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Programări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Programează ședința" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: false }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Contactează-mă" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: true }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 9: Fotograf
+  // ─────────────────────────────────────────────
+  {
+    slug: "photographer-portfolio",
+    name: "Studio Foto",
+    description: "Site portfolio elegant pentru fotografi, videografi, studio foto.",
+    category: "photographer",
+    industryTags: ["fotograf", "videograf", "studio foto", "nuntă", "evenimente", "portrait"],
+    themeSlug: "professional-clean",
+    isFeatured: false,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Momentele tale, surprinse perfect",
+            subtitle: "Fotografie de eveniment, portret și produs cu suflet",
+            ctaPrimary: { text: "Rezervă ședință", href: "/programari" },
+            ctaSecondary: { text: "Vezi portofoliul", href: "/portofoliu" },
+            backgroundImage: "https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "Servicii foto",
+            features: [
+              { icon: "💍", title: "Nunți & evenimente", text: "Surprind emoția fiecărui moment important" },
+              { icon: "👨‍👩‍👧", title: "Portrete de familie", text: "Sesiuni relaxate, în studio sau outdoor" },
+              { icon: "📦", title: "Fotografie produs", text: "Pentru shop online, lifestyle, advertising" },
+              { icon: "🎓", title: "Promoții & corporate", text: "Headshots, team photos, evenimente brand" },
+            ],
+          }),
+          block("servicesPreview", { title: "Pachete foto", ctaText: "Vezi prețuri", ctaHref: "/servicii" }),
+          block("testimonials", {
+            title: "Clienții mei spun",
+            items: [
+              { author: "Andra & Mihai", text: "Pozele de la nuntă sunt magice. Mulțumim din suflet!", rating: 5 },
+              { author: "Catalin S.", text: "Profesionist, punctual, rezultate spectaculoase.", rating: 5 },
+            ],
+          }),
+        ],
+      },
+      {
+        slug: "portofoliu",
+        title: "Portofoliu",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Portofoliu", subtitle: "Câteva dintre proiectele mele preferate" }),
+          block("textImage", {
+            title: "Stil fotografic propriu",
+            text: "Lucrez în stil natural, fără pose forțate. Caut momentele autentice, lumina caldă, emoțiile reale.",
+            imageUrl: "https://images.unsplash.com/photo-1554080353-a576cf803bda?w=800",
+            imagePosition: "left",
+          }),
+        ],
+      },
+      {
+        slug: "servicii",
+        title: "Servicii",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Servicii și pachete" }),
+          block("servicesList", { displayMode: "list" }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Rezervări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Rezervă o sesiune foto" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: false }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Hai să discutăm proiectul tău" }),
+          block("contactInfo", { showMap: false, showHours: false, showSocial: true }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 10: Florărie
+  // ─────────────────────────────────────────────
+  {
+    slug: "florist-boutique",
+    name: "Florărie Boutique",
+    description: "Site cald și colorat pentru florării, aranjamente florale, livrări evenimente.",
+    category: "florist",
+    industryTags: ["florărie", "flori", "aranjamente", "buchete", "livrare flori", "evenimente"],
+    themeSlug: "beauty-vintage",
+    isFeatured: false,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Florile spun ce cuvintele nu pot",
+            subtitle: "Aranjamente florale unice, livrate cu emoție",
+            ctaPrimary: { text: "Comandă acum", href: "/comenzi" },
+            ctaSecondary: { text: "Vezi colecția", href: "/colectie" },
+            backgroundImage: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce florăria noastră",
+            features: [
+              { icon: "🌸", title: "Flori proaspete zilnic", text: "Importăm direct de la cei mai buni furnizori" },
+              { icon: "🚚", title: "Livrare în 2 ore", text: "În tot orașul, gratis peste 150 lei" },
+              { icon: "💝", title: "Aranjamente personalizate", text: "Spune-ne ocazia, creăm buchetul perfect" },
+              { icon: "📞", title: "Comenzi pentru evenimente", text: "Nunți, botezuri, corporate, conferințe" },
+            ],
+          }),
+          block("servicesPreview", { title: "Buchete populare", ctaText: "Vezi toate aranjamentele", ctaHref: "/colectie" }),
+          block("ctaBanner", {
+            title: "Vrei buchete săptămânale?",
+            subtitle: "Abonament pentru birou sau acasă — flori proaspete în fiecare săptămână",
+            ctaText: "Solicită ofertă",
+            ctaHref: "/contact",
+          }),
+        ],
+      },
+      {
+        slug: "colectie",
+        title: "Colecție",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Colecția noastră", subtitle: "Aranjamente pentru orice ocazie" }),
+          block("servicesList", { displayMode: "grid" }),
+        ],
+      },
+      {
+        slug: "comenzi",
+        title: "Comenzi",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Comandă online", subtitle: "Alege buchetul, alege momentul" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: false }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Vino la noi sau ne suni" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: true }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
 ];
 
 // ─────────────────────────────────────────────

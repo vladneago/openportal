@@ -401,29 +401,35 @@
 
 ## Faza 8 — Templates + AI Generator (Săpt 14–15)
 
-### 8.1 40 Industry Templates
-- [ ] Salon de înfrumusețare (3 variante)
-- [ ] Frizerie/Barbershop (3 variante)
-- [ ] Cofetărie/Patiserie (2 variante)
+### 8.1 40 Industry Templates (10/40 done)
+- [x] Salon de înfrumusețare — `beauty-modern-salon` (5 pagini)
+- [x] Frizerie/Barbershop — `barbershop-classic` (4 pagini)
+- [x] SPA & Wellness — `spa-wellness-retreat` (4 pagini)
+- [x] Cofetărie/Patiserie — `cofetarie-artizanala` (3 pagini)
+- [x] Consultant/Avocat/Contabil — `consultant-profesional` (5 pagini)
+- [x] Cabinet medical — `medical-clinic-trust` (5 pagini, cu echipa)
+- [x] Stomatolog — `dental-care-modern` (4 pagini)
+- [x] Personal trainer / Fitness — `fitness-personal-trainer` (5 pagini)
+- [x] Fotograf / Studio foto — `photographer-portfolio` (5 pagini, cu portofoliu)
+- [x] Florărie — `florist-boutique` (4 pagini)
+- [ ] Salon înfrumusețare — variantă vintage + lux (2 mai)
+- [ ] Frizerie — variantă modern + retro (2 mai)
+- [ ] Cofetărie — variantă modern (1 mai)
 - [ ] Restaurant/Bistro (3 variante)
-- [ ] Consultant asigurări (2 variante)
-- [ ] Cabinet medical (3 variante)
-- [ ] Stomatolog
-- [ ] Avocat / Notar (2 variante)
-- [ ] Contabil
+- [ ] Consultant asigurări (variantă dedicată)
+- [ ] Cabinet medical — variantă pediatrie + ginecologie
+- [ ] Avocat / Notar (variantă dedicată)
+- [ ] Contabil (variantă dedicată)
 - [ ] Psiholog / Coach
-- [ ] Personal trainer / Sala fitness
 - [ ] Studio yoga / pilates
-- [ ] Florărie
 - [ ] Atelier auto
 - [ ] Curățătorie chimică
 - [ ] Pet shop / Veterinar
-- [ ] Fotograf
 - [ ] DJ / Evenimente
 - [ ] Tatuaj / Piercing
 - [ ] Hotel mic / Pensiune
 - [ ] Cazare turistică / Airbnb host
-- [ ] Total: 40 template-uri responsive
+- [ ] Onboarding presets updated cu noi industrii: dental, photographer, florist (11 presets total)
 
 ### 8.2 AI Site Generator
 - [ ] Wizard: "Spune-mi despre business-ul tău" (industry, locatie, USP)
