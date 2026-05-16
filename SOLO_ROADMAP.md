@@ -260,8 +260,10 @@
 - [x] Pick from existing customer + manual override
 - [x] Pagină `/billing/series` (CRUD serii cu numerotare, prefix/sufix, reset policy)
 - [x] Item nav lateral "Facturi"
-- [ ] Preview PDF înainte de save
-- [ ] Storno + corecții
+- [x] Preview PDF (`GET /billing/invoices/:id/print` server-rendered HTML cu print CSS A4 + Save-as-PDF nativ browser)
+- [x] Storno + corecții (`POST /billing/invoices/:id/storno` creează credit_note cu linii negate + linkează relatedInvoiceId, marchează originalul ca void)
+- [x] Auto-provision serie credit_note dacă tenant n-are una (cod „STO", prefix STO, pad 4, reset yearly)
+- [x] UI: buton „PDF" pe orice factură + buton „Stornează" pe facturile emise/trimise/plătite cu prompt motiv
 
 ### 4.2 ANAF e-Factura
 - [x] Schema `tenant_anaf_credentials` (OAuth tokens + issuer fiscal identity) + migrate aplicat

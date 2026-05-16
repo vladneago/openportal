@@ -224,6 +224,43 @@ export default function BillingPage() {
     await load();
   }
 
+  function openPrintPreview(id: string) {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+    // We need to pass the bearer token to authenticate the print endpoint.
+    // Fetch the HTML and open it in a new tab via a blob URL.
+    fetch(`${API_URL}/api/v1/billing/invoices/${id}/print`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const data = await res.json().catch(() => null);
+          alert(data?.error?.message || "Nu pot deschide previzualizarea");
+          return;
+        }
+        const html = await res.text();
+        const blob = new Blob([html], { type: "text/html;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+        setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      })
+      .catch((err) => alert("Eroare: " + String(err)));
+  }
+
+  async function stornoInvoice(id: string, documentNumber: string) {
+    const reason = prompt(`Motiv storno pentru ${documentNumber} (opțional):`);
+    if (reason === null) return; // user cancelled
+    const res = await api(`/api/v1/billing/invoices/${id}/storno`, {
+      method: "POST",
+      body: JSON.stringify({ reason: reason || undefined }),
+    });
+    if (!res.success) {
+      alert(res.error?.message || "Eroare la stornare");
+      return;
+    }
+    await load();
+  }
+
   const noSeries = series.length === 0;
   const t = totals();
 
@@ -364,6 +401,13 @@ export default function BillingPage() {
                 )}
               </div>
               <div className="flex items-center gap-1 shrink-0">
+                <button
+                  onClick={() => openPrintPreview(inv.id)}
+                  className="btn-secondary text-xs"
+                  title="Previzualizare / Salvează PDF"
+                >
+                  PDF
+                </button>
                 {inv.status === "draft" && (
                   <button onClick={() => markIssued(inv.id)} className="btn-secondary text-xs">
                     Emite
@@ -374,6 +418,17 @@ export default function BillingPage() {
                     → ANAF
                   </button>
                 )}
+                {inv.type !== "credit_note" &&
+                  ["issued", "sent", "viewed", "partially_paid", "paid", "overdue"].includes(inv.status) && (
+                    <button
+                      onClick={() => stornoInvoice(inv.id, inv.documentNumber)}
+                      className="btn-secondary text-xs"
+                      title="Creează notă de credit (storno)"
+                      style={{ color: "#DC2626" }}
+                    >
+                      Stornează
+                    </button>
+                  )}
               </div>
             </div>
           ))

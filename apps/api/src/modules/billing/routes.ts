@@ -15,6 +15,7 @@ import { and, eq, gte, lte, sql, desc, asc, count } from "drizzle-orm";
 import { requireAuth } from "../../middleware/auth";
 import { AppError } from "../../middleware/error-handler";
 import { assertEfacturaQuota } from "../../lib/plan-limits";
+import { renderInvoiceHtml } from "../../lib/invoice-html";
 
 export const billingRoutes = new Hono();
 billingRoutes.use("*", requireAuth);
@@ -502,6 +503,246 @@ billingRoutes.delete("/invoices/:id", async (c) => {
 
   return c.json({ success: true });
 });
+
+// ─────────────────────────────────────────────
+// GET /invoices/:id/print — server-rendered HTML for print / Save-as-PDF
+// Returns text/html with embedded print styles; user opens in tab,
+// Ctrl+P or hits the "Tipărește" button on the page itself.
+// ─────────────────────────────────────────────
+
+billingRoutes.get("/invoices/:id/print", async (c) => {
+  const tenantId = c.get("tenantId");
+  const id = c.req.param("id");
+
+  const [invoice] = await db
+    .select()
+    .from(billingInvoices)
+    .where(and(eq(billingInvoices.tenantId, tenantId), eq(billingInvoices.id, id)))
+    .limit(1);
+  if (!invoice) throw new AppError(404, "NOT_FOUND", "Invoice not found");
+
+  const [lines, payments] = await Promise.all([
+    db
+      .select()
+      .from(billingInvoiceLines)
+      .where(eq(billingInvoiceLines.invoiceId, id))
+      .orderBy(asc(billingInvoiceLines.lineNumber)),
+    db
+      .select()
+      .from(billingPayments)
+      .where(eq(billingPayments.invoiceId, id))
+      .orderBy(asc(billingPayments.paidAt)),
+  ]);
+
+  const html = renderInvoiceHtml({ invoice, lines, payments });
+  c.header("Content-Type", "text/html; charset=utf-8");
+  return c.body(html);
+});
+
+// ─────────────────────────────────────────────
+// POST /invoices/:id/storno — create credit_note that reverses this invoice
+// Copies lines with negative quantities, links back via relatedInvoiceId.
+// Marks original as "void" (status='void') so it can't be paid again.
+// ─────────────────────────────────────────────
+
+billingRoutes.post(
+  "/invoices/:id/storno",
+  zValidator("json", z.object({ reason: z.string().max(500).optional() }).optional()),
+  async (c) => {
+    const tenantId = c.get("tenantId");
+    const user = c.get("user");
+    const id = c.req.param("id");
+    const body = c.req.valid("json") || {};
+
+    const result = await db.transaction(async (tx) => {
+      const [original] = await tx
+        .select()
+        .from(billingInvoices)
+        .where(and(eq(billingInvoices.tenantId, tenantId), eq(billingInvoices.id, id)))
+        .limit(1);
+      if (!original) throw new AppError(404, "NOT_FOUND", "Invoice not found");
+      if (original.type === "credit_note") {
+        throw new AppError(400, "CANNOT_STORNO_CREDIT_NOTE", "O notă de credit nu poate fi stornată");
+      }
+      if (original.status === "draft") {
+        throw new AppError(400, "DRAFT_CANNOT_BE_STORNED", "Ciornele se șterg, nu se stornează");
+      }
+      if (original.status === "cancelled" || original.status === "void") {
+        throw new AppError(400, "ALREADY_INACTIVE", "Factura este deja anulată/stornată");
+      }
+
+      const originalLines = await tx
+        .select()
+        .from(billingInvoiceLines)
+        .where(eq(billingInvoiceLines.invoiceId, id))
+        .orderBy(asc(billingInvoiceLines.lineNumber));
+      if (originalLines.length === 0) {
+        throw new AppError(400, "EMPTY_INVOICE", "Factura nu are linii");
+      }
+
+      // Find a credit_note series — default first, then any active one
+      let [creditSeries] = await tx
+        .select()
+        .from(billingInvoiceSeries)
+        .where(
+          and(
+            eq(billingInvoiceSeries.tenantId, tenantId),
+            eq(billingInvoiceSeries.type, "credit_note"),
+            eq(billingInvoiceSeries.isActive, true),
+            eq(billingInvoiceSeries.isDefault, true),
+          ),
+        )
+        .limit(1);
+      if (!creditSeries) {
+        [creditSeries] = await tx
+          .select()
+          .from(billingInvoiceSeries)
+          .where(
+            and(
+              eq(billingInvoiceSeries.tenantId, tenantId),
+              eq(billingInvoiceSeries.type, "credit_note"),
+              eq(billingInvoiceSeries.isActive, true),
+            ),
+          )
+          .limit(1);
+      }
+      if (!creditSeries) {
+        // Auto-provision a default credit_note series on first storno
+        const [created] = await tx
+          .insert(billingInvoiceSeries)
+          .values({
+            tenantId,
+            code: "STO",
+            name: "Storno (auto)",
+            type: "credit_note",
+            prefix: "STO",
+            suffix: "",
+            padLength: 4,
+            resetPolicy: "yearly",
+            nextNumber: 1,
+            isDefault: true,
+            isActive: true,
+          })
+          .returning();
+        creditSeries = created;
+      }
+
+      // Allocate next number for the credit_note series
+      const [seriesLocked] = await tx
+        .select()
+        .from(billingInvoiceSeries)
+        .where(eq(billingInvoiceSeries.id, creditSeries.id))
+        .for("update")
+        .limit(1);
+      if (!seriesLocked) throw new AppError(500, "SERIES_LOCK_FAILED", "Could not lock series");
+
+      const number = seriesLocked.nextNumber;
+      const padded = padNumber(number, seriesLocked.padLength);
+      const issueDate = new Date().toISOString().slice(0, 10);
+      const year = parseInt(issueDate.slice(0, 4), 10);
+      const documentNumber = formatDocumentNumber(
+        seriesLocked.prefix || seriesLocked.code,
+        padded,
+        seriesLocked.suffix,
+        year,
+      );
+
+      await tx
+        .update(billingInvoiceSeries)
+        .set({ nextNumber: number + 1, lastIssuedAt: new Date(), updatedAt: new Date() })
+        .where(eq(billingInvoiceSeries.id, seriesLocked.id));
+
+      // Insert credit_note header — negate all amounts
+      const neg = (v: string) => "-" + Math.abs(Number(v)).toFixed(2);
+
+      const [creditNote] = await tx
+        .insert(billingInvoices)
+        .values({
+          tenantId,
+          seriesId: seriesLocked.id,
+          number,
+          documentNumber,
+          type: "credit_note",
+          status: "issued",
+          relatedInvoiceId: original.id,
+          // Issuer + customer snapshot copied from original
+          issuerName: original.issuerName,
+          issuerTaxId: original.issuerTaxId,
+          issuerRegistrationNumber: original.issuerRegistrationNumber,
+          issuerAddress: original.issuerAddress,
+          issuerCity: original.issuerCity,
+          issuerCounty: original.issuerCounty,
+          issuerCountry: original.issuerCountry,
+          issuerIban: original.issuerIban,
+          issuerBank: original.issuerBank,
+          issuerEmail: original.issuerEmail,
+          issuerPhone: original.issuerPhone,
+          customerId: original.customerId,
+          customerName: original.customerName,
+          customerIsCompany: original.customerIsCompany,
+          customerTaxId: original.customerTaxId,
+          customerRegistrationNumber: original.customerRegistrationNumber,
+          customerAddress: original.customerAddress,
+          customerCity: original.customerCity,
+          customerCounty: original.customerCounty,
+          customerCountry: original.customerCountry,
+          customerEmail: original.customerEmail,
+          customerPhone: original.customerPhone,
+          issueDate,
+          dueDate: null,
+          currency: original.currency,
+          exchangeRate: original.exchangeRate,
+          subtotal: neg(original.subtotal),
+          totalDiscount: neg(original.totalDiscount),
+          totalVat: neg(original.totalVat),
+          totalAmount: neg(original.totalAmount),
+          amountDue: "0", // credit notes don't owe money
+          notes: body.reason ? `Storno la factura ${original.documentNumber} — ${body.reason}` : `Storno la factura ${original.documentNumber}`,
+          createdBy: user.id,
+        })
+        .returning();
+
+      // Insert negated lines
+      const negLines = originalLines.map((line) => ({
+        tenantId,
+        invoiceId: creditNote.id,
+        lineNumber: line.lineNumber,
+        description: line.description,
+        itemType: line.itemType,
+        itemId: line.itemId,
+        itemCode: line.itemCode,
+        quantity: "-" + Math.abs(Number(line.quantity)).toFixed(4),
+        unitOfMeasure: line.unitOfMeasure,
+        unitPrice: line.unitPrice,
+        discountPercent: line.discountPercent,
+        discountAmount: neg(line.discountAmount),
+        vatRate: line.vatRate,
+        vatCategory: line.vatCategory,
+        subtotal: neg(line.subtotal),
+        vatAmount: neg(line.vatAmount),
+        totalAmount: neg(line.totalAmount),
+      }));
+      await tx.insert(billingInvoiceLines).values(negLines);
+
+      // Mark original as void so it can't accept further payments
+      await tx
+        .update(billingInvoices)
+        .set({
+          status: "void",
+          cancelledAt: new Date(),
+          internalNotes: original.internalNotes
+            ? `${original.internalNotes}\nStornată prin ${documentNumber} la ${issueDate}`
+            : `Stornată prin ${documentNumber} la ${issueDate}`,
+          updatedAt: new Date(),
+        })
+        .where(eq(billingInvoices.id, original.id));
+
+      return creditNote;
+    });
+
+    return c.json({ success: true, data: result }, 201);
+  },
+);
 
 // ─────────────────────────────────────────────
 // PAYMENTS
