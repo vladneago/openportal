@@ -278,10 +278,16 @@
 - [x] Preview XML endpoint (GET /preview-xml/:invoiceId) pentru debug + verificare CIUS-RO
 
 ### 4.3 Plăți + Recouvrement
-- [ ] Track plăți (manual + Stripe link)
-- [ ] Aging report (overdue)
-- [ ] Email reminder pentru facturi neplătite
-- [ ] Export Excel/CSV pentru contabil
+- [x] Track plăți manuale (cash, transfer, card, Stripe) — completat în 4.0
+- [x] Aging report cu buckets (curent, 1–30, 31–60, 61–90, 90+) la `GET /billing/aging`
+- [x] Auto-marker overdue: cron flips `status='overdue'` când due_date < azi și amount_due > 0
+- [x] Email reminder pentru facturi neplătite (cadență: 1 zi după scadență, apoi săptămânal, cap 5 reminder-uri/factură)
+- [x] Schema: `billing_invoices.last_reminder_sent_at` + `reminder_count` pentru tracking cadență
+- [x] Template `renderInvoiceReminder` cu tonuri (soft/polite/firm) bazat pe daysOverdue + IBAN block
+- [x] Worker endpoints `/internal/billing/{mark-overdue,reminders}/tick` cu WORKER_TOKEN
+- [x] Cron script `scripts/billing-cron.mjs` (suggested 9 AM daily)
+- [x] Export CSV `GET /billing/export.csv?from=…&to=…` cu BOM UTF-8 pentru Excel/LibreOffice
+- [x] Pagina `/billing/reports` cu tabel aging colaps/expand pe bucket + export form
 
 ### 4.4 Integrare Stripe
 - [ ] Cont Stripe Connect per tenant

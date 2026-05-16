@@ -700,3 +700,154 @@ billingRoutes.post(
     return c.json({ success: true, data: submission }, 201);
   },
 );
+
+// ─────────────────────────────────────────────
+// AGING REPORT (overdue buckets)
+// GET /api/v1/billing/aging — buckets unpaid invoices by overdue days
+// ─────────────────────────────────────────────
+
+billingRoutes.get("/aging", async (c) => {
+  const tenantId = c.get("tenantId");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayDate = today.toISOString().slice(0, 10);
+
+  const rows = await db
+    .select({
+      id: billingInvoices.id,
+      documentNumber: billingInvoices.documentNumber,
+      customerName: billingInvoices.customerName,
+      customerEmail: billingInvoices.customerEmail,
+      issueDate: billingInvoices.issueDate,
+      dueDate: billingInvoices.dueDate,
+      status: billingInvoices.status,
+      totalAmount: billingInvoices.totalAmount,
+      amountDue: billingInvoices.amountDue,
+      currency: billingInvoices.currency,
+    })
+    .from(billingInvoices)
+    .where(
+      and(
+        eq(billingInvoices.tenantId, tenantId),
+        sql`${billingInvoices.status} IN ('issued','sent','viewed','partially_paid','overdue')`,
+        sql`${billingInvoices.amountDue}::numeric > 0`,
+      ),
+    )
+    .orderBy(asc(billingInvoices.dueDate));
+
+  const buckets: Record<string, { label: string; total: number; count: number; invoices: typeof rows }> = {
+    notDue:    { label: "Curent (neexpirat)", total: 0, count: 0, invoices: [] },
+    "1_30":    { label: "1–30 zile întârziere", total: 0, count: 0, invoices: [] },
+    "31_60":   { label: "31–60 zile",          total: 0, count: 0, invoices: [] },
+    "61_90":   { label: "61–90 zile",          total: 0, count: 0, invoices: [] },
+    "90_plus": { label: "Peste 90 zile",       total: 0, count: 0, invoices: [] },
+  };
+
+  for (const row of rows) {
+    const dueIso = row.dueDate || row.issueDate;
+    if (!dueIso) continue;
+    const due = new Date(dueIso + "T00:00:00Z");
+    const days = Math.floor((today.getTime() - due.getTime()) / 86400000);
+    let key: keyof typeof buckets;
+    if (days <= 0) key = "notDue";
+    else if (days <= 30) key = "1_30";
+    else if (days <= 60) key = "31_60";
+    else if (days <= 90) key = "61_90";
+    else key = "90_plus";
+    buckets[key].count++;
+    buckets[key].total += Number(row.amountDue);
+    buckets[key].invoices.push(row);
+  }
+
+  const grandTotal = Object.values(buckets).reduce((s, b) => s + b.total, 0);
+  const grandCount = Object.values(buckets).reduce((s, b) => s + b.count, 0);
+
+  return c.json({
+    success: true,
+    data: {
+      asOf: todayDate,
+      grandTotal,
+      grandCount,
+      buckets,
+    },
+  });
+});
+
+// ─────────────────────────────────────────────
+// CSV EXPORT — for accountant
+// GET /api/v1/billing/export.csv?from=YYYY-MM-DD&to=YYYY-MM-DD
+// ─────────────────────────────────────────────
+
+billingRoutes.get("/export.csv", async (c) => {
+  const tenantId = c.get("tenantId");
+  const from = c.req.query("from");
+  const to = c.req.query("to");
+
+  const conds = [eq(billingInvoices.tenantId, tenantId)];
+  if (from) conds.push(gte(billingInvoices.issueDate, from));
+  if (to) conds.push(lte(billingInvoices.issueDate, to));
+
+  const rows = await db
+    .select()
+    .from(billingInvoices)
+    .where(and(...conds))
+    .orderBy(asc(billingInvoices.issueDate));
+
+  // CSV header — covers what accountants typically need for the journal
+  const headers = [
+    "Document",
+    "Tip",
+    "Status",
+    "Data emiterii",
+    "Data scadentei",
+    "Client",
+    "CUI client",
+    "Subtotal",
+    "TVA",
+    "Total",
+    "Achitat",
+    "Rest de plata",
+    "Moneda",
+    "Status e-Factura",
+    "Upload ID ANAF",
+    "Note",
+  ];
+
+  const escCsv = (v: unknown): string => {
+    if (v === null || v === undefined) return "";
+    const s = String(v).replace(/"/g, '""');
+    return /[",\n;]/.test(s) ? `"${s}"` : s;
+  };
+
+  const lines = [headers.join(";")];
+  for (const r of rows) {
+    lines.push(
+      [
+        r.documentNumber,
+        r.type,
+        r.status,
+        r.issueDate,
+        r.dueDate ?? "",
+        r.customerName,
+        r.customerTaxId ?? "",
+        r.subtotal,
+        r.totalVat,
+        r.totalAmount,
+        r.totalPaid,
+        r.amountDue,
+        r.currency,
+        r.efacturaStatus,
+        r.efacturaUploadId ?? "",
+        (r.notes ?? "").replace(/\r?\n/g, " ").slice(0, 200),
+      ].map(escCsv).join(";"),
+    );
+  }
+
+  // BOM so Excel recognises UTF-8
+  const csv = "﻿" + lines.join("\n");
+  const filename = `facturi_${from ?? "all"}_${to ?? "all"}.csv`;
+
+  c.header("Content-Type", "text/csv; charset=utf-8");
+  c.header("Content-Disposition", `attachment; filename="${filename}"`);
+  return c.body(csv);
+});

@@ -186,6 +186,10 @@ export const billingInvoices = pgTable("billing_invoices", {
   paidAt: timestamp("paid_at", { withTimezone: true }),
   cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
 
+  // Payment reminder tracking
+  lastReminderSentAt: timestamp("last_reminder_sent_at", { withTimezone: true }),
+  reminderCount: integer("reminder_count").notNull().default(0),
+
   metadata: jsonb("metadata").$type<Record<string, unknown>>().default({}),
 
   createdBy: uuid("created_by").references(() => users.id),

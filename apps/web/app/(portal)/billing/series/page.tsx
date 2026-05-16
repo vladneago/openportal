@@ -29,6 +29,7 @@ const TYPE_LABELS: Record<string, string> = {
 
 const TABS = [
   { href: "/billing", label: "Facturi" },
+  { href: "/billing/reports", label: "Rapoarte" },
   { href: "/billing/series", label: "Serii" },
 ];
 

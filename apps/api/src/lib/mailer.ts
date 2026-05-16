@@ -334,6 +334,84 @@ export function renderBookingReminder(data: BookingReminderData): {
   return { subject, html: wrapEmail(content, data.brandColor) };
 }
 
+// ─────────────────────────────────────────────
+// Invoice payment reminder
+// ─────────────────────────────────────────────
+
+export interface InvoiceReminderData {
+  customerName: string;
+  documentNumber: string;
+  issueDate: string; // YYYY-MM-DD
+  dueDate: string | null;
+  amountDue: string; // pre-formatted
+  currency: string;
+  businessName: string;
+  businessIban: string | null;
+  businessBank: string | null;
+  paymentUrl: string | null;
+  daysOverdue: number; // negative if not yet due, positive if past due
+  brandColor?: string;
+}
+
+export function renderInvoiceReminder(data: InvoiceReminderData): {
+  subject: string;
+  html: string;
+} {
+  const isOverdue = data.daysOverdue > 0;
+  const subject = isOverdue
+    ? `Reminder plată — factura ${data.documentNumber} (${data.daysOverdue} zile întârziere)`
+    : `Reminder plată — factura ${data.documentNumber} ajunge la scadență`;
+
+  const tone = data.daysOverdue > 60 ? "firm" : data.daysOverdue > 14 ? "polite" : "soft";
+  const intro =
+    tone === "firm"
+      ? `Factura nr. <strong>${escapeHtml(data.documentNumber)}</strong> are deja <strong>${data.daysOverdue} zile</strong> de întârziere. Te rugăm să achiți cât de curând pentru a evita alte măsuri.`
+      : tone === "polite"
+        ? `Factura nr. <strong>${escapeHtml(data.documentNumber)}</strong> este restantă de <strong>${data.daysOverdue} zile</strong>. Ne-ar ajuta foarte mult dacă o poți achita zilele acestea.`
+        : isOverdue
+          ? `Factura nr. <strong>${escapeHtml(data.documentNumber)}</strong> a depășit data scadenței cu ${data.daysOverdue} zile.`
+          : `Îți reamintim prietenește că factura nr. <strong>${escapeHtml(data.documentNumber)}</strong> ajunge la scadență curând.`;
+
+  const paymentBlock = data.businessIban
+    ? `
+    <div class="summary" style="margin-top:16px;">
+      <div class="summary-row"><span>IBAN</span><strong style="font-family:monospace;">${escapeHtml(data.businessIban)}</strong></div>
+      ${data.businessBank ? `<div class="summary-row"><span>Bancă</span><strong>${escapeHtml(data.businessBank)}</strong></div>` : ""}
+      <div class="summary-row"><span>Referință plată</span><strong>${escapeHtml(data.documentNumber)}</strong></div>
+    </div>`
+    : "";
+
+  const content = `
+    <div class="header">
+      <h1>${isOverdue ? "Factură restantă" : "Reminder plată"}</h1>
+    </div>
+
+    <p>Bună, ${escapeHtml(data.customerName)},</p>
+    <p>${intro}</p>
+
+    <div class="summary">
+      <div class="summary-row"><span>Document</span><strong>${escapeHtml(data.documentNumber)}</strong></div>
+      <div class="summary-row"><span>Data emiterii</span><strong>${escapeHtml(data.issueDate)}</strong></div>
+      ${data.dueDate ? `<div class="summary-row"><span>Scadență</span><strong>${escapeHtml(data.dueDate)}</strong></div>` : ""}
+      <div class="summary-row"><span>De plată</span><strong>${escapeHtml(data.amountDue)} ${escapeHtml(data.currency)}</strong></div>
+    </div>
+
+    ${paymentBlock}
+
+    ${data.paymentUrl ? `
+      <p style="text-align:center;margin-top:24px;">
+        <a href="${data.paymentUrl}" style="background:${data.brandColor || "#6366F1"};color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600;display:inline-block;">Plătește acum</a>
+      </p>
+    ` : ""}
+
+    <p style="margin-top:24px;color:#475569;font-size:13px;">
+      Dacă plata a fost deja efectuată, te rugăm să ignori acest mesaj. Mulțumim — ${escapeHtml(data.businessName)}.
+    </p>
+  `;
+
+  return { subject, html: wrapEmail(content, data.brandColor) };
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
