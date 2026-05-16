@@ -216,7 +216,10 @@
 - [x] Respectă `emailConsent` din customer record (GDPR)
 - [x] Marchează `confirmationSentAt` la trimitere
 - [ ] SMS confirmation (integrare Twilio sau Vonage)
-- [ ] Reminder 24h + 2h înainte (cron job sau Inngest)
+- [x] Reminder 24h + 2h înainte — endpoint `/api/v1/internal/booking/reminders/tick` + script `scripts/booking-cron.mjs` (cron 5–10 min) + template email dual-variant (24h "mâine la…" / 2h "peste 2 ore")
+- [x] Tracking duplicare: `reminder_24h_sent_at` / `reminder_2h_sent_at` în DB
+- [x] Auto-mark `no_show`: endpoint `/api/v1/internal/booking/no-show/tick` (grace period configurabil, default 30 min după `end_at`)
+- [x] Auth worker prin `WORKER_TOKEN` env (X-Worker-Token header) — dev mode open
 - [ ] Cancel/Reschedule link cu magic token în email
 
 ### 3.4 Customer self-service

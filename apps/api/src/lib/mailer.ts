@@ -268,21 +268,33 @@ export interface BookingReminderData {
   businessPhone: string | null;
   businessAddress: string | null;
   brandColor?: string;
+  variant?: "24h" | "2h";
+  cancellationUrl?: string;
 }
 
 export function renderBookingReminder(data: BookingReminderData): {
   subject: string;
   html: string;
 } {
-  const subject = `Reminder — programare mâine la ${formatTimeRO(data.startAt)}`;
+  const variant = data.variant ?? "24h";
+  const subject =
+    variant === "2h"
+      ? `Te așteptăm peste 2 ore — ${data.serviceName}`
+      : `Reminder — programare mâine la ${formatTimeRO(data.startAt)}`;
+
+  const headerLabel = variant === "2h" ? "Programarea ta începe în curând" : "Reminder programare";
+  const introLine =
+    variant === "2h"
+      ? "Programarea ta începe peste aproximativ 2 ore:"
+      : "Îți reamintim că mâine ai programare la <strong>" + escapeHtml(data.businessName) + "</strong>:";
 
   const content = `
     <div class="header">
-      <h1>Reminder programare</h1>
+      <h1>${headerLabel}</h1>
     </div>
 
     <p>Bună, ${escapeHtml(data.customerName)},</p>
-    <p>Îți reamintim că ai programare la <strong>${escapeHtml(data.businessName)}</strong>:</p>
+    <p>${introLine}</p>
 
     <div class="summary">
       <div class="summary-row">
@@ -311,6 +323,12 @@ export function renderBookingReminder(data: BookingReminderData): {
     ` : ""}
 
     <p style="margin-top:24px;">Te așteptăm!</p>
+
+    ${data.cancellationUrl ? `
+      <p style="margin-top:24px;color:#64748B;font-size:13px;text-align:center;">
+        Nu mai poți veni? <a href="${data.cancellationUrl}" style="color:${data.brandColor || "#6366F1"};">Anulează aici</a>
+      </p>
+    ` : ""}
   `;
 
   return { subject, html: wrapEmail(content, data.brandColor) };

@@ -295,6 +295,9 @@ export const bookingAppointments = pgTable("booking_appointments", {
   // Notification tracking
   confirmationSentAt: timestamp("confirmation_sent_at", { withTimezone: true }),
   reminderSentAt: timestamp("reminder_sent_at", { withTimezone: true }),
+  reminder24hSentAt: timestamp("reminder_24h_sent_at", { withTimezone: true }),
+  reminder2hSentAt: timestamp("reminder_2h_sent_at", { withTimezone: true }),
+  noShowMarkedAt: timestamp("no_show_marked_at", { withTimezone: true }),
 
   // For rescheduled appointments, point to the previous one
   rescheduledFromId: uuid("rescheduled_from_id"),
