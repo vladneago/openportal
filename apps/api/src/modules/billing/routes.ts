@@ -14,6 +14,7 @@ import {
 import { and, eq, gte, lte, sql, desc, asc, count } from "drizzle-orm";
 import { requireAuth } from "../../middleware/auth";
 import { AppError } from "../../middleware/error-handler";
+import { assertEfacturaQuota } from "../../lib/plan-limits";
 
 export const billingRoutes = new Hono();
 billingRoutes.use("*", requireAuth);
@@ -675,6 +676,8 @@ billingRoutes.post(
     if (invoice.status === "draft") {
       throw new AppError(400, "INVOICE_DRAFT", "Cannot submit a draft invoice to e-Factura");
     }
+
+    await assertEfacturaQuota(tenantId);
 
     const [submission] = await db
       .insert(efacturaSubmissions)

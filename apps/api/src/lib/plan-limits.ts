@@ -6,6 +6,7 @@ import {
   products as posProducts,
   webSites,
   chatWidgetMessages,
+  efacturaSubmissions,
 } from "@openportal/db";
 import { and, count, eq, gte, isNull, or } from "drizzle-orm";
 import { getPlan, PLANS, type Plan, type PlanLimits } from "./stripe";
@@ -151,6 +152,40 @@ export async function getChatAiUsageThisMonth(tenantId: string): Promise<number>
   return value;
 }
 
+/** Returns count of e-Factura submissions queued/sent for this tenant
+ * this calendar month. Used to enforce efacturaPerMonth quota. */
+export async function getEfacturaUsageThisMonth(tenantId: string): Promise<number> {
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [{ value }] = await db
+    .select({ value: count() })
+    .from(efacturaSubmissions)
+    .where(
+      and(
+        eq(efacturaSubmissions.tenantId, tenantId),
+        gte(efacturaSubmissions.createdAt, monthStart),
+      ),
+    );
+
+  return value;
+}
+
+export async function assertEfacturaQuota(tenantId: string): Promise<void> {
+  const { plan, planSlug } = await getTenantPlan(tenantId);
+  if (plan.limits.efacturaPerMonth >= 99999) return;
+
+  const used = await getEfacturaUsageThisMonth(tenantId);
+  if (used >= plan.limits.efacturaPerMonth) {
+    throw new AppError(
+      402,
+      "PLAN_LIMIT_EFACTURA",
+      `Ai trimis cele ${plan.limits.efacturaPerMonth} facturi e-Factura incluse în planul ${plan.name} luna aceasta. Upgrade la Solo Pro pentru e-Factura nelimitat.`,
+      { used, limit: plan.limits.efacturaPerMonth, planSlug, upgradeTo: "solo_pro" },
+    );
+  }
+}
+
 export async function assertChatAiQuota(tenantId: string): Promise<void> {
   const { plan, planSlug } = await getTenantPlan(tenantId);
   const used = await getChatAiUsageThisMonth(tenantId);
@@ -208,6 +243,7 @@ export async function getTenantUsage(tenantId: string): Promise<{
   resources: { used: number; limit: number };
   products: { used: number; limit: number };
   chatAiThisMonth: { used: number; limit: number };
+  efacturaThisMonth: { used: number; limit: number };
   sitesPublished: { used: number; limit: number | null };
 }> {
   const active = await getTenantPlan(tenantId);
@@ -221,7 +257,10 @@ export async function getTenantUsage(tenantId: string): Promise<{
       .where(and(eq(webSites.tenantId, tenantId), eq(webSites.status, "published"))),
   ]);
 
-  const chatAiUsed = await getChatAiUsageThisMonth(tenantId);
+  const [chatAiUsed, efacturaUsed] = await Promise.all([
+    getChatAiUsageThisMonth(tenantId),
+    getEfacturaUsageThisMonth(tenantId),
+  ]);
 
   return {
     planSlug: active.planSlug,
@@ -238,6 +277,10 @@ export async function getTenantUsage(tenantId: string): Promise<{
     chatAiThisMonth: {
       used: chatAiUsed,
       limit: active.plan.limits.chatAiMessagesPerMonth,
+    },
+    efacturaThisMonth: {
+      used: efacturaUsed,
+      limit: active.plan.limits.efacturaPerMonth,
     },
     sitesPublished: {
       used: sitesRow[0].value,

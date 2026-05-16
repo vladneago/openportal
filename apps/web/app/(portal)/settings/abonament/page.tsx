@@ -51,6 +51,7 @@ interface UsageReport {
   resources: UsageQuota;
   products: UsageQuota;
   chatAiThisMonth: UsageQuota;
+  efacturaThisMonth: UsageQuota;
   sitesPublished: { used: number; limit: number | null };
 }
 
@@ -301,6 +302,11 @@ export default function SubscriptionPage() {
               label="Mesaje AI luna aceasta"
               used={usage.chatAiThisMonth.used}
               limit={usage.chatAiThisMonth.limit}
+            />
+            <UsageBar
+              label="e-Factura ANAF luna aceasta"
+              used={usage.efacturaThisMonth.used}
+              limit={usage.efacturaThisMonth.limit}
             />
             <UsageBar
               label="Site-uri publicate"
