@@ -20,6 +20,9 @@ out/
 *.swp
 *.swo
 
+# Claude Code local agent state
+.claude/settings.local.json
+
 # OS
 .DS_Store
 Thumbs.db
