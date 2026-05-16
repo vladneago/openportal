@@ -230,7 +230,11 @@
 - [x] Min cancellation window: 2h înainte (configurabil)
 - [x] Trigger email notification de anulare automat
 - [x] Link în email-ul de confirmare către `/b/[code]`
-- [ ] Self-reschedule (în viitor — necesită new slot picker)
+- [x] Self-reschedule: endpoint `POST /api/v1/public/booking/reschedule` + slot picker `GET /api/v1/public/booking/reschedule-slots?code=...&date=...`
+- [x] UI reschedule pe `/b/[code]` cu date picker + grid de slots disponibile (folosește același service+resource, exclude appointment-ul curent din conflict check)
+- [x] Auto-reset `reminder_24h_sent_at` + `reminder_2h_sent_at` la reschedule (clientul primește reminderele pentru noul timp)
+- [x] Min reschedule window: 2h înainte (același ca cancel)
+- [x] Trigger re-confirmation email automat după reschedule
 - [ ] Istoric programări per customer (lookup multiple by phone/email)
 
 ---

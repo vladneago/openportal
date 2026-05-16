@@ -506,3 +506,262 @@ bookingPublicRoutes.post("/cancel", zValidator("json", cancelSchema), async (c) 
 
   return c.json({ success: true, data: { cancelled: true } });
 });
+
+// ─────────────────────────────────────────────
+// GET /public/booking/reschedule-slots?code=ABC12345&date=YYYY-MM-DD
+// Returns available slots for the customer's existing service + resource
+// on the requested date. Excludes the customer's own appointment from
+// conflict checks (so the slot they're currently in shows as available).
+// ─────────────────────────────────────────────
+
+bookingPublicRoutes.get("/reschedule-slots", async (c) => {
+  const code = c.req.query("code");
+  const date = c.req.query("date");
+  if (!code) throw new AppError(400, "MISSING_CODE", "code required");
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    throw new AppError(400, "INVALID_DATE", "date must be YYYY-MM-DD");
+  }
+
+  const [appt] = await db
+    .select()
+    .from(bookingAppointments)
+    .where(eq(bookingAppointments.bookingCode, code.toUpperCase()))
+    .limit(1);
+
+  if (!appt) throw new AppError(404, "NOT_FOUND", "Programare negăsită");
+
+  const tenantId = appt.tenantId;
+
+  const [service] = await db
+    .select()
+    .from(bookingServices)
+    .where(eq(bookingServices.id, appt.serviceId))
+    .limit(1);
+
+  if (!service) throw new AppError(404, "SERVICE_NOT_FOUND", "Service not found");
+
+  const dayStart = new Date(`${date}T00:00:00.000Z`);
+  const dayEnd = new Date(`${date}T23:59:59.999Z`);
+  const dayOfWeek = dayStart.getUTCDay();
+
+  const minAdvance = service.minAdvanceBookingHours ?? 2;
+  const earliestStart = new Date(Date.now() + minAdvance * 60 * 60 * 1000);
+
+  const availabilityRules = await db
+    .select()
+    .from(bookingAvailability)
+    .where(
+      and(
+        eq(bookingAvailability.tenantId, tenantId),
+        eq(bookingAvailability.resourceId, appt.resourceId),
+        eq(bookingAvailability.dayOfWeek, dayOfWeek),
+        eq(bookingAvailability.isActive, true),
+      ),
+    );
+
+  // Conflicts EXCLUDING current appointment
+  const conflicts = await db
+    .select({
+      startAt: bookingAppointments.startAt,
+      endAt: bookingAppointments.endAt,
+    })
+    .from(bookingAppointments)
+    .where(
+      and(
+        eq(bookingAppointments.tenantId, tenantId),
+        eq(bookingAppointments.resourceId, appt.resourceId),
+        sql`${bookingAppointments.id} <> ${appt.id}`,
+        inArray(bookingAppointments.status, ["pending", "confirmed", "checked_in", "in_progress"]),
+        gte(bookingAppointments.startAt, dayStart),
+        lte(bookingAppointments.startAt, dayEnd),
+      ),
+    );
+
+  const blockedSlots = await db
+    .select()
+    .from(bookingBlockedSlots)
+    .where(
+      and(
+        eq(bookingBlockedSlots.tenantId, tenantId),
+        or(
+          eq(bookingBlockedSlots.resourceId, appt.resourceId),
+          sql`${bookingBlockedSlots.resourceId} IS NULL`,
+        )!,
+        lt(bookingBlockedSlots.startAt, dayEnd),
+        gt(bookingBlockedSlots.endAt, dayStart),
+      ),
+    );
+
+  const slotIncrementMinutes = 15;
+  const duration = service.durationMinutes;
+  const bufferAfter = service.bufferAfterMinutes;
+  const bufferBefore = service.bufferBeforeMinutes;
+
+  const slots: Array<{ startAt: string; endAt: string }> = [];
+
+  for (const rule of availabilityRules) {
+    if (rule.effectiveFrom && date < rule.effectiveFrom) continue;
+    if (rule.effectiveUntil && date > rule.effectiveUntil) continue;
+
+    const ruleStart = new Date(`${date}T${rule.startTime}`);
+    const ruleEnd = new Date(`${date}T${rule.endTime}`);
+
+    let cursor = new Date(ruleStart.getTime());
+
+    while (cursor.getTime() + duration * 60_000 <= ruleEnd.getTime()) {
+      if (cursor.getTime() < earliestStart.getTime()) {
+        cursor = new Date(cursor.getTime() + slotIncrementMinutes * 60_000);
+        continue;
+      }
+
+      const slotStart = new Date(cursor.getTime() - bufferBefore * 60_000);
+      const slotEnd = new Date(cursor.getTime() + (duration + bufferAfter) * 60_000);
+
+      const apptConflict = conflicts.some(
+        (a) => a.startAt.getTime() < slotEnd.getTime() && a.endAt.getTime() > slotStart.getTime(),
+      );
+      const blockedConflict = blockedSlots.some(
+        (b) => b.startAt.getTime() < slotEnd.getTime() && b.endAt.getTime() > slotStart.getTime(),
+      );
+
+      if (!apptConflict && !blockedConflict) {
+        slots.push({
+          startAt: cursor.toISOString(),
+          endAt: new Date(cursor.getTime() + duration * 60_000).toISOString(),
+        });
+      }
+
+      cursor = new Date(cursor.getTime() + slotIncrementMinutes * 60_000);
+    }
+  }
+
+  return c.json({ success: true, data: slots });
+});
+
+// ─────────────────────────────────────────────
+// POST /public/booking/reschedule
+// Customer-facing reschedule by booking code.
+// Accepts a new start time, validates against availability + conflicts,
+// updates the appointment in place (no new code issued).
+// ─────────────────────────────────────────────
+
+const rescheduleSchema = z.object({
+  code: z.string().min(4).max(16),
+  newStartAt: z.string().datetime(),
+});
+
+bookingPublicRoutes.post("/reschedule", zValidator("json", rescheduleSchema), async (c) => {
+  const { code, newStartAt } = c.req.valid("json");
+
+  const [appt] = await db
+    .select()
+    .from(bookingAppointments)
+    .where(eq(bookingAppointments.bookingCode, code.toUpperCase()))
+    .limit(1);
+
+  if (!appt) throw new AppError(404, "NOT_FOUND", "Programarea nu a fost găsită");
+
+  if (appt.status === "cancelled" || appt.status === "completed" || appt.status === "no_show") {
+    throw new AppError(400, "CANNOT_RESCHEDULE", "Această programare nu mai poate fi reprogramată");
+  }
+
+  // Min reschedule window — same as cancel (2h before)
+  const hoursBefore = (appt.startAt.getTime() - Date.now()) / (60 * 60 * 1000);
+  if (hoursBefore < 2 && hoursBefore > 0) {
+    throw new AppError(400, "TOO_LATE", "Reprogramarea online se poate face cu cel puțin 2 ore înainte. Te rugăm sună-ne.");
+  }
+
+  const newStart = new Date(newStartAt);
+  if (Number.isNaN(newStart.getTime())) {
+    throw new AppError(400, "INVALID_TIME", "Ora nouă nu este validă");
+  }
+
+  if (newStart.getTime() <= Date.now()) {
+    throw new AppError(400, "PAST_TIME", "Nu poți reprograma în trecut");
+  }
+
+  // Load service to compute end_at + advance booking constraints
+  const [service] = await db
+    .select()
+    .from(bookingServices)
+    .where(eq(bookingServices.id, appt.serviceId))
+    .limit(1);
+
+  if (!service) throw new AppError(404, "SERVICE_NOT_FOUND", "Service not found");
+
+  const minAdvanceMs = (service.minAdvanceBookingHours ?? 0) * 60 * 60_000;
+  if (newStart.getTime() - Date.now() < minAdvanceMs) {
+    throw new AppError(400, "TOO_SOON", `Rezervarea trebuie făcută cu cel puțin ${service.minAdvanceBookingHours} ore în avans`);
+  }
+
+  const duration = service.durationMinutes;
+  const newEnd = new Date(newStart.getTime() + duration * 60_000);
+
+  // Conflict check on the SAME resource — excluding this appointment itself
+  const conflicting = await db
+    .select({ id: bookingAppointments.id })
+    .from(bookingAppointments)
+    .where(
+      and(
+        eq(bookingAppointments.resourceId, appt.resourceId),
+        sql`${bookingAppointments.id} <> ${appt.id}`,
+        sql`${bookingAppointments.status} IN ('pending','confirmed','checked_in','in_progress')`,
+        lt(bookingAppointments.startAt, newEnd),
+        gt(bookingAppointments.endAt, newStart),
+      ),
+    )
+    .limit(1);
+
+  if (conflicting.length > 0) {
+    throw new AppError(409, "SLOT_TAKEN", "Ora aleasă nu mai este disponibilă. Te rugăm alege alt slot.");
+  }
+
+  // Blocked slot check
+  const blocked = await db
+    .select({ id: bookingBlockedSlots.id })
+    .from(bookingBlockedSlots)
+    .where(
+      and(
+        or(
+          eq(bookingBlockedSlots.resourceId, appt.resourceId),
+          sql`${bookingBlockedSlots.resourceId} IS NULL`,
+        ),
+        lt(bookingBlockedSlots.startAt, newEnd),
+        gt(bookingBlockedSlots.endAt, newStart),
+      ),
+    )
+    .limit(1);
+
+  if (blocked.length > 0) {
+    throw new AppError(409, "SLOT_BLOCKED", "Ora aleasă este blocată. Te rugăm alege alt slot.");
+  }
+
+  // Apply the reschedule. Reset reminder flags so the customer gets fresh
+  // reminders for the new time. Bump status back to "pending" if it was
+  // "checked_in" — but typically reschedule happens before check-in, so
+  // we only reset reminders.
+  await db
+    .update(bookingAppointments)
+    .set({
+      startAt: newStart,
+      endAt: newEnd,
+      reminderSentAt: null,
+      reminder24hSentAt: null,
+      reminder2hSentAt: null,
+      // status stays the same; if it was "confirmed" it remains "confirmed"
+      updatedAt: new Date(),
+    })
+    .where(eq(bookingAppointments.id, appt.id));
+
+  // Send a fresh confirmation email
+  notifyBookingConfirmed(appt.id).catch(() => {});
+
+  return c.json({
+    success: true,
+    data: {
+      rescheduled: true,
+      newStartAt: newStart.toISOString(),
+      newEndAt: newEnd.toISOString(),
+    },
+  });
+});

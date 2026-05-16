@@ -53,6 +53,18 @@ function formatTime(d: Date): string {
   return d.toLocaleTimeString("ro-RO", { hour: "2-digit", minute: "2-digit", hour12: false });
 }
 
+interface RescheduleSlot {
+  startAt: string;
+  endAt: string;
+}
+
+function toDateInputValue(d: Date): string {
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 export default function BookingLookupPage() {
   const params = useParams();
   const code = (params?.code as string)?.toUpperCase();
@@ -64,6 +76,15 @@ export default function BookingLookupPage() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [cancelSuccess, setCancelSuccess] = useState(false);
+
+  // Reschedule state
+  const [showRescheduleDialog, setShowRescheduleDialog] = useState(false);
+  const [rescheduleDate, setRescheduleDate] = useState<string>(toDateInputValue(new Date(Date.now() + 24 * 60 * 60 * 1000)));
+  const [rescheduleSlots, setRescheduleSlots] = useState<RescheduleSlot[]>([]);
+  const [rescheduleSlotsLoading, setRescheduleSlotsLoading] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [rescheduling, setRescheduling] = useState(false);
+  const [rescheduleSuccess, setRescheduleSuccess] = useState(false);
 
   useEffect(() => {
     if (!code) return;
@@ -108,6 +129,51 @@ export default function BookingLookupPage() {
       alert("Eroare de rețea. Te rugăm încearcă din nou.");
     }
     setCancelling(false);
+  }
+
+  async function loadRescheduleSlots(date: string) {
+    setRescheduleSlotsLoading(true);
+    setSelectedSlot(null);
+    try {
+      const res = await fetch(
+        `${API_URL}/api/v1/public/booking/reschedule-slots?code=${encodeURIComponent(code)}&date=${encodeURIComponent(date)}`,
+      );
+      const json = await res.json();
+      setRescheduleSlots(json.success && Array.isArray(json.data) ? json.data : []);
+    } catch {
+      setRescheduleSlots([]);
+    }
+    setRescheduleSlotsLoading(false);
+  }
+
+  function openReschedule() {
+    setShowRescheduleDialog(true);
+    setSelectedSlot(null);
+    setRescheduleSuccess(false);
+    void loadRescheduleSlots(rescheduleDate);
+  }
+
+  async function confirmReschedule() {
+    if (!selectedSlot) return;
+    setRescheduling(true);
+    try {
+      const res = await fetch(`${API_URL}/api/v1/public/booking/reschedule`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code, newStartAt: selectedSlot }),
+      });
+      const json = await res.json();
+      if (json.success) {
+        setShowRescheduleDialog(false);
+        setRescheduleSuccess(true);
+        await load();
+      } else {
+        alert(json.error?.message || "Eroare la reprogramare");
+      }
+    } catch {
+      alert("Eroare de rețea. Te rugăm încearcă din nou.");
+    }
+    setRescheduling(false);
   }
 
   if (loading) {
@@ -198,6 +264,22 @@ export default function BookingLookupPage() {
         </div>
       )}
 
+      {rescheduleSuccess && (
+        <div
+          style={{
+            background: "#DBEAFE",
+            color: "#1E40AF",
+            padding: 12,
+            borderRadius: 8,
+            marginBottom: 16,
+            textAlign: "center",
+            fontSize: "0.9rem",
+          }}
+        >
+          ✓ Programarea a fost reprogramată. Vei primi un email cu noua dată și oră.
+        </div>
+      )}
+
       <div
         style={{
           background: "#F8FAFC",
@@ -241,29 +323,190 @@ export default function BookingLookupPage() {
       )}
 
       {canCancel && !cancelTooLate && (
-        <button
-          onClick={() => setShowCancelDialog(true)}
-          style={{
-            width: "100%",
-            padding: 14,
-            background: "transparent",
-            color: "#EF4444",
-            border: "1px solid #EF4444",
-            borderRadius: 10,
-            fontFamily: "inherit",
-            fontSize: "0.95rem",
-            fontWeight: 600,
-            cursor: "pointer",
-          }}
-        >
-          Anulează programarea
-        </button>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <button
+            onClick={openReschedule}
+            style={{
+              width: "100%",
+              padding: 14,
+              background: "#6366F1",
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+              fontFamily: "inherit",
+              fontSize: "0.95rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Reprogramează
+          </button>
+          <button
+            onClick={() => setShowCancelDialog(true)}
+            style={{
+              width: "100%",
+              padding: 14,
+              background: "transparent",
+              color: "#EF4444",
+              border: "1px solid #EF4444",
+              borderRadius: 10,
+              fontFamily: "inherit",
+              fontSize: "0.95rem",
+              fontWeight: 600,
+              cursor: "pointer",
+            }}
+          >
+            Anulează programarea
+          </button>
+        </div>
       )}
 
       {canCancel && cancelTooLate && (
         <p style={{ textAlign: "center", color: "#94A3B8", fontSize: "0.8rem" }}>
-          Anularea online se face cu min. 2h înainte. Pentru anulare târzie, sună-ne direct.
+          Anularea sau reprogramarea online se face cu min. 2h înainte. Sună-ne direct.
         </p>
+      )}
+
+      {showRescheduleDialog && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 16,
+            zIndex: 100,
+          }}
+          onClick={() => setShowRescheduleDialog(false)}
+        >
+          <div
+            style={{
+              background: "#FFFFFF",
+              padding: 24,
+              borderRadius: 12,
+              maxWidth: 480,
+              width: "100%",
+              maxHeight: "90vh",
+              overflowY: "auto",
+              fontFamily: "system-ui, sans-serif",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 style={{ fontSize: "1.15rem", fontWeight: 700, margin: "0 0 8px", color: "#0F172A" }}>
+              Reprogramează
+            </h2>
+            <p style={{ color: "#64748B", marginBottom: 16, fontSize: "0.9rem" }}>
+              {booking.serviceName} cu {booking.resourceName}. Alege o altă dată și oră.
+            </p>
+
+            <label style={{ display: "block", marginBottom: 16 }}>
+              <span style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, marginBottom: 6, color: "#0F172A" }}>
+                Data
+              </span>
+              <input
+                type="date"
+                value={rescheduleDate}
+                min={toDateInputValue(new Date(Date.now() + 24 * 60 * 60 * 1000))}
+                onChange={(e) => {
+                  setRescheduleDate(e.target.value);
+                  void loadRescheduleSlots(e.target.value);
+                }}
+                style={{
+                  width: "100%",
+                  padding: "10px 12px",
+                  border: "1px solid #CBD5E1",
+                  borderRadius: 8,
+                  fontFamily: "inherit",
+                  fontSize: "0.95rem",
+                }}
+              />
+            </label>
+
+            <div style={{ marginBottom: 16 }}>
+              <span style={{ display: "block", fontSize: "0.85rem", fontWeight: 600, marginBottom: 8, color: "#0F172A" }}>
+                Ore disponibile
+              </span>
+              {rescheduleSlotsLoading ? (
+                <p style={{ color: "#94A3B8", fontSize: "0.85rem", textAlign: "center", padding: 16 }}>Se încarcă…</p>
+              ) : rescheduleSlots.length === 0 ? (
+                <p style={{ color: "#94A3B8", fontSize: "0.85rem", textAlign: "center", padding: 16 }}>
+                  Nu sunt ore disponibile în această zi. Încearcă altă dată.
+                </p>
+              ) : (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))",
+                    gap: 8,
+                  }}
+                >
+                  {rescheduleSlots.map((slot) => {
+                    const time = formatTime(new Date(slot.startAt));
+                    const isSelected = selectedSlot === slot.startAt;
+                    return (
+                      <button
+                        key={slot.startAt}
+                        type="button"
+                        onClick={() => setSelectedSlot(slot.startAt)}
+                        style={{
+                          padding: "10px 8px",
+                          border: isSelected ? "2px solid #6366F1" : "1px solid #CBD5E1",
+                          background: isSelected ? "#EEF2FF" : "#FFFFFF",
+                          color: isSelected ? "#3730A3" : "#0F172A",
+                          borderRadius: 8,
+                          fontFamily: "inherit",
+                          fontSize: "0.85rem",
+                          fontWeight: isSelected ? 700 : 500,
+                          cursor: "pointer",
+                        }}
+                      >
+                        {time}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setShowRescheduleDialog(false)}
+                disabled={rescheduling}
+                style={{
+                  padding: "10px 16px",
+                  background: "transparent",
+                  border: "1px solid #CBD5E1",
+                  borderRadius: 8,
+                  fontFamily: "inherit",
+                  fontSize: "0.9rem",
+                  cursor: "pointer",
+                }}
+              >
+                Înapoi
+              </button>
+              <button
+                onClick={confirmReschedule}
+                disabled={rescheduling || !selectedSlot}
+                style={{
+                  padding: "10px 16px",
+                  background: "#6366F1",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 8,
+                  fontFamily: "inherit",
+                  fontSize: "0.9rem",
+                  fontWeight: 600,
+                  cursor: rescheduling || !selectedSlot ? "not-allowed" : "pointer",
+                  opacity: rescheduling || !selectedSlot ? 0.5 : 1,
+                }}
+              >
+                {rescheduling ? "Se reprogramează…" : "Confirmă reprogramarea"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showCancelDialog && (
