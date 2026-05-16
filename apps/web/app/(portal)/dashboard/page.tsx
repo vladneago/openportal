@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { api, getUser } from "@/lib/api";
 import Link from "next/link";
 
@@ -13,6 +14,7 @@ interface Stats {
 interface SiteItem { id: string; title: string; slug: string; type: string; }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [sites, setSites] = useState<SiteItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -24,6 +26,26 @@ useEffect(() => {
 
   useEffect(() => {
     async function load() {
+      // First-run check: if tenant has no booking resources AND no services, send to onboarding
+      // (Skipped if user has explicitly dismissed via localStorage flag)
+      try {
+        const dismissed = typeof window !== "undefined" && localStorage.getItem("onboarding_dismissed") === "1";
+        if (!dismissed) {
+          const [resCheck, svcCheck] = await Promise.all([
+            api("/api/v1/booking/resources"),
+            api("/api/v1/booking/services"),
+          ]);
+          const resources = (resCheck.data as unknown[]) || [];
+          const services = (svcCheck.data as unknown[]) || [];
+          if (resources.length === 0 && services.length === 0) {
+            router.replace("/onboarding");
+            return;
+          }
+        }
+      } catch {
+        // Don't block dashboard load on errors
+      }
+
       const [statsRes, sitesRes] = await Promise.all([
         api("/api/v1/analytics/overview"),
         api("/api/v1/sites"),
@@ -33,7 +55,7 @@ useEffect(() => {
       setLoading(false);
     }
     load();
-  }, []);
+  }, [router]);
 
   const formatBytes = (b: number) => {
     if (!b) return "0 B";

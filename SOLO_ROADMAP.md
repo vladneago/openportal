@@ -434,10 +434,14 @@
 - [ ] Failed payment retry + dunning
 
 ### 9.2 Onboarding Flow
-- [ ] Signup → choose industry → AI generates site → preview → publish
-- [ ] Empty states cu CTA-uri clare
-- [ ] Tutorial interactiv (Shepherd.js sau Intro.js)
+- [x] Pagină `/onboarding` cu wizard 6 pași (industry → business → services → staff → program → site)
+- [x] 8 preset-uri industrie cu sugestii servicii + program săptămânal + temă + template (Beauty, Barbershop, SPA, Consulting, Medical, Fitness, Bakery, General)
+- [x] Auto-creare: resources + services + availability rules per zi + serie facturare + site cu template
+- [x] First-run check pe dashboard: redirect către `/onboarding` dacă tenant n-are resources/services
+- [x] Skip button cu localStorage dismissed flag
+- [x] Confirmation screen cu link-uri către booking, site public, dashboard
 - [ ] Video tour 2 min
+- [ ] Tutorial interactiv (Shepherd.js sau Intro.js)
 
 ### 9.3 Marketing Site
 - [ ] Landing page `openportal.app`
