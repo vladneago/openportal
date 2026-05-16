@@ -466,7 +466,11 @@
 - [x] Pagini Legal: `/legal/terms` (Termeni și condiții), `/legal/privacy` (Politică de confidențialitate cu GDPR), `/legal/dpa` (Data Processing Agreement)
 - [x] Layout dedicat `/legal/*` cu header simplu + back link
 - [x] Copy Romanian targeted la solo entrepreneurs (saloane, frizerii, cofetării, consultanți)
-- [ ] Pagini per industrie (`/saloane`, `/frizerii`, `/cofetarii`)
+- [x] Pagini per industrie SEO-targeted: `/saloane`, `/frizerii`, `/cabinete-medicale`, `/cofetarii`, `/florarii` — fiecare cu pain-points + features + testimonial + FAQ specific industriei
+- [x] Component template `<IndustryLandingPage>` + data registry în `components/marketing/industry-data.ts` — un singur fișier de menținut pentru toate landing-urile
+- [x] Accent color per industrie (pink saloane, orange frizerii, blue medical, brown cofetării, pink florării)
+- [x] Link-uri cross-referenced între main landing și industrii (target-business chip cloud)
+- [x] Root `/sitemap.xml` + `/robots.txt` cu Disallow pentru rute auth (dashboard, onboarding, booking, billing, etc)
 - [ ] Blog (10 articole SEO de start)
 - [ ] Comparison vs Wix/Squarespace/Booksy
 

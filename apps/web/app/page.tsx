@@ -148,17 +148,18 @@ const FAQ = [
   },
 ];
 
-const TARGET_BUSINESSES = [
-  "💇 Saloane înfrumusețare",
-  "💈 Frizerii / barbershop",
-  "🧁 Cofetării / patiserii",
-  "🧖 Spa / wellness",
-  "🩺 Cabinete medicale",
-  "🦷 Stomatologi",
-  "💼 Consultanți / coach",
-  "🐶 Veterinari",
-  "📸 Fotografi",
-  "🧘 Yoga / fitness",
+const TARGET_BUSINESSES: Array<{ label: string; href?: string }> = [
+  { label: "💇 Saloane înfrumusețare", href: "/saloane" },
+  { label: "💈 Frizerii / barbershop", href: "/frizerii" },
+  { label: "🧁 Cofetării / patiserii", href: "/cofetarii" },
+  { label: "💐 Florării", href: "/florarii" },
+  { label: "🩺 Cabinete medicale", href: "/cabinete-medicale" },
+  { label: "🧖 Spa / wellness" },
+  { label: "🦷 Stomatologi" },
+  { label: "💼 Consultanți / coach" },
+  { label: "🐶 Veterinari" },
+  { label: "📸 Fotografi" },
+  { label: "🧘 Yoga / fitness" },
 ];
 
 export default function LandingPage() {
@@ -304,21 +305,27 @@ export default function LandingPage() {
               justifyContent: "center",
             }}
           >
-            {TARGET_BUSINESSES.map((b) => (
-              <span
-                key={b}
-                style={{
-                  background: COLORS.bg,
-                  padding: "8px 16px",
-                  borderRadius: 999,
-                  border: `1px solid ${COLORS.border}`,
-                  fontSize: "0.9rem",
-                  color: COLORS.text,
-                }}
-              >
-                {b}
-              </span>
-            ))}
+            {TARGET_BUSINESSES.map((b) => {
+              const style = {
+                background: COLORS.bg,
+                padding: "8px 16px",
+                borderRadius: 999,
+                border: `1px solid ${COLORS.border}`,
+                fontSize: "0.9rem",
+                color: COLORS.text,
+                textDecoration: "none" as const,
+                display: "inline-block" as const,
+              };
+              return b.href ? (
+                <Link key={b.label} href={b.href} style={{ ...style, fontWeight: 600 }}>
+                  {b.label} →
+                </Link>
+              ) : (
+                <span key={b.label} style={style}>
+                  {b.label}
+                </span>
+              );
+            })}
           </div>
         </div>
       </section>
