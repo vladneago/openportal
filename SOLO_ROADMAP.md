@@ -401,7 +401,7 @@
 
 ## Faza 8 — Templates + AI Generator (Săpt 14–15)
 
-### 8.1 40 Industry Templates (15/40 done)
+### 8.1 40 Industry Templates (20/40 done — 50%)
 - [x] Salon de înfrumusețare — `beauty-modern-salon` (5 pagini)
 - [x] Frizerie/Barbershop — `barbershop-classic` (4 pagini)
 - [x] SPA & Wellness — `spa-wellness-retreat` (4 pagini)
@@ -417,7 +417,12 @@
 - [x] Avocat / Notar — `lawyer-classic` (5 pagini, cu domenii practică)
 - [x] Contabil / Expert contabil — `accountant-precise` (4 pagini)
 - [x] Psiholog / Coach / Terapeut — `psychology-coach` (5 pagini, cu abordare)
-- [x] Onboarding presets: 16 industrii total (beauty, barbershop, spa, consulting, medical, fitness, bakery, dental, photographer, florist, yoga_pilates, restaurant, legal, accounting, psychology, general)
+- [x] Veterinar / Pet shop — `veterinary-care` (4 pagini)
+- [x] Atelier auto / Service — `auto-service` (4 pagini)
+- [x] Hotel / Pensiune / B&B — `hotel-boutique` (5 pagini, cu împrejurimi)
+- [x] Cursuri / Training / Educație — `education-courses` (5 pagini, cu echipa traineri)
+- [x] Tatuaj / Piercing — `tattoo-studio` (5 pagini, cu portofoliu)
+- [x] Onboarding presets: 21 industrii total (16 anterioare + veterinary, automotive, hotel_bnb, education, tattoo_studio)
 - [ ] Salon înfrumusețare — variantă vintage + lux (2 mai)
 - [ ] Frizerie — variantă modern + retro (2 mai)
 - [ ] Cofetărie — variantă modern (1 mai)
@@ -426,15 +431,15 @@
 - [ ] Cabinet medical — variantă pediatrie + ginecologie
 - [ ] Avocat / Notar — variantă boutique
 - [ ] Contabil — variantă firme mari
-- [ ] Atelier auto
 - [ ] Curățătorie chimică
-- [ ] Pet shop / Veterinar
 - [ ] DJ / Evenimente
-- [ ] Tatuaj / Piercing
-- [ ] Hotel mic / Pensiune
-- [ ] Cazare turistică / Airbnb host
-- [ ] Education / cursuri online
+- [ ] Cazare turistică / Airbnb host (variantă self-checkin)
 - [ ] Real estate / agenții imobiliare
+- [ ] Cafenea (variantă dedicată față de bakery)
+- [ ] Coach personal / lifestyle (variantă față de psiholog)
+- [ ] Salon manichiură (variantă față de beauty)
+- [ ] Atelier de cusut / croitorie
+- [ ] Servicii de menaj / curățenie
 
 ### 8.2 AI Site Generator
 - [ ] Wizard: "Spune-mi despre business-ul tău" (industry, locatie, USP)

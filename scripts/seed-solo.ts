@@ -1526,6 +1526,439 @@ const templates = [
       },
     ],
   },
+  // ─────────────────────────────────────────────
+  // Template 16: Veterinar / Pet shop
+  // ─────────────────────────────────────────────
+  {
+    slug: "veterinary-care",
+    name: "Cabinet Veterinar",
+    description: "Site cald pentru cabinete veterinare, pet shops, grooming pentru animale.",
+    category: "veterinary",
+    industryTags: ["veterinar", "pet shop", "grooming animale", "consultații animale"],
+    themeSlug: "medical-trust",
+    isFeatured: true,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Prietenii tăi blănoși, în mâini bune",
+            subtitle: "Cabinet veterinar cu medici dedicați, echipamente moderne, atmosferă prietenoasă",
+            ctaPrimary: { text: "Programează consultație", href: "/programari" },
+            ctaSecondary: { text: "Servicii", href: "/servicii" },
+            backgroundImage: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce ne aleg",
+            features: [
+              { icon: "🐕", title: "Medici cu experiență", text: "Peste 15 ani de practică veterinară pentru câini, pisici, animale exotice" },
+              { icon: "🩻", title: "Diagnoză modernă", text: "RX digital, ecograf, analize laborator interne — rezultate în 30 minute" },
+              { icon: "💉", title: "Vaccinare + microcip", text: "Schema completă conform legii, evidență digitală pentru tine" },
+              { icon: "🏥", title: "Urgențe 24/7", text: "Pet-ul tău nu așteaptă. Linie telefonică dedicată urgențelor" },
+            ],
+          }),
+          block("servicesPreview", { title: "Servicii", ctaText: "Vezi toate serviciile", ctaHref: "/servicii" }),
+          block("testimonials", {
+            title: "Recomandări",
+            items: [
+              { author: "Andrei C. — câine Bobby", text: "Echipă caldă, prețuri corecte, comunicare perfectă. Recomand cu drag!", rating: 5 },
+              { author: "Maria L. — pisică Whiskers", text: "Whiskers e tratată ca o regină aici. Mulțumesc echipei!", rating: 5 },
+            ],
+          }),
+          block("ctaBanner", {
+            title: "Programează vizita anuală",
+            subtitle: "Vaccinare + control general — important pentru sănătatea pet-ului tău",
+            ctaText: "Rezervă online",
+            ctaHref: "/programari",
+          }),
+        ],
+      },
+      {
+        slug: "servicii",
+        title: "Servicii veterinare",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Servicii oferite", subtitle: "De la consultații de rutină la intervenții complexe" }),
+          block("servicesList", { displayMode: "list" }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Programări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Programează o consultație", subtitle: "Alege specialitatea + medicul + ora" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: true }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Cum ne găsești" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: true }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 17: Atelier auto / Service auto
+  // ─────────────────────────────────────────────
+  {
+    slug: "auto-service",
+    name: "Atelier Auto / Service",
+    description: "Site pentru ateliere auto, vulcanizări, service mecanic, tinichigerie.",
+    category: "automotive",
+    industryTags: ["atelier auto", "service auto", "vulcanizare", "mecanic", "tinichigerie"],
+    themeSlug: "professional-clean",
+    isFeatured: true,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Mașina ta, în mâini de meșter",
+            subtitle: "Service auto multimarcă cu mecanici certificați, prețuri transparente, garanție la lucrări",
+            ctaPrimary: { text: "Programează revizie", href: "/programari" },
+            ctaSecondary: { text: "Servicii", href: "/servicii" },
+            backgroundImage: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce noi",
+            features: [
+              { icon: "🔧", title: "Mecanici certificați", text: "Echipa noastră are atestat ANRSC + experiență 10+ ani" },
+              { icon: "💵", title: "Deviz transparent", text: "Devizul îți este prezentat înainte de începere — fără surprize la facturare" },
+              { icon: "📋", title: "Diagnoză computerizată", text: "Tester multimarcă pentru identificare rapidă defecțiuni" },
+              { icon: "🛡️", title: "Garanție lucrări", text: "12 luni garanție la piese + manoperă pentru orice intervenție majoră" },
+            ],
+          }),
+          block("servicesPreview", { title: "Servicii oferite", ctaText: "Vezi tot", ctaHref: "/servicii" }),
+          block("testimonials", {
+            title: "Clienții noștri",
+            items: [
+              { author: "Vlad S.", text: "Singurul service în care am încredere. Mereu mă tratează corect.", rating: 5 },
+              { author: "Andra M.", text: "Repară rapid, prețuri corecte, comunicare clară. Recomand!", rating: 5 },
+            ],
+          }),
+          block("ctaBanner", {
+            title: "Revizie tehnică ITP?",
+            subtitle: "Programare online + pre-verificare în 30 minute",
+            ctaText: "Rezervă acum",
+            ctaHref: "/programari",
+          }),
+        ],
+      },
+      {
+        slug: "servicii",
+        title: "Servicii oferite",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Servicii și prețuri", subtitle: "Prețuri orientative; deviz final după diagnoză" }),
+          block("servicesList", { displayMode: "list" }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Programări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Programează o intervenție", subtitle: "Selectează tipul de lucrare, alegi ziua" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: false }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Vino să ne cunoști" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: false }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 18: Hotel mic / Pensiune
+  // ─────────────────────────────────────────────
+  {
+    slug: "hotel-boutique",
+    name: "Hotel / Pensiune",
+    description: "Site cald pentru pensiuni, hoteluri boutique, B&B-uri și cazări turistice.",
+    category: "hotel_bnb",
+    industryTags: ["hotel", "pensiune", "B&B", "cazare turistică", "vacanță"],
+    themeSlug: "spa-wellness",
+    isFeatured: true,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Locul tău departe de casă",
+            subtitle: "Pensiune cu suflet, atmosferă caldă, mic dejun de gospodărie, peisaje spectaculoase",
+            ctaPrimary: { text: "Rezervă o cameră", href: "/rezervari" },
+            ctaSecondary: { text: "Vezi camerele", href: "/camere" },
+            backgroundImage: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce să alegi pensiunea noastră",
+            features: [
+              { icon: "🌄", title: "Locație de poveste", text: "În inima naturii, departe de zgomot, aproape de obiective turistice" },
+              { icon: "🍳", title: "Mic dejun inclus", text: "Produse proaspete din gospodărie: ouă, brânză, dulceață, miere locală" },
+              { icon: "🛏️", title: "Camere confortabile", text: "Paturi premium, baie privată, vedere panoramică, decor autentic" },
+              { icon: "🏞️", title: "Activități outdoor", text: "Drumeții, excursii ghidate, închiriere biciclete, programe family-friendly" },
+            ],
+          }),
+          block("servicesPreview", { title: "Camerele noastre", ctaText: "Vezi toate camerele", ctaHref: "/camere" }),
+          block("testimonials", {
+            title: "Oaspeții noștri",
+            items: [
+              { author: "Familia Popescu", text: "Cel mai frumos weekend al anului. Vom reveni cu siguranță.", rating: 5 },
+              { author: "Cristian B.", text: "Atmosfera, mâncarea, ospitalitatea — totul peste așteptări.", rating: 5 },
+            ],
+          }),
+          block("ctaBanner", {
+            title: "Reducere 15% pentru sejur 3+ nopți",
+            subtitle: "Rezervă direct pe site pentru cel mai bun preț — fără comisioane Booking",
+            ctaText: "Rezervă acum",
+            ctaHref: "/rezervari",
+          }),
+        ],
+      },
+      {
+        slug: "camere",
+        title: "Camere",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Camerele noastre", subtitle: "Fiecare cu personalitatea ei" }),
+          block("servicesList", { displayMode: "grid" }),
+        ],
+      },
+      {
+        slug: "imprejurimi",
+        title: "Împrejurimi",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Ce poți face în zonă", subtitle: "Obiective turistice și activități recomandate" }),
+          block("textImage", {
+            title: "Natură și aventură",
+            text: "La doar câteva minute de pensiune găsești trasee de drumeție, lacuri, mănăstiri istorice. Recomandăm itinerarii personalizate pentru fiecare oaspete.",
+            imageUrl: "https://images.unsplash.com/photo-1551632436-cbf8dd35adfa?w=800",
+            imagePosition: "right",
+          }),
+        ],
+      },
+      {
+        slug: "rezervari",
+        title: "Rezervări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Rezervă-ți sejurul", subtitle: "Confirmare instantă, fără comisioane" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: false }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact & locație",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Cum ajungi la noi" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: true }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 19: Education / Cursuri online
+  // ─────────────────────────────────────────────
+  {
+    slug: "education-courses",
+    name: "Cursuri & Training",
+    description: "Site pentru traineri, școli de meserii, cursuri online, ateliere educaționale.",
+    category: "education",
+    industryTags: ["cursuri", "training", "școală meserii", "atelier educațional", "formare"],
+    themeSlug: "professional-clean",
+    isFeatured: false,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Învață ceva nou. Schimbă-ți cariera.",
+            subtitle: "Cursuri practice cu traineri experimentați, certificate recunoscute, comunitate de absolvenți",
+            ctaPrimary: { text: "Vezi cursurile", href: "/cursuri" },
+            ctaSecondary: { text: "Despre noi", href: "/despre" },
+            backgroundImage: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce să studiezi cu noi",
+            features: [
+              { icon: "👨‍🏫", title: "Traineri profesioniști", text: "Practicieni cu 10+ ani experiență, nu doar teoreticieni" },
+              { icon: "💼", title: "Curriculum practic", text: "Proiecte reale, studii de caz, portofoliu la final" },
+              { icon: "🏆", title: "Certificat recunoscut", text: "Diplome ANC + posibilitate plată certificare internațională" },
+              { icon: "🤝", title: "Comunitate alumni", text: "Acces la rețea de absolvenți, oportunități joburi, mentorat" },
+            ],
+          }),
+          block("servicesPreview", { title: "Cursuri populare", ctaText: "Vezi toate cursurile", ctaHref: "/cursuri" }),
+          block("testimonials", {
+            title: "Absolvenți",
+            items: [
+              { author: "Iulian M. — UX Designer", text: "După curs am primit job în 2 luni. Salariu dublu față de înainte!", rating: 5 },
+              { author: "Andrea P. — Frontend Dev", text: "Cea mai bună investiție pe care am făcut-o în carieră.", rating: 5 },
+            ],
+          }),
+        ],
+      },
+      {
+        slug: "cursuri",
+        title: "Cursuri",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Cursurile noastre", subtitle: "Online, hibrid și on-site" }),
+          block("servicesList", { displayMode: "grid" }),
+        ],
+      },
+      {
+        slug: "despre",
+        title: "Despre",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Despre școala noastră", subtitle: "Fondată în 2018, 500+ absolvenți" }),
+          block("textImage", {
+            title: "Misiunea noastră",
+            text: "Credem că educația trebuie să fie practică, accesibilă, conectată cu piața. Lucrăm cu profesioniști activi în industrie pentru a oferi cursuri care chiar te pregătesc pentru job-uri reale.",
+            imageUrl: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800",
+            imagePosition: "left",
+          }),
+          block("team", {
+            title: "Traineri principali",
+            members: [
+              { name: "Andrei Tudor", role: "Web Development & UX", avatarUrl: "" },
+              { name: "Maria Constantin", role: "Marketing Digital", avatarUrl: "" },
+              { name: "Vlad Dobre", role: "Data Analytics", avatarUrl: "" },
+            ],
+          }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Înscriere",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Rezervă-ți locul", subtitle: "Locuri limitate pe grupă" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: false }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Întrebări?" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: true }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
+  // ─────────────────────────────────────────────
+  // Template 20: Tatuaj / Piercing
+  // ─────────────────────────────────────────────
+  {
+    slug: "tattoo-studio",
+    name: "Studio Tatuaj & Piercing",
+    description: "Site bold pentru studiouri de tatuaj, piercing, body art.",
+    category: "tattoo_studio",
+    industryTags: ["tatuaj", "piercing", "body art", "studio tatuaj"],
+    themeSlug: "barbershop-bold",
+    isFeatured: false,
+    pagesContent: [
+      {
+        slug: "",
+        title: "Acasă",
+        isHome: true,
+        blocks: [
+          block("hero", {
+            title: "Arta ta. Pielea ta. Povestea ta.",
+            subtitle: "Studio cu artiști premiați, igienă spitalicească, design personalizat la cerere",
+            ctaPrimary: { text: "Rezervă consultație", href: "/programari" },
+            ctaSecondary: { text: "Portofoliu", href: "/portofoliu" },
+            backgroundImage: "https://images.unsplash.com/photo-1581929955747-fe6df14c1d54?w=1600",
+          }),
+          block("featuresGrid", {
+            title: "De ce studio-ul nostru",
+            features: [
+              { icon: "🎨", title: "Artiști premiați", text: "Echipa noastră a câștigat 3 trofee la conventul internațional din 2024" },
+              { icon: "🧼", title: "Igienă spitalicească", text: "Auto-clave EN 13060, ace single-use, mănuși nitril, dezinfecție riguroasă" },
+              { icon: "✏️", title: "Design personalizat", text: "Consultație gratuită pentru schiță, draft înainte de tatuare, ajustări nelimitate" },
+              { icon: "🤝", title: "Aftercare inclus", text: "Cremă healing, instrucțiuni pas-cu-pas, retouch gratuit primele 30 zile" },
+            ],
+          }),
+          block("servicesPreview", { title: "Servicii", ctaText: "Vezi prețurile", ctaHref: "/servicii" }),
+          block("testimonials", {
+            title: "Clienții noștri",
+            items: [
+              { author: "Razvan T.", text: "Tatuajul a ieșit fix cum mi l-am imaginat. Profesional 100%.", rating: 5 },
+              { author: "Andra M.", text: "Atmosfera relaxantă, atenție la detalii, igienă perfectă.", rating: 5 },
+            ],
+          }),
+        ],
+      },
+      {
+        slug: "portofoliu",
+        title: "Portofoliu",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Portofoliu", subtitle: "Lucrări recente ale artiștilor noștri" }),
+          block("textImage", {
+            title: "Stiluri de tatuaj",
+            text: "Lucrăm în toate stilurile majore: traditional, neo-traditional, realism, watercolor, geometric, dotwork, blackwork. Pentru consultații personalizate, programează o ședință de design gratuită.",
+            imageUrl: "https://images.unsplash.com/photo-1565058379802-bbe93b2f703a?w=800",
+            imagePosition: "right",
+          }),
+        ],
+      },
+      {
+        slug: "servicii",
+        title: "Servicii & prețuri",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Servicii oferite" }),
+          block("servicesList", { displayMode: "grid" }),
+        ],
+      },
+      {
+        slug: "programari",
+        title: "Programări",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Rezervă o ședință", subtitle: "Consultație gratuită + draft înainte de tatuare" }),
+          block("bookingWidget", { showServicePicker: true, showStaffPicker: true }),
+        ],
+      },
+      {
+        slug: "contact",
+        title: "Contact",
+        isHome: false,
+        blocks: [
+          block("hero", { title: "Vino să ne cunoști" }),
+          block("contactInfo", { showMap: true, showHours: true, showSocial: true }),
+          block("contactForm", { fields: ["name", "email", "phone", "message"] }),
+        ],
+      },
+    ],
+  },
 ];
 
 // ─────────────────────────────────────────────
