@@ -271,6 +271,15 @@ export async function generateAIReply(conversationId: string): Promise<{
     return { success: false, reason: "Last message is not from user" };
   }
 
+  // Enforce chat AI monthly quota based on tenant plan
+  try {
+    const { assertChatAiQuota } = await import("./plan-limits");
+    await assertChatAiQuota(ctx.widget.tenantId);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    return { success: false, reason: `plan_quota: ${message}` };
+  }
+
   const industryPrompt = getIndustryPrompt(ctx.widget.aiIndustry);
   const customPrompt = ctx.widget.aiSystemPrompt || "";
 

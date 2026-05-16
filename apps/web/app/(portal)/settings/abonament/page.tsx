@@ -40,6 +40,20 @@ interface Subscription {
   stripeEnabled: boolean;
 }
 
+interface UsageQuota {
+  used: number;
+  limit: number;
+}
+interface UsageReport {
+  planSlug: string;
+  planName: string;
+  status: string;
+  resources: UsageQuota;
+  products: UsageQuota;
+  chatAiThisMonth: UsageQuota;
+  sitesPublished: { used: number; limit: number | null };
+}
+
 const STATUS_LABEL: Record<string, string> = {
   trialing: "În perioadă de trial",
   active: "Activ",
@@ -73,6 +87,7 @@ export default function SubscriptionPage() {
   const searchParams = useSearchParams();
   const [sub, setSub] = useState<Subscription | null>(null);
   const [plans, setPlans] = useState<Plan[]>([]);
+  const [usage, setUsage] = useState<UsageReport | null>(null);
   const [loading, setLoading] = useState(true);
   const [interval, setInterval] = useState<"month" | "year">("month");
   const [busy, setBusy] = useState<string | null>(null);
@@ -91,12 +106,14 @@ export default function SubscriptionPage() {
 
   async function load() {
     setLoading(true);
-    const [subRes, plansRes] = await Promise.all([
+    const [subRes, plansRes, usageRes] = await Promise.all([
       api<Subscription>("/api/v1/billing/platform/subscription"),
       api<{ plans: Plan[]; stripeEnabled: boolean }>("/api/v1/billing/platform/plans"),
+      api<UsageReport>("/api/v1/billing/platform/usage"),
     ]);
     if (subRes.success && subRes.data) setSub(subRes.data);
     if (plansRes.success && plansRes.data) setPlans(plansRes.data.plans);
+    if (usageRes.success && usageRes.data) setUsage(usageRes.data);
     setLoading(false);
   }
 
@@ -273,6 +290,27 @@ export default function SubscriptionPage() {
         )}
       </div>
 
+      {/* Usage breakdown */}
+      {usage && (
+        <div style={{ background: "#FFFFFF", padding: 24, borderRadius: 16, border: "1px solid #E2E8F0", marginBottom: 24 }}>
+          <h2 style={{ fontSize: "1.25rem", fontWeight: 700, margin: "0 0 16px", color: "#0F172A" }}>Consum în planul curent</h2>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
+            <UsageBar label="Personal / resurse" used={usage.resources.used} limit={usage.resources.limit} />
+            <UsageBar label="Produse POS" used={usage.products.used} limit={usage.products.limit} />
+            <UsageBar
+              label="Mesaje AI luna aceasta"
+              used={usage.chatAiThisMonth.used}
+              limit={usage.chatAiThisMonth.limit}
+            />
+            <UsageBar
+              label="Site-uri publicate"
+              used={usage.sitesPublished.used}
+              limit={usage.sitesPublished.limit ?? null}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Plans grid */}
       <div style={{ marginBottom: 16, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
         <h2 style={{ fontSize: "1.25rem", fontWeight: 700, margin: 0, color: "#0F172A" }}>Toate planurile</h2>
@@ -383,6 +421,38 @@ function Info({ label, value, accent }: { label: string; value: string; accent?:
         {label}
       </div>
       <div style={{ fontSize: "1.05rem", color: accent || "#0F172A", fontWeight: 600 }}>{value}</div>
+    </div>
+  );
+}
+
+function UsageBar({ label, used, limit }: { label: string; used: number; limit: number | null }) {
+  const isUnlimited = limit === null || limit >= 99999;
+  const pct = isUnlimited || !limit ? 0 : Math.min(100, (used / limit) * 100);
+  const isNear = pct >= 80;
+  const isOver = pct >= 100;
+  const barColor = isOver ? "#EF4444" : isNear ? "#F59E0B" : "#10B981";
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+        <span style={{ fontSize: "0.85rem", color: "#475569", fontWeight: 600 }}>{label}</span>
+        <span style={{ fontSize: "0.85rem", color: isOver ? "#EF4444" : "#0F172A", fontWeight: 600 }}>
+          {used}
+          {isUnlimited ? "" : ` / ${limit}`}
+        </span>
+      </div>
+      <div style={{ background: "#F1F5F9", borderRadius: 999, height: 6, overflow: "hidden" }}>
+        <div style={{ background: isUnlimited ? "#94A3B8" : barColor, height: "100%", width: isUnlimited ? "100%" : `${pct}%`, transition: "width 0.3s ease" }} />
+      </div>
+      {isUnlimited && (
+        <div style={{ fontSize: "0.7rem", color: "#94A3B8", marginTop: 4 }}>Nelimitat</div>
+      )}
+      {isNear && !isOver && !isUnlimited && (
+        <div style={{ fontSize: "0.7rem", color: "#F59E0B", marginTop: 4, fontWeight: 600 }}>Aproape de limită</div>
+      )}
+      {isOver && (
+        <div style={{ fontSize: "0.7rem", color: "#EF4444", marginTop: 4, fontWeight: 600 }}>Peste limita planului</div>
+      )}
     </div>
   );
 }

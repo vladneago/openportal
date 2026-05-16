@@ -470,6 +470,14 @@
 - [x] Failed payment retry + dunning (handled de Stripe Smart Retries; webhook marchează past_due)
 - [x] Pagina `/settings/abonament` cu plan curent, status colorat, trial countdown, lista planuri cu toggle lunar/anual, butoane upgrade/portal
 - [x] Dev mode: checkout local stub când STRIPE_SECRET_KEY lipsește (simulează upgrade activ în DB pentru testing)
+- [x] **Plan enforcement live** — helper `getTenantPlan()` care citește tenant_subscriptions sau cade pe implicit trial Solo 14 zile din tenant.createdAt
+- [x] `assertCanCreateResource()` wired în POST `/booking/resources` (Solo max 3, Solo Pro nelimitat)
+- [x] `assertCanCreateProduct()` wired în POST `/pos/products` (Solo max 100, Solo Pro nelimitat)
+- [x] `assertFeature("hasCustomDomain")` wired în POST/PATCH `/site-builder/sites` (custom domain doar Solo Pro)
+- [x] `assertChatAiQuota()` wired în `generateAIReply()` (Solo 500/lună, Solo Pro 5000/lună; count via chat_widget_messages role=assistant + monthStart)
+- [x] Errors 402 Payment Required cu code PLAN_LIMIT_* + details `{ used, limit, upgradeTo }` pentru UI handling
+- [x] GET `/api/v1/billing/platform/usage` returns aggregated usage report (resources, products, chatAi, sitesPublished)
+- [x] UI: usage breakdown bars în `/settings/abonament` cu color-coded thresholds (verde<80%, galben 80-99%, roșu ≥100%, gri nelimitat)
 - [ ] Onboarding Stripe per tenant — așteptăm activarea contului Stripe Connect Romania
 
 ### 9.2 Onboarding Flow

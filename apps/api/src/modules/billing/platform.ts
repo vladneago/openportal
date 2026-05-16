@@ -11,6 +11,7 @@ import { eq } from "drizzle-orm";
 import { requireAuth } from "../../middleware/auth";
 import { AppError } from "../../middleware/error-handler";
 import { getStripe, stripeEnabled, getPlan, getPlanPriceId, PLANS } from "../../lib/stripe";
+import { getTenantUsage } from "../../lib/plan-limits";
 
 // ─────────────────────────────────────────────
 // Platform billing — OpenPortal charges tenant for its own use of the
@@ -91,6 +92,17 @@ platformBillingRoutes.get("/subscription", async (c) => {
       stripeEnabled,
     },
   });
+});
+
+// ─────────────────────────────────────────────
+// GET /api/v1/billing/platform/usage
+// Returns current consumption per metered/capped resource vs plan limit.
+// ─────────────────────────────────────────────
+
+platformBillingRoutes.get("/usage", async (c) => {
+  const tenantId = c.get("tenantId");
+  const usage = await getTenantUsage(tenantId);
+  return c.json({ success: true, data: usage });
 });
 
 // ─────────────────────────────────────────────

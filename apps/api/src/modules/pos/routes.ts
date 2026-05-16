@@ -12,6 +12,7 @@ import {
 import { and, eq, sql, desc, asc, count, or, gte, lte, lt } from "drizzle-orm";
 import { requireAuth } from "../../middleware/auth";
 import { AppError } from "../../middleware/error-handler";
+import { assertCanCreateProduct } from "../../lib/plan-limits";
 
 export const posRoutes = new Hono();
 posRoutes.use("*", requireAuth);
@@ -223,6 +224,8 @@ posRoutes.post("/products", zValidator("json", productCreateSchema), async (c) =
   const tenantId = c.get("tenantId");
   const user = c.get("user");
   const body = c.req.valid("json");
+
+  await assertCanCreateProduct(tenantId);
 
   const result = await db.transaction(async (tx) => {
     const [product] = await tx

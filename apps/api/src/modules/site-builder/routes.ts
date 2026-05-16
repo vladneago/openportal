@@ -12,6 +12,7 @@ import {
 import { and, eq, sql, desc, asc, count, or, isNull } from "drizzle-orm";
 import { requireAuth } from "../../middleware/auth";
 import { AppError } from "../../middleware/error-handler";
+import { assertFeature } from "../../lib/plan-limits";
 
 export const siteBuilderRoutes = new Hono();
 siteBuilderRoutes.use("*", requireAuth);
@@ -279,6 +280,11 @@ siteBuilderRoutes.post("/sites", zValidator("json", siteCreateSchema), async (c)
   const user = c.get("user");
   const body = c.req.valid("json");
 
+  // Plan: custom domain requires Solo Pro
+  if (body.customDomain) {
+    await assertFeature(tenantId, "hasCustomDomain");
+  }
+
   // Check subdomain uniqueness globally
   const [existing] = await db
     .select({ id: webSites.id })
@@ -369,6 +375,11 @@ siteBuilderRoutes.patch("/sites/:id", zValidator("json", siteCreateSchema.partia
   const tenantId = c.get("tenantId");
   const id = c.req.param("id");
   const body = c.req.valid("json");
+
+  // Plan: custom domain requires Solo Pro
+  if (body.customDomain) {
+    await assertFeature(tenantId, "hasCustomDomain");
+  }
 
   if (body.subdomain) {
     const [existing] = await db

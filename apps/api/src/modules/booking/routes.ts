@@ -14,6 +14,7 @@ import { and, eq, gte, lte, lt, gt, ne, sql, desc, asc, count, inArray, or } fro
 import { requireAuth } from "../../middleware/auth";
 import { AppError } from "../../middleware/error-handler";
 import { notifyBookingConfirmed, notifyBookingCancelled } from "../../lib/booking-notifications";
+import { assertCanCreateResource } from "../../lib/plan-limits";
 
 export const bookingRoutes = new Hono();
 bookingRoutes.use("*", requireAuth);
@@ -93,6 +94,8 @@ bookingRoutes.get("/resources/:id", async (c) => {
 bookingRoutes.post("/resources", zValidator("json", resourceCreateSchema), async (c) => {
   const tenantId = c.get("tenantId");
   const body = c.req.valid("json");
+
+  await assertCanCreateResource(tenantId);
 
   const [row] = await db
     .insert(bookingResources)

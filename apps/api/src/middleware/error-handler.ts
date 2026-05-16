@@ -6,7 +6,7 @@ export class AppError extends Error {
     public statusCode: number,
     public code: string,
     message: string,
-    public details?: Record<string, string[]>,
+    public details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = "AppError";
@@ -26,7 +26,7 @@ export const errorHandler: ErrorHandler = (err, c) => {
     }
     return c.json({
       success: false,
-      error: { code: "VALIDATION_ERROR", message: "Invalid request data", details },
+      error: { code: "VALIDATION_ERROR", message: "Invalid request data", details: details as Record<string, unknown> },
     }, 400);
   }
 
