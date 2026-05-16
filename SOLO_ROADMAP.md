@@ -202,7 +202,10 @@
 - [x] Booking code unic generat (8 caractere) afișat la confirmare
 - [x] GDPR consents (SMS/email/marketing) în formular client
 - [x] Theme-aware UI (folosește culorile din tema site-ului)
-- [ ] Embed widget JS pentru site-uri externe (separat de pagina full)
+- [x] Embed widget JS pentru site-uri externe (`/embed/booking.js?site=...`) — floating FAB + iframe modal cu /book/[siteId]
+- [x] Customizable cu `data-color`, `data-position`, `data-label`
+- [x] Auto-fallback no-script: snippet în site detail cu buton "Copiază"
+- [x] CORS Access-Control-Allow-Origin: * + Cache-Control 5min
 
 ### 3.3 Notifications
 - [x] Email confirmation la booking (admin + public widget)

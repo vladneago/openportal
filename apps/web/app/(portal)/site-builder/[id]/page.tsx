@@ -392,6 +392,9 @@ export default function SiteDetailPage() {
               </button>
             </div>
           </div>
+
+          {/* Embed snippet */}
+          <EmbedSnippet siteId={site.id} primaryColor="#6366F1" />
         </div>
 
         {/* Pages */}
@@ -555,5 +558,57 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       </span>
       {children}
     </label>
+  );
+}
+
+function EmbedSnippet({ siteId, primaryColor }: { siteId: string; primaryColor: string }) {
+  const [copied, setCopied] = useState(false);
+  const [origin, setOrigin] = useState("https://openportal.app");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") setOrigin(window.location.origin);
+  }, []);
+
+  const snippet = `<script src="${origin}/embed/booking.js?site=${siteId}"
+        data-color="${primaryColor}"
+        data-position="bottom-right"
+        data-label="Programează" async></script>`;
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(snippet);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore
+    }
+  }
+
+  return (
+    <div
+      className="mt-4 rounded-lg p-4"
+      style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+    >
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+          Embed pe alt site
+        </h3>
+        <button onClick={copy} className="btn-secondary text-xs">
+          {copied ? "✓ Copiat" : "Copiază"}
+        </button>
+      </div>
+      <p className="text-xs mb-2" style={{ color: "var(--text-tertiary)" }}>
+        Adaugă acest snippet în footer-ul site-ului tău existent (WordPress, Wix, etc.) — apare un buton "Programează" flotant care deschide rezervarea fără să-ți părăsești site-ul.
+      </p>
+      <pre
+        className="text-[10px] font-mono p-2 rounded overflow-x-auto"
+        style={{ background: "var(--bg)", color: "var(--text)", lineHeight: 1.4 }}
+      >
+        {snippet}
+      </pre>
+      <p className="text-[10px] mt-2" style={{ color: "var(--text-tertiary)" }}>
+        Atribute opționale: <code>data-color</code> (culoare buton), <code>data-position</code> (bottom-right / bottom-left), <code>data-label</code> (text buton).
+      </p>
+    </div>
   );
 }
