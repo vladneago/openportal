@@ -413,6 +413,11 @@ export function IndustryLandingPage({ data }: { data: IndustryLandingData }) {
                 <li><Link href="/cofetarii" style={footerLinkStyle}>Cofetării</Link></li>
                 <li><Link href="/florarii" style={footerLinkStyle}>Florării</Link></li>
                 <li><Link href="/restaurante" style={footerLinkStyle}>Restaurante</Link></li>
+                <li><Link href="/veterinari" style={footerLinkStyle}>Veterinari</Link></li>
+                <li><Link href="/atelier-auto" style={footerLinkStyle}>Atelier auto</Link></li>
+                <li><Link href="/hoteluri" style={footerLinkStyle}>Hoteluri / pensiuni</Link></li>
+                <li><Link href="/cursuri" style={footerLinkStyle}>Cursuri / training</Link></li>
+                <li><Link href="/tatuaje" style={footerLinkStyle}>Tatuaj / piercing</Link></li>
               </ul>
             </div>
             <div>

@@ -1200,6 +1200,421 @@ export const INDUSTRY_LANDINGS: Record<string, IndustryLandingData> = {
     ],
   },
 
+  veterinari: {
+    slug: "veterinari",
+    title: "Site pentru cabinet veterinar / pet shop — Programări online | OpenPortal",
+    description:
+      "Site pentru cabinete veterinare și pet shops. Programări consultații online, fișa medicală animal, vaccinare cu evidență, reminder anual. €25/lună.",
+    ogTitle: "OpenPortal pentru veterinari și pet shops",
+    heroBadge: "🐶 Pentru cabinete veterinare și pet shops",
+    heroTitle: "Cabinetul tău veterinar,",
+    heroHighlight: "lângă fiecare pet din lista ta",
+    heroSubtitle:
+      "Programări online pentru consultații + vaccinare, fișa medicală digitală per animal, reminder automat anual + grooming. Părinții pet-urilor te iubesc pentru profesionalism.",
+    accentHex: "#0EA5E9",
+    painPoints: [
+      {
+        problem: "Părinții pet-urilor uită vaccinurile anuale și animăluțul rămâne neprotejat",
+        solution: "Reminder automat cu o lună înainte de expirare. Email + reminder text cu data programării sugerată.",
+      },
+      {
+        problem: "Fișa medicală pe hârtie se pierde sau e indescifrabilă",
+        solution: "Fișă digitală per animal cu istoric vaccinări, tratamente, alergii, intervenții. Lizibilă pentru orice medic.",
+      },
+      {
+        problem: "Programări telefonice pentru urgențe ratează apelurile importante",
+        solution: "Slot-uri dedicate pentru urgențe, restul prin programare online. Telefonul tace pentru programări de rutină.",
+      },
+      {
+        problem: "Comunicarea cu clienții pentru rezultate analize durează zile",
+        solution: "Notificare automată la rezultat analize + atașament în fișa pet-ului. Toți informați la timp.",
+      },
+    ],
+    features: [
+      {
+        icon: "🐾",
+        title: "Fișa medicală per animal",
+        body: "Istoric complet: vaccinări, intervenții, alergii, medicamente curente. Acces criptat, share cu alți medici la nevoie.",
+      },
+      {
+        icon: "💉",
+        title: "Reminder vaccinare automat",
+        body: "Calculează data scadență per vaccin, trimite email cu 30 zile înainte + opțiune programare directă.",
+      },
+      {
+        icon: "🩺",
+        title: "Multi-medic + multi-specializare",
+        body: "Câini, pisici, exotice, mari animale. Fiecare medic cu propriul calendar și specializare.",
+      },
+      {
+        icon: "🆔",
+        title: "Microcip + pașaport",
+        body: "Evidență microcip + emitere pașaport pentru călătorii în UE conform reglementărilor.",
+      },
+      {
+        icon: "💬",
+        title: "Comunicare cu părintele",
+        body: "Rezultate analize, instrucțiuni post-intervenție, fotografii control — toate în portalul clientului.",
+      },
+      {
+        icon: "🛒",
+        title: "Vânzare produse",
+        body: "Hrană, accesorii, medicamente OTC — POS integrat. Stoc + bon fiscal conform legii.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Cabinet Veterinar Dr. Andra — Iași",
+      quote:
+        "Reminder-urile pentru vaccinări au crescut prezența anuală cu 60%. Părinții pet-urilor sunt recunoscători că nu mai uită.",
+    },
+    faq: [
+      {
+        q: "Funcționează cu carnet de identificare ANSVSA?",
+        a: "Da. Fișa pet-ului include câmpuri pentru număr microcip + carnet ANSVSA. Export în formatul cerut pentru raportări oficiale.",
+      },
+      {
+        q: "Pot oferi servicii de grooming + cabinet medical în același cont?",
+        a: "Da. Configurezi două tipuri de servicii (medicale și grooming) cu calendare separate sau combinate, după preferință.",
+      },
+      {
+        q: "Cum gestionez urgențele în afara programului?",
+        a: "Setezi telefon de urgență vizibil pe site + linie dedicată în orele non-program. Programări de rutină rămân doar online.",
+      },
+    ],
+  },
+
+  "atelier-auto": {
+    slug: "atelier-auto",
+    title: "Site pentru atelier auto / service mecanic — Programări online | OpenPortal",
+    description:
+      "Site pentru ateliere auto, service mecanic, vulcanizări. Programări revizii + ITP, deviz transparent, istoric mașină per client. €25/lună.",
+    ogTitle: "OpenPortal pentru ateliere auto și service",
+    heroBadge: "🚗 Pentru ateliere auto și service",
+    heroTitle: "Atelierul tău auto,",
+    heroHighlight: "cu deviz clar și fără surprize",
+    heroSubtitle:
+      "Site cu rezervări online pentru revizii + ITP, deviz transparent înainte de începere, istoric mașină per client. Clienții vin pentru profesionalism, rămân pentru încredere.",
+    accentHex: "#475569",
+    painPoints: [
+      {
+        problem: "Clienții te sună să întrebe de preț — pierzi 30 min/apel",
+        solution: "Prețuri orientative vizibile pe site + deviz exact după diagnoză. Apelurile se reduc cu 80%.",
+      },
+      {
+        problem: "Mașinile aduse fără programare aglomerează atelierul",
+        solution: "Programări online cu slot-uri planificate. Clienții vin la timpul lor, atelierul lucrează ordonat.",
+      },
+      {
+        problem: "Devizele Word + facturi separate sunt birocrație inutilă",
+        solution: "Deviz → factură cu un click, e-Factura ANAF automat. Plată Stripe sau cash la ridicare.",
+      },
+      {
+        problem: "Istoricul mașinilor în carnețele care se pierd",
+        solution: "Istoric digital per mașină (după număr înmatriculare): intervenții, kilometraj, piese schimbate.",
+      },
+    ],
+    features: [
+      {
+        icon: "🔧",
+        title: "Programări tipuri lucrări",
+        body: "Revizie, ITP, schimb ulei, diagnoză — fiecare cu timp estimativ. Atelierul se umple inteligent.",
+      },
+      {
+        icon: "💵",
+        title: "Deviz transparent",
+        body: "Listă piese + manoperă + total, semnat digital de client înainte de începere. Zero dispute.",
+      },
+      {
+        icon: "📋",
+        title: "Istoric per mașină",
+        body: "Toate intervențiile pe acea mașină, kilometraj la fiecare vizită, recomandări viitoare.",
+      },
+      {
+        icon: "🛡️",
+        title: "Garanție lucrări",
+        body: "Tracking automat al garanției per intervenție (12 luni / 20.000 km). Clienții știu exact când expiră.",
+      },
+      {
+        icon: "📷",
+        title: "Foto înainte/după",
+        body: "Atașează poze la deviz pentru evidență. Reduce disputele despre starea inițială a mașinii.",
+      },
+      {
+        icon: "🇷🇴",
+        title: "ANAF e-Factura",
+        body: "Facturi pentru firme cu deduceri TVA + bonuri fiscale pentru persoane fizice. Conform legii.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Auto Service Pro — Cluj",
+      quote:
+        "Devizele transparente au eliminat 100% din certurile cu clienții. Toți știu de la început ce vor plăti și ce vor primi.",
+    },
+    faq: [
+      {
+        q: "Pot scana plăcuța mașinii și pre-completa fișa?",
+        a: "În roadmap pentru Q3 2026 prin integrare OCR. Pentru moment introduci manual numărul + marca. Sistemul caută istoricul.",
+      },
+      {
+        q: "Cum gestionez piesele comandate și sosirea lor?",
+        a: "Adaugi piesa la deviz cu status «comandată». Sistemul te notifică să programezi continuarea când piesa ajunge.",
+      },
+      {
+        q: "Funcționează pentru atelier cu 5 mecanici?",
+        a: "Pe planul Solo Pro €50/lună ai resurse nelimitate. Fiecare mecanic are propriul calendar și specializare (motor, electronică, tinichigerie, etc.).",
+      },
+    ],
+  },
+
+  hoteluri: {
+    slug: "hoteluri",
+    title: "Site pentru hotel mic / pensiune / B&B — Rezervări directe | OpenPortal",
+    description:
+      "Site pentru pensiuni, hoteluri boutique, B&B-uri. Rezervări directe fără comisioane Booking, gestiune camere, plăți online. €25/lună.",
+    ogTitle: "OpenPortal pentru hoteluri mici și pensiuni",
+    heroBadge: "🏨 Pentru pensiuni, hoteluri mici, B&B",
+    heroTitle: "Pensiunea ta,",
+    heroHighlight: "fără 15% comision Booking",
+    heroSubtitle:
+      "Site cu galerie camere, rezervări directe cu plată online, gestiune disponibilitate, integrare canal Booking opțional. Recâștigi marja pe care o pierdeai la OTA-uri.",
+    accentHex: "#7A9F7A",
+    painPoints: [
+      {
+        problem: "15-20% comision la Booking + Airbnb pentru fiecare rezervare",
+        solution: "Site propriu cu rezervări directe. 0% comision pe rezervările prin site-ul tău.",
+      },
+      {
+        problem: "Disponibilitate de update-at pe 3 platforme separat — chaos",
+        solution: "Channel manager: blochezi camera o singură dată, se sincronizează automat pe Booking + Airbnb + site.",
+      },
+      {
+        problem: "Comunicare cu clienții se face pe WhatsApp și se pierd mesaje",
+        solution: "Inbox unificat per rezervare: WhatsApp + email + chat site, totul lângă rezervarea respectivă.",
+      },
+      {
+        problem: "Plăți pe transfer durează zile și clienții uită",
+        solution: "Link Stripe pentru avans la rezervare, restul la check-in. Plăți instant, fără follow-up manual.",
+      },
+    ],
+    features: [
+      {
+        icon: "🛏️",
+        title: "Catalog camere cu galerie",
+        body: "Fiecare cameră cu poze, descriere, dotări, preț per sezon. Vedere ca-n revistele de turism.",
+      },
+      {
+        icon: "📅",
+        title: "Calendar disponibilitate",
+        body: "Vizibil pe site. Clienții văd când e liber, nu sună să întrebe.",
+      },
+      {
+        icon: "💳",
+        title: "Plăți Stripe directe",
+        body: "Avans 30% la rezervare, restul la check-in. Cancel-window-uri configurabile per cameră.",
+      },
+      {
+        icon: "📋",
+        title: "Lista oaspeților",
+        body: "Detalii contact, preferințe, alergii, ocazii speciale. Personalizare la nivel de Ritz-Carlton.",
+      },
+      {
+        icon: "🔄",
+        title: "Channel manager",
+        body: "Sincronizare Booking + Airbnb + Vrbo. Niciun overbooking, niciun dublu update.",
+      },
+      {
+        icon: "🌟",
+        title: "Review-uri colectate auto",
+        body: "Email automat la check-out cu rugămintea de review. Direct pe site + redirect Google.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Pensiunea Munților — Bran",
+      quote:
+        "Rezervările directe prin site reprezintă acum 60% din total. Am recuperat marja de 18% comision la Booking. Bani serioși.",
+    },
+    faq: [
+      {
+        q: "Cum funcționează channel manager-ul cu Booking?",
+        a: "Conectezi conturile o singură dată. Când blochezi o cameră în OpenPortal, se blochează automat pe Booking în max 2 minute. Și invers.",
+      },
+      {
+        q: "Pot oferi tarife dinamice (weekend mai scump, low-season redus)?",
+        a: "Da. Setezi tarife per zi a săptămânii, sezon, durată sejur (3+ nopți reducere). Sistemul calculează automat.",
+      },
+      {
+        q: "Există integrare cu casa de marcat / PMS?",
+        a: "Export complet în format compatibil PMS-uri populare (Opera, Mews, Cloudbeds). Integrare directă cu Mews în roadmap.",
+      },
+    ],
+  },
+
+  cursuri: {
+    slug: "cursuri",
+    title: "Site pentru cursuri / training / școală meserii — Înscriere online | OpenPortal",
+    description:
+      "Site pentru traineri, școli de meserii, cursuri online. Înscriere cu plată, capacitate per grupă, materiale curs, comunitate alumni. €25/lună.",
+    ogTitle: "OpenPortal pentru cursuri și training",
+    heroBadge: "🎓 Pentru cursuri, training, școli de meserii",
+    heroTitle: "Școala ta,",
+    heroHighlight: "fără Google Forms și plăți manuale",
+    heroSubtitle:
+      "Site cu catalog cursuri, înscriere online cu plată automată Stripe, capacitate per grupă, materiale și certificat. Construiești o comunitate alumni, nu doar predai.",
+    accentHex: "#7C3AED",
+    painPoints: [
+      {
+        problem: "Google Forms + transfer bancar = înscrieri pierdute",
+        solution: "Pagina curs cu CTA «Înscrie-te + plătește» direct. Conversie de 3x mai mare.",
+      },
+      {
+        problem: "Tracking cine a plătit și cine nu durează ore",
+        solution: "Toți cu plată reușită apar în lista cursanților confirmați automat. Restul se șterg după 24h.",
+      },
+      {
+        problem: "Materialele curs trimise pe email se pierd, repeti aceleași emailuri",
+        solution: "Portal cursant cu toate materialele + lecții + certificate. Acces după curs cât vrei.",
+      },
+      {
+        problem: "După curs cursanții dispar, nu poți face up-sell la cursuri avansate",
+        solution: "Alumni list cu segmentare. Lansezi curs avansat, primii notificați sunt absolvenții.",
+      },
+    ],
+    features: [
+      {
+        icon: "📚",
+        title: "Catalog cursuri",
+        body: "Fiecare curs cu programă, durată, preț, prerequisite, certificat. Pagină dedicată cu testimoniale.",
+      },
+      {
+        icon: "👥",
+        title: "Capacitate per grupă",
+        body: "Maxim 15 cursanți per modul? Sistemul închide înscrierile automat când e plin.",
+      },
+      {
+        icon: "💳",
+        title: "Plată Stripe + plată în rate",
+        body: "Curs 2500 lei cash sau 3x839 lei. Stripe Installments configurabil per curs.",
+      },
+      {
+        icon: "📂",
+        title: "Portal cursant",
+        body: "Materiale, înregistrări lecții, teme, certificat la finalizare. Acces lifetime sau limitat.",
+      },
+      {
+        icon: "🏆",
+        title: "Certificate digitale",
+        body: "Certificat PDF generat automat cu numele cursantului + cod verificare unic. Verificabil online.",
+      },
+      {
+        icon: "💬",
+        title: "Comunitate alumni",
+        body: "Forum privat sau grupul cursanților fiecărui curs. Networking + suport peer-to-peer.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Andrei T. — Trainer Marketing Digital",
+      quote:
+        "Conversia s-a triplat după ce am pus checkout-ul direct pe site. Plus, alumni list mi-a permis să lansez cursul avansat cu 80% pre-comanda din list.",
+    },
+    faq: [
+      {
+        q: "Pot organiza cursuri online + on-site simultan?",
+        a: "Da. Setezi două variante per curs: online (link Zoom auto-generat) și on-site (locație + capacitate fizică). Cursanții aleg formatul.",
+      },
+      {
+        q: "Cum gestionez cursuri recurente (ex. luna 1, luna 2, etc.)?",
+        a: "Creezi un program cu sesiuni multiple. Cursantul se înscrie o singură dată, primește acces la toate sesiunile din program.",
+      },
+      {
+        q: "Funcționează cu cursuri acreditate ANC?",
+        a: "Da. Câmpuri dedicate pentru cod ocupație + raportare ANC. Exportul lunar e conform cerințelor.",
+      },
+    ],
+  },
+
+  tatuaje: {
+    slug: "tatuaje",
+    title: "Site pentru studio tatuaj / piercing — Programări + portofoliu | OpenPortal",
+    description:
+      "Site bold pentru studiouri tatuaj și piercing. Portofoliu artiști, consultații gratuite, avans rezervare, instrucțiuni aftercare. €25/lună.",
+    ogTitle: "OpenPortal pentru studiouri tatuaj și piercing",
+    heroBadge: "✒️ Pentru studiouri tatuaj și piercing",
+    heroTitle: "Studio-ul tău de body art,",
+    heroHighlight: "cu portofoliu care convinge",
+    heroSubtitle:
+      "Site cu galerie spectaculoasă per artist, programări consultații + avans Stripe, instrucțiuni aftercare automate. Clienții vin gata convinși, plătesc avans, vin la timp.",
+    accentHex: "#0F172A",
+    painPoints: [
+      {
+        problem: "Negociere pe Instagram DM durează 3 zile pentru o consultație de 30 min",
+        solution: "Site cu prețuri orientative + buton rezervare consultație gratuită. Cure-i ce au bani vin direct.",
+      },
+      {
+        problem: "Clienții nu vin la programare, pierzi ședințe de 3-5 ore",
+        solution: "Avans Stripe la rezervare (200-500 lei). No-show = îți rămâne avansul. Reduce dispariții cu 90%.",
+      },
+      {
+        problem: "Aftercare instructions trimise pe WhatsApp și clienții uită",
+        solution: "Email automat la 1h, 24h, 7 zile, 30 zile cu instrucțiuni pas-cu-pas + fotografii ce e normal.",
+      },
+      {
+        problem: "Portofoliu pe Instagram cu hashtag random nu convinge clienții serioși",
+        solution: "Galerie pe site organizată pe stil (realism, dotwork, traditional). Clienții văd ce vor.",
+      },
+    ],
+    features: [
+      {
+        icon: "🎨",
+        title: "Portofoliu per artist",
+        body: "Fiecare artist cu galerie proprie, organizată pe stil. Clienții aleg artistul după estetică.",
+      },
+      {
+        icon: "💳",
+        title: "Avans la rezervare",
+        body: "Stripe Link pentru avans 200-500 lei la consultație + restul la ședință. Fără no-show.",
+      },
+      {
+        icon: "📋",
+        title: "Acord informat digital",
+        body: "Formular obligatoriu pre-tatuaj (alergii, medicamente, condiții) semnat digital, salvat pe fișa client.",
+      },
+      {
+        icon: "📲",
+        title: "Aftercare automatizat",
+        body: "Email-uri programate la 1h, 24h, 7 zile, 30 zile cu instrucțiuni + ce e normal vs ce e îngrijorător.",
+      },
+      {
+        icon: "📅",
+        title: "Multi-ședință pentru tatuaje mari",
+        body: "Tatuaj 20+ ore? Programezi 4-5 ședințe consecutive, le legi în același proiect.",
+      },
+      {
+        icon: "🌟",
+        title: "Galerie social proof",
+        body: "Clienții uploadează poze finale cu drepturi de utilizare. Construiești portofoliu organic.",
+      },
+    ],
+    testimonialSnippet: {
+      who: "Studio Black Ink — București",
+      quote:
+        "Avansul Stripe a redus no-show-urile la zero. Plus, portofoliul curat pe site ne aduce clienți cu așteptări realiste, nu vânători de prețuri.",
+    },
+    faq: [
+      {
+        q: "Cum gestionez tatuaje mari care necesită multe ședințe?",
+        a: "Creezi un proiect cu ședințe multiple. Plata e per ședință sau forfait pentru întregul proiect. Tracking timp total per proiect.",
+      },
+      {
+        q: "Pot oferi consultații video pentru clienți din alte orașe?",
+        a: "Da. Setezi consultații online cu link Zoom auto-generat. Util pentru clienți care vor să se programeze din alt oraș/țară.",
+      },
+      {
+        q: "Funcționează cu acord informat pentru minori (16-18 ani)?",
+        a: "Da. Formular cu câmp dedicat pentru tutorele legal, semnătură electronică ambii, conform legii române (piercing 16+, tatuaj 18+).",
+      },
+    ],
+  },
+
   florarii: {
     slug: "florarii",
     title: "Site pentru florărie — Comenzi online + livrare | OpenPortal",

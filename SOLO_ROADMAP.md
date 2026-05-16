@@ -476,7 +476,7 @@
 - [x] Pagini Legal: `/legal/terms` (Termeni și condiții), `/legal/privacy` (Politică de confidențialitate cu GDPR), `/legal/dpa` (Data Processing Agreement)
 - [x] Layout dedicat `/legal/*` cu header simplu + back link
 - [x] Copy Romanian targeted la solo entrepreneurs (saloane, frizerii, cofetării, consultanți)
-- [x] **15 pagini per industrie SEO-targeted**: `/saloane`, `/frizerii`, `/spa-wellness`, `/yoga`, `/cabinete-medicale`, `/stomatologi`, `/fitness`, `/fotografie`, `/consultanti`, `/cofetarii`, `/florarii`, `/restaurante`, `/avocati`, `/contabili`, `/psihologi` — fiecare cu pain-points + features + testimonial + FAQ specific industriei
+- [x] **20 pagini per industrie SEO-targeted**: `/saloane`, `/frizerii`, `/spa-wellness`, `/yoga`, `/cabinete-medicale`, `/stomatologi`, `/fitness`, `/fotografie`, `/consultanti`, `/cofetarii`, `/florarii`, `/restaurante`, `/avocati`, `/contabili`, `/psihologi`, `/veterinari`, `/atelier-auto`, `/hoteluri`, `/cursuri`, `/tatuaje` — fiecare cu pain-points + features + testimonial + FAQ specific industriei. **Parity 1:1 cu templates (20↔20)**.
 - [x] Component template `<IndustryLandingPage>` + data registry în `components/marketing/industry-data.ts` — un singur fișier de menținut pentru toate landing-urile, fiecare nouă industrie = 1 entry + 1 route file de 10 linii
 - [x] Accent color per industrie (pink saloane, amber frizerii, green spa, sky medical, cyan dental, orange fitness, purple foto, blue consultanți, amber cofetării, pink florării)
 - [x] Link-uri cross-referenced între main landing și industrii (target-business chip cloud cu 10 link-uri active)

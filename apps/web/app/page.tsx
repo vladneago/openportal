@@ -164,7 +164,11 @@ const TARGET_BUSINESSES: Array<{ label: string; href?: string }> = [
   { label: "📊 Contabili", href: "/contabili" },
   { label: "🧠 Psihologi / terapeuți", href: "/psihologi" },
   { label: "💼 Consultanți", href: "/consultanti" },
-  { label: "🐶 Veterinari" },
+  { label: "🐶 Veterinari / pet shop", href: "/veterinari" },
+  { label: "🚗 Atelier auto", href: "/atelier-auto" },
+  { label: "🏨 Hoteluri / pensiuni", href: "/hoteluri" },
+  { label: "🎓 Cursuri / training", href: "/cursuri" },
+  { label: "✒️ Tatuaj / piercing", href: "/tatuaje" },
 ];
 
 export default function LandingPage() {
@@ -633,6 +637,11 @@ export default function LandingPage() {
                 <li><Link href="/cofetarii" style={footerLinkStyle}>Cofetării</Link></li>
                 <li><Link href="/florarii" style={footerLinkStyle}>Florării</Link></li>
                 <li><Link href="/restaurante" style={footerLinkStyle}>Restaurante</Link></li>
+                <li><Link href="/veterinari" style={footerLinkStyle}>Veterinari</Link></li>
+                <li><Link href="/atelier-auto" style={footerLinkStyle}>Atelier auto</Link></li>
+                <li><Link href="/hoteluri" style={footerLinkStyle}>Hoteluri / pensiuni</Link></li>
+                <li><Link href="/cursuri" style={footerLinkStyle}>Cursuri / training</Link></li>
+                <li><Link href="/tatuaje" style={footerLinkStyle}>Tatuaj / piercing</Link></li>
               </ul>
             </div>
             <div>
