@@ -185,6 +185,8 @@
 - [x] Pagină `/booking/services` (CRUD cu durată/buffer/preț/TVA)
 - [x] Pagină `/booking/resources` (CRUD staff/rooms/equipment cu culoare + capacitate)
 - [x] Pagină `/booking/customers` (CRUD cu search debounce + consents GDPR)
+- [x] Pagină `/booking/customers/[id]` profil detaliat: KPI-uri lifetime (vizite, total cheltuit, frecvență, no-show rate), servicii preferate (top 5 cu count + revenue), istoric programări (50 ultimele), istoric facturi, note interne editabile, consents inline, alert restanță invoiced
+- [x] API `GET /booking/customers/:id/profile` cu join services + resources + invoices și calcul stats live (avg days between visits, lifetime value, completed vs no-show ratio)
 - [x] Pagină `/booking/availability` (editor orar săptămânal cu grid 7 zile, preset-uri rapide L-V, multi-interval per zi pentru pauze)
 - [x] Pagină `/booking/calendar` (vedere săptămână + zi cu grid orar 07-22, programări ca blocuri colorate, click → modal cu acțiuni status)
 - [x] Resource filter în calendar + navigare prev/today/next

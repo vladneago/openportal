@@ -9,6 +9,7 @@ import {
   bookingAvailability,
   bookingBlockedSlots,
   bookingAppointments,
+  billingInvoices,
 } from "@openportal/db";
 import { and, eq, gte, lte, lt, gt, ne, sql, desc, asc, count, inArray, or } from "drizzle-orm";
 import { requireAuth } from "../../middleware/auth";
@@ -485,6 +486,165 @@ bookingRoutes.get("/customers/:id", async (c) => {
 
   if (!row) throw new AppError(404, "NOT_FOUND", "Customer not found");
   return c.json({ success: true, data: row });
+});
+
+// ─────────────────────────────────────────────
+// GET /customers/:id/profile
+// Full customer profile: identity + computed lifetime stats
+// (visits, no-show rate, avg spend, favorite service) + appointment
+// history + invoice history.
+// ─────────────────────────────────────────────
+
+bookingRoutes.get("/customers/:id/profile", async (c) => {
+  const tenantId = c.get("tenantId");
+  const id = c.req.param("id");
+
+  const [customer] = await db
+    .select()
+    .from(bookingCustomers)
+    .where(and(eq(bookingCustomers.tenantId, tenantId), eq(bookingCustomers.id, id)))
+    .limit(1);
+
+  if (!customer) throw new AppError(404, "NOT_FOUND", "Customer not found");
+
+  // Pull all appointments for this customer, newest first.
+  const appointments = await db
+    .select({
+      id: bookingAppointments.id,
+      bookingCode: bookingAppointments.bookingCode,
+      startAt: bookingAppointments.startAt,
+      endAt: bookingAppointments.endAt,
+      status: bookingAppointments.status,
+      channel: bookingAppointments.channel,
+      priceSnapshot: bookingAppointments.priceSnapshot,
+      currencySnapshot: bookingAppointments.currencySnapshot,
+      totalPaid: bookingAppointments.totalPaid,
+      paymentStatus: bookingAppointments.paymentStatus,
+      customerNote: bookingAppointments.customerNote,
+      internalNote: bookingAppointments.internalNote,
+      cancelledAt: bookingAppointments.cancelledAt,
+      cancellationReason: bookingAppointments.cancellationReason,
+      serviceId: bookingServices.id,
+      serviceName: bookingServices.name,
+      serviceColor: bookingServices.color,
+      serviceDuration: bookingServices.durationMinutes,
+      resourceId: bookingResources.id,
+      resourceName: bookingResources.name,
+    })
+    .from(bookingAppointments)
+    .innerJoin(bookingServices, eq(bookingServices.id, bookingAppointments.serviceId))
+    .innerJoin(bookingResources, eq(bookingResources.id, bookingAppointments.resourceId))
+    .where(
+      and(
+        eq(bookingAppointments.tenantId, tenantId),
+        eq(bookingAppointments.customerId, id),
+      ),
+    )
+    .orderBy(desc(bookingAppointments.startAt))
+    .limit(200);
+
+  // Pull related invoices (customer link OR by-customer email match)
+  const invoices = await db
+    .select({
+      id: billingInvoices.id,
+      documentNumber: billingInvoices.documentNumber,
+      status: billingInvoices.status,
+      issueDate: billingInvoices.issueDate,
+      dueDate: billingInvoices.dueDate,
+      totalAmount: billingInvoices.totalAmount,
+      totalPaid: billingInvoices.totalPaid,
+      amountDue: billingInvoices.amountDue,
+      currency: billingInvoices.currency,
+      type: billingInvoices.type,
+    })
+    .from(billingInvoices)
+    .where(
+      and(
+        eq(billingInvoices.tenantId, tenantId),
+        eq(billingInvoices.customerId, id),
+      ),
+    )
+    .orderBy(desc(billingInvoices.issueDate))
+    .limit(100);
+
+  // Compute lifetime stats from the live appointments table
+  const completed = appointments.filter((a) =>
+    ["completed", "checked_in", "in_progress"].includes(a.status),
+  );
+  const cancelledByCustomer = appointments.filter((a) => a.status === "cancelled").length;
+  const noShows = appointments.filter((a) => a.status === "no_show").length;
+  const totalSpent = completed.reduce((sum, a) => sum + Number(a.priceSnapshot), 0);
+  const lifetimeValue = appointments.reduce((sum, a) => sum + Number(a.totalPaid), 0);
+  const avgSpend = completed.length > 0 ? totalSpent / completed.length : 0;
+  const upcoming = appointments.filter(
+    (a) => a.startAt.getTime() > Date.now() && ["pending", "confirmed", "checked_in"].includes(a.status),
+  );
+
+  // Favorite service (highest count among completed)
+  const serviceTally = new Map<string, { id: string; name: string; color: string; count: number; revenue: number }>();
+  for (const a of completed) {
+    const cur = serviceTally.get(a.serviceId);
+    if (cur) {
+      cur.count++;
+      cur.revenue += Number(a.priceSnapshot);
+    } else {
+      serviceTally.set(a.serviceId, {
+        id: a.serviceId,
+        name: a.serviceName,
+        color: a.serviceColor ?? "#6366F1",
+        count: 1,
+        revenue: Number(a.priceSnapshot),
+      });
+    }
+  }
+  const favoriteServices = Array.from(serviceTally.values())
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
+
+  // Time between visits — mean delta between completed appointments
+  const completedAsc = [...completed].sort(
+    (a, b) => a.startAt.getTime() - b.startAt.getTime(),
+  );
+  let avgDaysBetween: number | null = null;
+  if (completedAsc.length >= 2) {
+    const deltas: number[] = [];
+    for (let i = 1; i < completedAsc.length; i++) {
+      deltas.push(
+        (completedAsc[i].startAt.getTime() - completedAsc[i - 1].startAt.getTime()) / 86400_000,
+      );
+    }
+    avgDaysBetween = deltas.reduce((s, d) => s + d, 0) / deltas.length;
+  }
+
+  // Outstanding invoiced amount
+  const outstanding = invoices
+    .filter((i) => ["issued", "sent", "viewed", "partially_paid", "overdue"].includes(i.status))
+    .reduce((s, i) => s + Number(i.amountDue), 0);
+
+  return c.json({
+    success: true,
+    data: {
+      customer,
+      stats: {
+        totalAppointments: appointments.length,
+        completed: completed.length,
+        upcoming: upcoming.length,
+        cancelled: cancelledByCustomer,
+        noShows,
+        noShowRate: appointments.length > 0 ? noShows / appointments.length : 0,
+        totalSpent: totalSpent.toFixed(2),
+        lifetimeValue: lifetimeValue.toFixed(2),
+        avgSpend: avgSpend.toFixed(2),
+        avgDaysBetweenVisits: avgDaysBetween ? Math.round(avgDaysBetween * 10) / 10 : null,
+        firstVisitAt: completedAsc[0]?.startAt.toISOString() ?? null,
+        lastVisitAt: completed[0]?.startAt.toISOString() ?? null,
+        favoriteServices,
+        outstandingInvoiced: outstanding.toFixed(2),
+      },
+      appointments,
+      invoices,
+    },
+  });
 });
 
 bookingRoutes.post("/customers", zValidator("json", customerCreateSchema), async (c) => {

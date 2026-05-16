@@ -189,46 +189,52 @@ export default function CustomersPage() {
           customers.map((c) => (
             <div
               key={c.id}
-              className="flex items-center gap-4 px-4 py-3"
+              className="flex items-center gap-4 px-4 py-3 group"
               style={{ borderBottom: "1px solid var(--border)" }}
             >
-              <div
-                className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0"
-                style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)" }}
+              <Link
+                href={`/booking/customers/${c.id}`}
+                className="flex items-center gap-4 flex-1 min-w-0 no-underline"
+                style={{ color: "inherit" }}
               >
-                {c.firstName[0]?.toUpperCase()}
-                {c.lastName?.[0]?.toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-medium text-sm" style={{ color: "var(--text)" }}>
-                    {c.firstName}
-                    {c.lastName ? ` ${c.lastName}` : ""}
-                  </span>
-                  {c.totalAppointments > 0 && (
-                    <span
-                      className="text-[10px] px-1.5 py-0.5 rounded"
-                      style={{ background: "#10B98122", color: "#10B981" }}
-                    >
-                      {c.totalAppointments} programări
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold text-white shrink-0"
+                  style={{ background: "linear-gradient(135deg, #6366F1, #8B5CF6)" }}
+                >
+                  {c.firstName[0]?.toUpperCase()}
+                  {c.lastName?.[0]?.toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-medium text-sm" style={{ color: "var(--text)" }}>
+                      {c.firstName}
+                      {c.lastName ? ` ${c.lastName}` : ""}
                     </span>
+                    {c.totalAppointments > 0 && (
+                      <span
+                        className="text-[10px] px-1.5 py-0.5 rounded"
+                        style={{ background: "#10B98122", color: "#10B981" }}
+                      >
+                        {c.totalAppointments} programări
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                    {c.phone || "—"}
+                    {c.email ? ` · ${c.email}` : ""}
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <div className="font-semibold text-sm" style={{ color: "var(--text)" }}>
+                    {Number(c.totalSpent).toFixed(2)} RON
+                  </div>
+                  {c.lastVisitAt && (
+                    <div className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>
+                      ultima: {new Date(c.lastVisitAt).toLocaleDateString("ro-RO")}
+                    </div>
                   )}
                 </div>
-                <div className="text-xs" style={{ color: "var(--text-tertiary)" }}>
-                  {c.phone || "—"}
-                  {c.email ? ` · ${c.email}` : ""}
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                <div className="font-semibold text-sm" style={{ color: "var(--text)" }}>
-                  {Number(c.totalSpent).toFixed(2)} RON
-                </div>
-                {c.lastVisitAt && (
-                  <div className="text-[10px]" style={{ color: "var(--text-tertiary)" }}>
-                    ultima: {new Date(c.lastVisitAt).toLocaleDateString("ro-RO")}
-                  </div>
-                )}
-              </div>
+              </Link>
               <div className="flex items-center gap-1 shrink-0">
                 <button onClick={() => openEdit(c)} className="btn-secondary text-xs">
                   Editează
