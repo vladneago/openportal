@@ -90,7 +90,7 @@ export default async function PreviewSitePage({
   const { siteId, slug } = await params;
   const slugStr = slug?.join("/") || "";
 
-  const [sitePayload, pageData, navPages, services] = await Promise.all([
+  const [sitePayload, pageData, navPages, services, reviews] = await Promise.all([
     fetchJson<SitePayload>(
       `${API_URL}/api/v1/public/site-builder/sites/by-id?id=${siteId}&preview=1`,
     ),
@@ -103,6 +103,16 @@ export default async function PreviewSitePage({
     fetchJson<ServicePayload[]>(
       `${API_URL}/api/v1/public/site-builder/sites/${siteId}/services`,
     ),
+    fetchJson<Array<{
+      id: string;
+      rating: number | null;
+      comment: string | null;
+      customerName: string | null;
+      serviceName: string | null;
+      ownerReply: string | null;
+      isFeatured: boolean;
+      publishedAt: string | null;
+    }>>(`${API_URL}/api/v1/public/site-builder/sites/${siteId}/reviews?limit=20`),
   ]);
 
   if (!pageData || !sitePayload) notFound();
@@ -120,6 +130,7 @@ export default async function PreviewSitePage({
     subdomain: sitePayload.site.subdomain,
     preview: true,
     services: services || [],
+    reviews: reviews || [],
     navigation: nav,
     business: {
       name: sitePayload.site.businessName,

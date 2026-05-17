@@ -73,6 +73,17 @@ interface ServicePayload {
   imageUrl: string | null;
 }
 
+interface ReviewPayload {
+  id: string;
+  rating: number | null;
+  comment: string | null;
+  customerName: string | null;
+  serviceName: string | null;
+  ownerReply: string | null;
+  isFeatured: boolean;
+  publishedAt: string | null;
+}
+
 async function fetchJson<T>(url: string): Promise<T | null> {
   try {
     const res = await fetch(url, { cache: "no-store" });
@@ -102,12 +113,13 @@ export default async function PublicSitePage({
 
   const siteId = sitePayload.site.id;
 
-  const [pageData, navPages, services] = await Promise.all([
+  const [pageData, navPages, services, reviews] = await Promise.all([
     fetchJson<PagePayload>(
       `${API_URL}/api/v1/public/site-builder/sites/${siteId}/page?slug=${encodeURIComponent(slugStr)}`,
     ),
     fetchJson<NavPage[]>(`${API_URL}/api/v1/public/site-builder/sites/${siteId}/pages`),
     fetchJson<ServicePayload[]>(`${API_URL}/api/v1/public/site-builder/sites/${siteId}/services`),
+    fetchJson<ReviewPayload[]>(`${API_URL}/api/v1/public/site-builder/sites/${siteId}/reviews?limit=20`),
   ]);
 
   if (!pageData) notFound();
@@ -125,6 +137,7 @@ export default async function PublicSitePage({
     subdomain: sitePayload.site.subdomain,
     preview: false,
     services: services || [],
+    reviews: reviews || [],
     navigation: nav,
     business: {
       name: sitePayload.site.businessName,

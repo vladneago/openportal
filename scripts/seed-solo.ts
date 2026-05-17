@@ -307,9 +307,9 @@ const templates = [
             ctaText: "Vezi toate serviciile",
             ctaHref: "/servicii",
           }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Ce spun clientele noastre",
-            items: [
+            fallbackItems: [
               { author: "Maria P.", text: "Cea mai bună experiență de salon. Mă întorc lună de lună!", rating: 5 },
               { author: "Andreea D.", text: "Stil profesionist și atmosferă caldă. Recomand!", rating: 5 },
               { author: "Cristina M.", text: "Mereu plec mulțumită. Atenție la detalii incredibilă.", rating: 5 },
@@ -488,9 +488,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Tratamente populare", ctaText: "Vezi toate tratamentele", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Experiențe ale oaspeților noștri",
-            items: [
+            fallbackItems: [
               { author: "Ioana D.", text: "Mă simt ca într-o altă lume. O oază de pace.", rating: 5 },
               { author: "Mihai T.", text: "Cel mai bun masaj din oraș, fără îndoială.", rating: 5 },
             ],
@@ -615,9 +615,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Servicii", ctaText: "Vezi toate", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Clienții mei",
-            items: [
+            fallbackItems: [
               { author: "SC. Tehno SRL", text: "Profesionist și mereu disponibil. Recomand cu încredere.", rating: 5 },
               { author: "PFA Constantin", text: "M-a ajutat să economisesc bani și timp.", rating: 5 },
             ],
@@ -702,9 +702,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Specialități medicale", ctaText: "Vezi toate serviciile", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Pacienți mulțumiți",
-            items: [
+            fallbackItems: [
               { author: "Marian I.", text: "Doctor foarte atent, m-am simțit ascultat. Recomand cu drag.", rating: 5 },
               { author: "Elena B.", text: "Programare online rapidă, fără așteptare. Excelent!", rating: 5 },
             ],
@@ -795,9 +795,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Servicii stomatologice", ctaText: "Vezi tot", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Pacienți care zâmbesc",
-            items: [
+            fallbackItems: [
               { author: "Ioana M.", text: "Mi-au făcut implant fără să simt nimic. Profesioniști!", rating: 5 },
               { author: "Adrian D.", text: "Cei mai buni dentiști din oraș. Mereu mă întorc cu drag.", rating: 5 },
               { author: "Carmen T.", text: "Prețuri corecte, calitate ireproșabilă. Recomand!", rating: 5 },
@@ -868,9 +868,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Pachete antrenament", ctaText: "Vezi toate pachetele", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Transformări reale",
-            items: [
+            fallbackItems: [
               { author: "Alex R.", text: "Am slăbit 15kg în 6 luni. Echipă excelentă!", rating: 5 },
               { author: "Maria V.", text: "Mi-am redescoperit forța. Recomand 100%!", rating: 5 },
             ],
@@ -961,9 +961,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Pachete foto", ctaText: "Vezi prețuri", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Clienții mei spun",
-            items: [
+            fallbackItems: [
               { author: "Andra & Mihai", text: "Pozele de la nuntă sunt magice. Mulțumim din suflet!", rating: 5 },
               { author: "Catalin S.", text: "Profesionist, punctual, rezultate spectaculoase.", rating: 5 },
             ],
@@ -1120,9 +1120,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Tipuri de clase", ctaText: "Vezi orarul complet", ctaHref: "/orar" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Ce spun cursanții",
-            items: [
+            fallbackItems: [
               { author: "Andreea L.", text: "Mi-am găsit echilibrul după 3 luni. Studio-ul e o oază în mijlocul orașului.", rating: 5 },
               { author: "Cristian M.", text: "Pilates m-a ajutat cu durerile de spate mai mult decât 10 sesiuni de kinetoterapie.", rating: 5 },
             ],
@@ -1214,9 +1214,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Specialitățile casei", ctaText: "Vezi meniul complet", ctaHref: "/meniu" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Recenzii",
-            items: [
+            fallbackItems: [
               { author: "George B.", text: "Cel mai bun bistro din oraș. Atenție la detalii, mâncare excelentă, atmosferă perfectă.", rating: 5 },
               { author: "Diana M.", text: "Brunch-ul de duminică e un must. Rezervați din timp, e plin mereu.", rating: 5 },
             ],
@@ -1293,9 +1293,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Domenii de practică", ctaText: "Vezi toate specialitățile", ctaHref: "/specialitati" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Clienții noștri",
-            items: [
+            fallbackItems: [
               { author: "SC. Tehnică Plus SRL", text: "Ne-a câștigat un proces complex de drept comercial. Profesionist absolut.", rating: 5 },
               { author: "Familia Popescu", text: "Procesul de divorț s-a încheiat mediat, fără traume. Apreciem empatia.", rating: 5 },
             ],
@@ -1388,9 +1388,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Servicii oferite", ctaText: "Vezi tot", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Recomandări",
-            items: [
+            fallbackItems: [
               { author: "SC. IT Solutions SRL", text: "Cei mai serioși contabili cu care am lucrat. Răspunde rapid, raportează totul la zi.", rating: 5 },
               { author: "PFA Vlad Stancu", text: "Am scăpat de stresul deadline-urilor ANAF. Recomand 100%.", rating: 5 },
             ],
@@ -1467,9 +1467,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Servicii", ctaText: "Vezi toate serviciile", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Mesaje de la oameni reali (anonimizate)",
-            items: [
+            fallbackItems: [
               { author: "C., 34 ani", text: "Mi-a schimbat felul în care îmi privesc viața. Sunt recunoscător profund.", rating: 5 },
               { author: "M., 28 ani", text: "Nu credeam că terapia online funcționează. Acum nu mai pot fără ședințele săptămânale.", rating: 5 },
             ],
@@ -1560,9 +1560,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Servicii", ctaText: "Vezi toate serviciile", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Recomandări",
-            items: [
+            fallbackItems: [
               { author: "Andrei C. — câine Bobby", text: "Echipă caldă, prețuri corecte, comunicare perfectă. Recomand cu drag!", rating: 5 },
               { author: "Maria L. — pisică Whiskers", text: "Whiskers e tratată ca o regină aici. Mulțumesc echipei!", rating: 5 },
             ],
@@ -1639,9 +1639,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Servicii oferite", ctaText: "Vezi tot", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Clienții noștri",
-            items: [
+            fallbackItems: [
               { author: "Vlad S.", text: "Singurul service în care am încredere. Mereu mă tratează corect.", rating: 5 },
               { author: "Andra M.", text: "Repară rapid, prețuri corecte, comunicare clară. Recomand!", rating: 5 },
             ],
@@ -1718,9 +1718,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Camerele noastre", ctaText: "Vezi toate camerele", ctaHref: "/camere" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Oaspeții noștri",
-            items: [
+            fallbackItems: [
               { author: "Familia Popescu", text: "Cel mai frumos weekend al anului. Vom reveni cu siguranță.", rating: 5 },
               { author: "Cristian B.", text: "Atmosfera, mâncarea, ospitalitatea — totul peste așteptări.", rating: 5 },
             ],
@@ -1811,9 +1811,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Cursuri populare", ctaText: "Vezi toate cursurile", ctaHref: "/cursuri" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Absolvenți",
-            items: [
+            fallbackItems: [
               { author: "Iulian M. — UX Designer", text: "După curs am primit job în 2 luni. Salariu dublu față de înainte!", rating: 5 },
               { author: "Andrea P. — Frontend Dev", text: "Cea mai bună investiție pe care am făcut-o în carieră.", rating: 5 },
             ],
@@ -1906,9 +1906,9 @@ const templates = [
             ],
           }),
           block("servicesPreview", { title: "Servicii", ctaText: "Vezi prețurile", ctaHref: "/servicii" }),
-          block("testimonials", {
+          block("reviewsList", {
             title: "Clienții noștri",
-            items: [
+            fallbackItems: [
               { author: "Razvan T.", text: "Tatuajul a ieșit fix cum mi l-am imaginat. Profesional 100%.", rating: 5 },
               { author: "Andra M.", text: "Atmosfera relaxantă, atenție la detalii, igienă perfectă.", rating: 5 },
             ],

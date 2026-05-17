@@ -1,6 +1,6 @@
 import { Hono } from "hono";
-import { db, webSites, webPages, webThemes, bookingServices, bookingResources } from "@openportal/db";
-import { and, asc, eq, or } from "drizzle-orm";
+import { db, webSites, webPages, webThemes, bookingServices, bookingResources, bookingReviews } from "@openportal/db";
+import { and, asc, desc, eq, isNotNull, or, sql } from "drizzle-orm";
 import { AppError } from "../../middleware/error-handler";
 
 export const siteBuilderPublicRoutes = new Hono();
@@ -222,4 +222,55 @@ siteBuilderPublicRoutes.get("/sites/:siteId/resources", async (c) => {
     .orderBy(asc(bookingResources.sortOrder), asc(bookingResources.name));
 
   return c.json({ success: true, data: resources });
+});
+
+// ─────────────────────────────────────────────
+// GET /public/sites/:siteId/reviews?limit=20&minRating=4
+// Returns published reviews for the site's tenant, featured-first.
+// Used by the site-builder reviewsList block.
+// ─────────────────────────────────────────────
+
+siteBuilderPublicRoutes.get("/sites/:siteId/reviews", async (c) => {
+  const siteId = c.req.param("siteId");
+  const limit = Math.min(parseInt(c.req.query("limit") || "20"), 100);
+  const minRating = c.req.query("minRating");
+
+  const [site] = await db
+    .select({ tenantId: webSites.tenantId })
+    .from(webSites)
+    .where(eq(webSites.id, siteId))
+    .limit(1);
+
+  if (!site) throw new AppError(404, "SITE_NOT_FOUND", "Site not found");
+
+  const conds = [
+    eq(bookingReviews.tenantId, site.tenantId),
+    eq(bookingReviews.status, "published"),
+    eq(bookingReviews.showOnPublicSite, true),
+    isNotNull(bookingReviews.rating),
+  ];
+  if (minRating) {
+    const min = parseInt(minRating);
+    if (Number.isFinite(min) && min >= 1 && min <= 5) {
+      conds.push(sql`${bookingReviews.rating} >= ${min}`);
+    }
+  }
+
+  const reviews = await db
+    .select({
+      id: bookingReviews.id,
+      rating: bookingReviews.rating,
+      comment: bookingReviews.comment,
+      customerName: bookingReviews.customerName,
+      serviceName: bookingReviews.serviceName,
+      ownerReply: bookingReviews.ownerReply,
+      isFeatured: bookingReviews.isFeatured,
+      publishedAt: bookingReviews.publishedAt,
+    })
+    .from(bookingReviews)
+    .where(and(...conds))
+    .orderBy(desc(bookingReviews.isFeatured), desc(bookingReviews.publishedAt))
+    .limit(limit);
+
+  return c.json({ success: true, data: reviews });
 });

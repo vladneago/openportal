@@ -219,6 +219,10 @@
 - [x] Admin route `/api/v1/booking/reviews` (list cu filter status/minRating, summary cu avg + distribution, PATCH pentru moderation acțiuni)
 - [x] Admin page `/booking/reviews` cu summary card (avg rating mare, distribuție pe stele cu bar charts, count submitted/published/pending) + filtere status + acțiuni inline (publică / retrage / recomandă / spam / răspunde)
 - [x] Public list `/api/v1/public/reviews?tenantId=...` pentru site builder block (featured-first, newest-first, doar published cu showOnPublicSite=true)
+- [x] **Site-builder block `reviewsList`** consumă live reviews din `bookingReviews` cu fallback la `fallbackItems` static (template ship-with-content). Aggregate score badge afișat când există >=1 review real. Featured reviews au border primary + label „★ Recomandat". Render include owner reply într-un subbox cu border-top.
+- [x] Endpoint `/public/site-builder/sites/:id/reviews?limit=&minRating=` care rezolvă tenantId din site + filtre live (published + showOnPublicSite + minRating). Fetch paralel la page-render alături de services/nav.
+- [x] Editor palette `block-schema.ts`: nouă definiție `reviewsList` cu fields title/subtitle/limit/minRating + fallbackItems list cu help text explicând auto-fallback comportament.
+- [x] **17 template-uri convertite** din `testimonials` static → `reviewsList` cu autorii originali ca fallback. Pe măsură ce vin recenzii reale, fallback-ul se evaporează automat — zero acțiune din partea tenantului.
 - [x] Tab "Recenzii" adăugat la nav-ul booking în toate 6 paginile (consistency)
 - [x] Cron script `scripts/reviews-cron.mjs` (suggested 10 AM daily) + status endpoint cu counts per state
 

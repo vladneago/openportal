@@ -17,11 +17,23 @@ type SiteService = {
   imageUrl: string | null;
 };
 
+type SiteReview = {
+  id: string;
+  rating: number | null;
+  comment: string | null;
+  customerName: string | null;
+  serviceName: string | null;
+  ownerReply: string | null;
+  isFeatured: boolean;
+  publishedAt: string | null;
+};
+
 type RenderContext = {
   siteId: string;
   subdomain: string;
   preview: boolean;
   services: SiteService[];
+  reviews: SiteReview[];
   navigation: Array<{ slug: string; title: string; isHomePage: boolean }>;
   business: {
     name: string | null;
@@ -686,6 +698,216 @@ function TestimonialsBlock({ data }: { data: Block["data"] }) {
 }
 
 // ─────────────────────────────────────────────
+// REVIEWS LIST — pulls live published reviews from booking_reviews
+// ─────────────────────────────────────────────
+
+function ReviewsListBlock({ data, ctx }: { data: Block["data"]; ctx: RenderContext }) {
+  const title = s(data.title, "Ce spun clienții noștri");
+  const subtitle = s(data.subtitle);
+  const limit = typeof data.limit === "number" ? data.limit : 6;
+  const minRating = typeof data.minRating === "number" ? data.minRating : 0;
+  const layout = s(data.layout, "grid"); // grid | carousel — grid only for MVP
+  const fallback = (data.fallbackItems as Array<{ author?: string; text?: string; rating?: number }>) || [];
+
+  const filtered = ctx.reviews.filter((r) => r.rating !== null && (r.rating || 0) >= minRating).slice(0, limit);
+  const hasReal = filtered.length > 0;
+  const items = hasReal
+    ? filtered.map((r) => ({
+        author: r.customerName || "Client",
+        text: r.comment,
+        rating: r.rating,
+        serviceName: r.serviceName,
+        ownerReply: r.ownerReply,
+        isFeatured: r.isFeatured,
+        publishedAt: r.publishedAt,
+      }))
+    : fallback.map((f) => ({
+        author: f.author || "Client mulțumit",
+        text: f.text || "",
+        rating: f.rating || 5,
+        serviceName: null,
+        ownerReply: null,
+        isFeatured: false,
+        publishedAt: null,
+      }));
+
+  // Compute aggregate score (only from real reviews)
+  const aggregate =
+    hasReal && filtered.length > 0
+      ? (filtered.reduce((sum, r) => sum + (r.rating || 0), 0) / filtered.length).toFixed(1)
+      : null;
+
+  if (items.length === 0) return null;
+
+  return (
+    <section style={{ padding: "80px 24px", background: "var(--site-bg)" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          {title && (
+            <h2
+              style={{
+                fontFamily: "var(--site-font-heading)",
+                fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)",
+                fontWeight: 700,
+                marginBottom: 12,
+                color: "var(--site-text)",
+              }}
+            >
+              {title}
+            </h2>
+          )}
+          {subtitle && (
+            <p
+              style={{
+                fontFamily: "var(--site-font-body)",
+                fontSize: "1.05rem",
+                color: "var(--site-text-muted)",
+                maxWidth: 640,
+                margin: "0 auto",
+                lineHeight: 1.55,
+              }}
+            >
+              {subtitle}
+            </p>
+          )}
+          {aggregate && (
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 8,
+                marginTop: 16,
+                padding: "6px 14px",
+                background: "var(--site-surface)",
+                borderRadius: 999,
+                border: "1px solid rgba(0,0,0,0.06)",
+              }}
+            >
+              <span style={{ color: "#F59E0B", fontSize: "1.05rem", letterSpacing: 1 }}>★</span>
+              <strong style={{ color: "var(--site-text)", fontSize: "0.95rem" }}>{aggregate}/5</strong>
+              <span style={{ color: "var(--site-text-muted)", fontSize: "0.85rem" }}>
+                · {filtered.length} {filtered.length === 1 ? "recenzie" : "recenzii"}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: 20,
+          }}
+        >
+          {items.map((item, i) => (
+            <div
+              key={i}
+              style={{
+                background: "var(--site-surface)",
+                padding: 26,
+                borderRadius: "var(--site-radius-lg)",
+                border: item.isFeatured
+                  ? "2px solid var(--site-primary)"
+                  : "1px solid rgba(0,0,0,0.06)",
+                position: "relative",
+              }}
+            >
+              {item.isFeatured && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 12,
+                    right: 12,
+                    fontSize: "0.7rem",
+                    fontWeight: 700,
+                    color: "var(--site-primary)",
+                    letterSpacing: "0.05em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  ★ Recomandat
+                </div>
+              )}
+              {item.rating && (
+                <div style={{ fontSize: "1.05rem", marginBottom: 10, color: "#F59E0B", letterSpacing: 1 }}>
+                  {"★".repeat(item.rating)}
+                  <span style={{ color: "rgba(0,0,0,0.15)" }}>{"★".repeat(5 - item.rating)}</span>
+                </div>
+              )}
+              {item.text && (
+                <p
+                  style={{
+                    fontFamily: "var(--site-font-body)",
+                    fontSize: "0.98rem",
+                    color: "var(--site-text)",
+                    lineHeight: 1.6,
+                    marginBottom: 14,
+                    fontStyle: item.text ? "italic" : "normal",
+                  }}
+                >
+                  &ldquo;{item.text}&rdquo;
+                </p>
+              )}
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "baseline",
+                  gap: 8,
+                  flexWrap: "wrap",
+                }}
+              >
+                <div
+                  style={{
+                    fontFamily: "var(--site-font-body)",
+                    fontSize: "0.88rem",
+                    fontWeight: 600,
+                    color: "var(--site-text-muted)",
+                  }}
+                >
+                  — {item.author}
+                </div>
+                {item.serviceName && (
+                  <div style={{ fontSize: "0.78rem", color: "var(--site-text-muted)", opacity: 0.7 }}>
+                    {item.serviceName}
+                  </div>
+                )}
+              </div>
+              {item.ownerReply && (
+                <div
+                  style={{
+                    marginTop: 14,
+                    paddingTop: 14,
+                    borderTop: "1px solid rgba(0,0,0,0.08)",
+                    fontSize: "0.85rem",
+                    color: "var(--site-text-muted)",
+                    lineHeight: 1.5,
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      marginBottom: 4,
+                      color: "var(--site-primary)",
+                    }}
+                  >
+                    Răspunsul nostru
+                  </div>
+                  {item.ownerReply}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────
 // CTA BANNER
 // ─────────────────────────────────────────────
 
@@ -1131,6 +1353,8 @@ export function BlockRenderer({ block, ctx }: { block: Block; ctx: RenderContext
       return <TextImageBlock data={block.data} />;
     case "testimonials":
       return <TestimonialsBlock data={block.data} />;
+    case "reviewsList":
+      return <ReviewsListBlock data={block.data} ctx={ctx} />;
     case "ctaBanner":
       return <CtaBannerBlock data={block.data} ctx={ctx} />;
     case "contactInfo":

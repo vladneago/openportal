@@ -758,7 +758,7 @@ function Field({ label, children, help }: { label: string; children: React.React
 // ─────────────────────────────────────────────
 
 function summarizeBlock(b: Block): string {
-  if (b.type === "hero" || b.type === "ctaBanner" || b.type === "textImage" || b.type === "featuresGrid" || b.type === "team" || b.type === "testimonials" || b.type === "servicesPreview") {
+  if (b.type === "hero" || b.type === "ctaBanner" || b.type === "textImage" || b.type === "featuresGrid" || b.type === "team" || b.type === "testimonials" || b.type === "reviewsList" || b.type === "servicesPreview") {
     const t = b.data.title;
     if (typeof t === "string" && t) return t;
   }

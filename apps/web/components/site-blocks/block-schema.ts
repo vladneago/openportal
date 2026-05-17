@@ -170,6 +170,57 @@ export const BLOCK_TYPES: BlockTypeDef[] = [
     },
   },
   {
+    type: "reviewsList",
+    label: "Recenzii reale",
+    icon: "⭐",
+    description:
+      "Trage live recenziile publicate din /booking/reviews. Fallback la textul de mai jos dacă încă n-ai recenzii.",
+    fields: [
+      { key: "title", label: "Titlu", type: "text", placeholder: "Ce spun clienții noștri" },
+      { key: "subtitle", label: "Subtitlu", type: "textarea" },
+      {
+        key: "limit",
+        label: "Câte recenzii să afișez",
+        type: "number",
+        defaultValue: 6,
+        helpText: "Featured-first, apoi cele mai recente.",
+      },
+      {
+        key: "minRating",
+        label: "Rating minim",
+        type: "select",
+        options: [
+          { value: "0", label: "Toate" },
+          { value: "3", label: "≥ 3 stele" },
+          { value: "4", label: "≥ 4 stele (recomandat)" },
+          { value: "5", label: "Doar 5 stele" },
+        ],
+        defaultValue: "0",
+      },
+      {
+        key: "fallbackItems",
+        label: "Recenzii de rezervă (dacă n-ai încă reale)",
+        type: "list",
+        itemFields: [
+          { key: "author", label: "Nume", type: "text" },
+          { key: "text", label: "Mesaj", type: "textarea" },
+          { key: "rating", label: "Rating (1-5)", type: "number", defaultValue: 5 },
+        ],
+        helpText: "Acestea apar până când ai cel puțin 1 recenzie publicată.",
+      },
+    ],
+    defaultData: {
+      title: "Ce spun clienții noștri",
+      subtitle: "Feedback real de la oamenii cu care am lucrat.",
+      limit: 6,
+      minRating: 0,
+      fallbackItems: [
+        { author: "Maria P.", text: "Experiență minunată, recomand!", rating: 5 },
+        { author: "Andrei S.", text: "Profesionalism și atenție la detalii.", rating: 5 },
+      ],
+    },
+  },
+  {
     type: "ctaBanner",
     label: "Banner CTA",
     icon: "📢",
