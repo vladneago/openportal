@@ -43,6 +43,9 @@ import { bookingWorkerRoutes } from "./modules/workers/booking";
 import { stripeWebhookRoutes } from "./modules/workers/stripe";
 import { efacturaWorkerRoutes } from "./modules/workers/efactura";
 import { billingReminderRoutes } from "./modules/workers/billing-reminders";
+import { reviewWorkerRoutes } from "./modules/workers/reviews";
+import { reviewsRoutes } from "./modules/reviews/routes";
+import { reviewsPublicRoutes } from "./modules/reviews/public";
 import { platformBillingRoutes } from "./modules/billing/platform";
 import { anafRoutes } from "./modules/billing/anaf";
 import { chatWidgetRoutes } from "./modules/chat-widget/routes";
@@ -74,6 +77,7 @@ v1.route("/support", supportRoutes); v1.route("/crm", crmRoutes); v1.route("/fin
 v1.route("/government", governmentRoutes); v1.route("/legal", legalRoutes); v1.route("/healthcare", healthcareRoutes);
 v1.route("/realestate", realestateRoutes); v1.route("/events", eventsRoutes); v1.route("/itops", itopsRoutes);
 v1.route("/booking", bookingRoutes);
+v1.route("/booking/reviews", reviewsRoutes);
 v1.route("/billing", billingRoutes);
 v1.route("/billing/platform", platformBillingRoutes);
 v1.route("/billing/anaf", anafRoutes);
@@ -85,11 +89,13 @@ app.route("/api/v1", v1);
 // Public (no-auth) routes for serving websites + customer-facing booking
 app.route("/api/v1/public/site-builder", siteBuilderPublicRoutes);
 app.route("/api/v1/public/booking", bookingPublicRoutes);
+app.route("/api/v1/public/reviews", reviewsPublicRoutes);
 
 // Internal worker endpoints (cron-driven, secured by WORKER_TOKEN)
 app.route("/api/v1/internal/booking", bookingWorkerRoutes);
 app.route("/api/v1/internal/efactura", efacturaWorkerRoutes);
 app.route("/api/v1/internal/billing", billingReminderRoutes);
+app.route("/api/v1/internal/reviews", reviewWorkerRoutes);
 // Stripe webhook (signature-verified, not WORKER_TOKEN)
 app.route("/api/v1/internal/stripe", stripeWebhookRoutes);
 

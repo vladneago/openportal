@@ -210,6 +210,18 @@
 - [x] Auto-fallback no-script: snippet în site detail cu buton "Copiază"
 - [x] CORS Access-Control-Allow-Origin: * + Cache-Control 5min
 
+### 3.4 Reviews (post-appointment ratings + public moderation)
+- [x] Schema `booking_reviews` (token unic, rating 1-5, comment, status workflow: pending → submitted → published/hidden/spam, ownerReply pentru răspuns admin, snapshot pe customer/service/resource pentru integritate la delete)
+- [x] Worker `/internal/reviews/request/tick` care găsește appointments completed >24h fără review row, creează `pending` cu token random 24-byte URL-safe, trimite email cerere recenzie
+- [x] Email template branded (header colorat, CTA "Lasă o recenzie ★★★★★", link valabil 30 zile)
+- [x] Public route `/api/v1/public/reviews/by-token/:token` (GET preview + POST submit idempotent, fără auth — token e auth-ul)
+- [x] Public page `/r/[token]` cu 5-star hover-rating + textarea comment + brand color de la tenant + thank-you state
+- [x] Admin route `/api/v1/booking/reviews` (list cu filter status/minRating, summary cu avg + distribution, PATCH pentru moderation acțiuni)
+- [x] Admin page `/booking/reviews` cu summary card (avg rating mare, distribuție pe stele cu bar charts, count submitted/published/pending) + filtere status + acțiuni inline (publică / retrage / recomandă / spam / răspunde)
+- [x] Public list `/api/v1/public/reviews?tenantId=...` pentru site builder block (featured-first, newest-first, doar published cu showOnPublicSite=true)
+- [x] Tab "Recenzii" adăugat la nav-ul booking în toate 6 paginile (consistency)
+- [x] Cron script `scripts/reviews-cron.mjs` (suggested 10 AM daily) + status endpoint cu counts per state
+
 ### 3.3 Notifications
 - [x] Email confirmation la booking (admin + public widget)
 - [x] Email cancellation la status change

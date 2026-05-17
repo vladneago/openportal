@@ -28,6 +28,7 @@ const TABS = [
   { href: "/booking/resources", label: "Personal & Spații" },
   { href: "/booking/availability", label: "Program" },
   { href: "/booking/customers", label: "Clienți" },
+  { href: "/booking/reviews", label: "Recenzii" },
 ];
 
 export default function CustomersPage() {
