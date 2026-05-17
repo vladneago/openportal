@@ -226,6 +226,23 @@
 - [x] Tab "Recenzii" adăugat la nav-ul booking în toate 6 paginile (consistency)
 - [x] Cron script `scripts/reviews-cron.mjs` (suggested 10 AM daily) + status endpoint cu counts per state
 
+### 3.5 Marketing campaigns (retention flywheel)
+- [x] Schema `marketing_campaigns` (status workflow draft→scheduled→sending→sent/paused/failed, targeting types, denormalized stats) + `marketing_recipients` (per-customer log cu status, message_id, error, unsubscribe tracking)
+- [x] Rendering markdown→HTML simplu (#/##/bullets/links/bold/italic/hr) cu substituție variabile `{firstName}` `{businessName}` `{bookingLink}` `{unsubscribeLink}` `{currentYear}`
+- [x] Email template branded (header color, unsubscribe footer, preview text hidden span)
+- [x] CRUD complete `/api/v1/marketing/campaigns` (list, detail, create draft, edit while !sent, delete while !sent)
+- [x] `POST /:id/preview` randează cu vars de mostră (Maria Popescu) — folosit pentru live preview în iframe
+- [x] `POST /:id/audience` calculează cine primește (total, eligible, withoutEmail, withoutConsent, sample primii 5)
+- [x] `POST /:id/send-now` rezolvă audience, asertează quota plan, insert recipients (queued/skipped), procesează inline 50 + lasă restul pentru worker drain
+- [x] 6 audience types: all_with_consent | segment_recent (X days) | segment_dormant (Y days no visit) | segment_top_spenders (top N) | segment_tag | manual (customerIds array)
+- [x] Worker `/internal/marketing/{scheduled,drain}/tick` cu WORKER_TOKEN auth — scheduled promotes due campaigns + expands audience, drain procesează batch per campaign in-flight
+- [x] Cron `scripts/marketing-cron.mjs` (suggested every 2-3 min)
+- [x] Plan limit `marketingEmailsPerMonth` (Solo: 1000, Solo Pro: 20000) cu `assertEmailQuota(tenantId, additional)` care permite cap-check pre-send
+- [x] `getEmailQuotaThisMonth()` count peste recipients status='sent' din luna calendaristică — surfaced în `/api/v1/billing/platform/usage` + bar pe `/settings/abonament`
+- [x] UI `/marketing` (list cu summary cards drafts/scheduled/sent/sentThisMonth + filtru status) + nav item nou
+- [x] UI `/marketing/new` cu 4 șabloane preset (Aniversare/Comeback/Newsletter/Promo) + selector audiență + editor markdown
+- [x] UI `/marketing/[id]` cu split-view: editor (când nu e sent) + audiență live + preview iframe srcDoc, butoane Send Now + Edit + audience confirm dialog
+
 ### 3.3 Notifications
 - [x] Email confirmation la booking (admin + public widget)
 - [x] Email cancellation la status change

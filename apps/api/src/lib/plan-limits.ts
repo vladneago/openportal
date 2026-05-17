@@ -7,6 +7,7 @@ import {
   webSites,
   chatWidgetMessages,
   efacturaSubmissions,
+  marketingRecipients,
 } from "@openportal/db";
 import { and, count, eq, gte, isNull, or } from "drizzle-orm";
 import { getPlan, PLANS, type Plan, type PlanLimits } from "./stripe";
@@ -186,6 +187,43 @@ export async function assertEfacturaQuota(tenantId: string): Promise<void> {
   }
 }
 
+/** Returns count of marketing emails sent for this tenant this calendar
+ * month (only status='sent'; skipped/failed don't count against quota). */
+export async function getEmailQuotaThisMonth(tenantId: string): Promise<number> {
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [{ value }] = await db
+    .select({ value: count() })
+    .from(marketingRecipients)
+    .where(
+      and(
+        eq(marketingRecipients.tenantId, tenantId),
+        eq(marketingRecipients.status, "sent"),
+        gte(marketingRecipients.sentAt, monthStart),
+      ),
+    );
+
+  return value;
+}
+
+/** Throws PLAN_LIMIT_MARKETING_EMAILS if sending `additional` emails
+ * would exceed the monthly cap. Pass 0 to just check the current usage. */
+export async function assertEmailQuota(tenantId: string, additional = 0): Promise<void> {
+  const { plan, planSlug } = await getTenantPlan(tenantId);
+  if (plan.limits.marketingEmailsPerMonth >= 99999) return;
+
+  const used = await getEmailQuotaThisMonth(tenantId);
+  if (used + additional > plan.limits.marketingEmailsPerMonth) {
+    throw new AppError(
+      402,
+      "PLAN_LIMIT_MARKETING_EMAILS",
+      `Vrei să trimiți ${additional} email-uri, dar ai folosit ${used} din ${plan.limits.marketingEmailsPerMonth} email-uri marketing incluse în planul ${plan.name} luna aceasta.`,
+      { used, attempting: additional, limit: plan.limits.marketingEmailsPerMonth, planSlug, upgradeTo: "solo_pro" },
+    );
+  }
+}
+
 export async function assertChatAiQuota(tenantId: string): Promise<void> {
   const { plan, planSlug } = await getTenantPlan(tenantId);
   const used = await getChatAiUsageThisMonth(tenantId);
@@ -244,6 +282,7 @@ export async function getTenantUsage(tenantId: string): Promise<{
   products: { used: number; limit: number };
   chatAiThisMonth: { used: number; limit: number };
   efacturaThisMonth: { used: number; limit: number };
+  marketingEmailsThisMonth: { used: number; limit: number };
   sitesPublished: { used: number; limit: number | null };
 }> {
   const active = await getTenantPlan(tenantId);
@@ -257,9 +296,10 @@ export async function getTenantUsage(tenantId: string): Promise<{
       .where(and(eq(webSites.tenantId, tenantId), eq(webSites.status, "published"))),
   ]);
 
-  const [chatAiUsed, efacturaUsed] = await Promise.all([
+  const [chatAiUsed, efacturaUsed, emailUsed] = await Promise.all([
     getChatAiUsageThisMonth(tenantId),
     getEfacturaUsageThisMonth(tenantId),
+    getEmailQuotaThisMonth(tenantId),
   ]);
 
   return {
@@ -281,6 +321,10 @@ export async function getTenantUsage(tenantId: string): Promise<{
     efacturaThisMonth: {
       used: efacturaUsed,
       limit: active.plan.limits.efacturaPerMonth,
+    },
+    marketingEmailsThisMonth: {
+      used: emailUsed,
+      limit: active.plan.limits.marketingEmailsPerMonth,
     },
     sitesPublished: {
       used: sitesRow[0].value,

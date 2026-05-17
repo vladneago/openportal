@@ -46,6 +46,8 @@ import { billingReminderRoutes } from "./modules/workers/billing-reminders";
 import { reviewWorkerRoutes } from "./modules/workers/reviews";
 import { reviewsRoutes } from "./modules/reviews/routes";
 import { reviewsPublicRoutes } from "./modules/reviews/public";
+import { marketingRoutes } from "./modules/marketing/routes";
+import { marketingWorkerRoutes } from "./modules/workers/marketing";
 import { platformBillingRoutes } from "./modules/billing/platform";
 import { anafRoutes } from "./modules/billing/anaf";
 import { chatWidgetRoutes } from "./modules/chat-widget/routes";
@@ -78,6 +80,7 @@ v1.route("/government", governmentRoutes); v1.route("/legal", legalRoutes); v1.r
 v1.route("/realestate", realestateRoutes); v1.route("/events", eventsRoutes); v1.route("/itops", itopsRoutes);
 v1.route("/booking", bookingRoutes);
 v1.route("/booking/reviews", reviewsRoutes);
+v1.route("/marketing", marketingRoutes);
 v1.route("/billing", billingRoutes);
 v1.route("/billing/platform", platformBillingRoutes);
 v1.route("/billing/anaf", anafRoutes);
@@ -96,6 +99,7 @@ app.route("/api/v1/internal/booking", bookingWorkerRoutes);
 app.route("/api/v1/internal/efactura", efacturaWorkerRoutes);
 app.route("/api/v1/internal/billing", billingReminderRoutes);
 app.route("/api/v1/internal/reviews", reviewWorkerRoutes);
+app.route("/api/v1/internal/marketing", marketingWorkerRoutes);
 // Stripe webhook (signature-verified, not WORKER_TOKEN)
 app.route("/api/v1/internal/stripe", stripeWebhookRoutes);
 

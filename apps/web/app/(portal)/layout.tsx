@@ -20,6 +20,7 @@ const NAV_ITEMS = [
   { id: "pos", label: "POS / Magazin", href: "/pos" },
   { id: "site-builder", label: "Site Builder", href: "/site-builder" },
   { id: "chat-widget", label: "Chat Widget", href: "/chat-widget" },
+  { id: "marketing", label: "Marketing", href: "/marketing" },
   { id: "settings", label: "Abonament", href: "/settings/abonament" },
   { id: "hr", label: "HR", href: "/hr" },
   { id: "search", label: "Căutare", href: "/search" },

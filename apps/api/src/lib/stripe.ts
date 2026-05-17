@@ -37,6 +37,7 @@ export interface PlanLimits {
   emailMailboxes: number;
   efacturaPerMonth: number;
   chatAiMessagesPerMonth: number;
+  marketingEmailsPerMonth: number;
   hasCustomDomain: boolean;
   hasMultipleLocations: boolean;
   hasRecurringBilling: boolean;
@@ -73,6 +74,7 @@ export const PLANS: Record<"solo" | "solo_pro", Plan> = {
       emailMailboxes: 5,
       efacturaPerMonth: 100,
       chatAiMessagesPerMonth: 500,
+      marketingEmailsPerMonth: 1000,
       hasCustomDomain: false,
       hasMultipleLocations: false,
       hasRecurringBilling: false,
@@ -96,6 +98,7 @@ export const PLANS: Record<"solo" | "solo_pro", Plan> = {
       emailMailboxes: 20,
       efacturaPerMonth: 99999,
       chatAiMessagesPerMonth: 5000,
+      marketingEmailsPerMonth: 20000,
       hasCustomDomain: true,
       hasMultipleLocations: true,
       hasRecurringBilling: true,

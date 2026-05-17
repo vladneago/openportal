@@ -39,6 +39,7 @@ import * as siteBuilderSchema from "./schema/site_builder";
 import * as platformBillingSchema from "./schema/platform_billing";
 import * as anafSchema from "./schema/anaf";
 import * as reviewsSchema from "./schema/reviews";
+import * as marketingSchema from "./schema/marketing";
 
 const schema: Record<string, unknown> = {
   ...tenantSchema, ...userSchema, ...siteSchema, ...listsSchema,
@@ -58,6 +59,7 @@ const schema: Record<string, unknown> = {
   ...platformBillingSchema,
   ...anafSchema,
   ...reviewsSchema,
+  ...marketingSchema,
 };
 
 const connectionString = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
@@ -102,6 +104,7 @@ export * from "./schema/site_builder";
 export * from "./schema/platform_billing";
 export * from "./schema/anaf";
 export * from "./schema/reviews";
+export * from "./schema/marketing";
 
 export { schema };
 export type Database = typeof db;
