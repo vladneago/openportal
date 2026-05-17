@@ -191,7 +191,7 @@
 - [x] Pagină `/booking/calendar` (vedere săptămână + zi cu grid orar 07-22, programări ca blocuri colorate, click → modal cu acțiuni status)
 - [x] Resource filter în calendar + navigare prev/today/next
 - [x] Modal detail cu state machine complet (pending→confirmed→checked_in→in_progress→completed, sau cancelled/no_show)
-- [ ] Drag-to-reschedule appointments (în viitor)
+- [x] Drag-to-reschedule appointments — mouse-driven, snap-15min, cross-day cu ghost block live (verde valid / roșu conflict), optimistic UI + rollback la 409 BOOKING_CONFLICT, ESC anulează. PATCH `/appointments/:id` acceptă acum și `resourceId` pentru reassign între resurse (cu conflict-check pe resursa țintă).
 - [x] Item nav lateral "Programări"
 
 ### 3.2 Booking Widget (public)

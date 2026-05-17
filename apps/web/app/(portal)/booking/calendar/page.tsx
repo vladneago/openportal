@@ -69,6 +69,8 @@ const DAYS_SHORT = ["Dum", "Lun", "Mar", "Mie", "Joi", "Vin", "Sâm"];
 const HOUR_HEIGHT = 60; // px per hour
 const START_HOUR = 7;
 const END_HOUR = 22;
+const SNAP_MINUTES = 15;
+const DRAG_THRESHOLD_PX = 4;
 
 function startOfWeek(d: Date): Date {
   const result = new Date(d);
@@ -100,6 +102,18 @@ function formatTime(d: Date): string {
 
 type ViewMode = "week" | "day";
 
+interface DragState {
+  apptId: string;
+  originalStartMs: number;
+  durationMin: number;
+  originalDayIdx: number;
+  pointerStartX: number;
+  pointerStartY: number;
+  currentDeltaX: number;
+  currentDeltaY: number;
+  passedThreshold: boolean;
+}
+
 export default function CalendarPage() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
@@ -108,6 +122,9 @@ export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState<Date>(() => new Date());
   const [loading, setLoading] = useState(true);
   const [selectedAppt, setSelectedAppt] = useState<Appointment | null>(null);
+  const [dragState, setDragState] = useState<DragState | null>(null);
+  const [dragError, setDragError] = useState<string | null>(null);
+  const columnWidthRef = useRef<number>(0);
 
   const days = useMemo(() => {
     if (viewMode === "day") return [new Date(currentDate)];
@@ -166,6 +183,162 @@ export default function CalendarPage() {
   function today() {
     setCurrentDate(new Date());
   }
+
+  // ─────────────────────────────────────────────
+  // Drag-to-reschedule
+  //
+  // Mouse-driven. Pointer position is captured globally during a drag,
+  // mapped back to a target (dayIdx, minutesFromStartHour) snapped to a
+  // 15-min grid. On release, PATCH /appointments/:id with the new
+  // startAt. UI updates optimistically; a 409 (conflict) rolls back.
+  // ─────────────────────────────────────────────
+
+  function computeTargetFromDrag(d: DragState): { newStart: Date; dayIdx: number } | null {
+    if (!d.passedThreshold) return null;
+    const columnWidth = columnWidthRef.current || 1;
+    const dayDelta = Math.round(d.currentDeltaX / columnWidth);
+    const minutesDelta = Math.round((d.currentDeltaY / HOUR_HEIGHT) * 60 / SNAP_MINUTES) * SNAP_MINUTES;
+
+    const targetDayIdx = Math.max(0, Math.min(days.length - 1, d.originalDayIdx + dayDelta));
+    const dayDeltaActual = targetDayIdx - d.originalDayIdx;
+
+    const newStart = new Date(d.originalStartMs);
+    newStart.setDate(newStart.getDate() + dayDeltaActual);
+    newStart.setMinutes(newStart.getMinutes() + minutesDelta);
+
+    // Clamp into business hours
+    const hours = newStart.getHours() + newStart.getMinutes() / 60;
+    if (hours < START_HOUR) {
+      newStart.setHours(START_HOUR, 0, 0, 0);
+    } else if (hours + d.durationMin / 60 > END_HOUR) {
+      newStart.setHours(END_HOUR - Math.ceil(d.durationMin / 60), 0, 0, 0);
+    }
+
+    return { newStart, dayIdx: targetDayIdx };
+  }
+
+  // Ref kept in sync with dragState, so the global mouseup handler can
+  // read the latest snapshot even if React batches the state update.
+  const dragStateRef = useRef<DragState | null>(null);
+  useEffect(() => {
+    dragStateRef.current = dragState;
+  }, [dragState]);
+
+  function onApptMouseDown(e: React.MouseEvent, a: Appointment) {
+    // Skip drag for terminal states
+    if (
+      a.appointment.status === "cancelled" ||
+      a.appointment.status === "completed" ||
+      a.appointment.status === "no_show"
+    )
+      return;
+    if (e.button !== 0) return;
+    e.preventDefault();
+    const start = new Date(a.appointment.startAt);
+    const end = new Date(a.appointment.endAt);
+    const durationMin = Math.round((end.getTime() - start.getTime()) / 60_000);
+    const dayKey = start.toISOString().slice(0, 10);
+    const originalDayIdx = days.findIndex((dd) => dd.toISOString().slice(0, 10) === dayKey);
+    if (originalDayIdx < 0) return;
+
+    setDragError(null);
+    setDragState({
+      apptId: a.appointment.id,
+      originalStartMs: start.getTime(),
+      durationMin,
+      originalDayIdx,
+      pointerStartX: e.clientX,
+      pointerStartY: e.clientY,
+      currentDeltaX: 0,
+      currentDeltaY: 0,
+      passedThreshold: false,
+    });
+  }
+
+  useEffect(() => {
+    if (!dragState) return;
+
+    function onMove(e: MouseEvent) {
+      setDragState((prev) => {
+        if (!prev) return prev;
+        const dx = e.clientX - prev.pointerStartX;
+        const dy = e.clientY - prev.pointerStartY;
+        const dist = Math.hypot(dx, dy);
+        return {
+          ...prev,
+          currentDeltaX: dx,
+          currentDeltaY: dy,
+          passedThreshold: prev.passedThreshold || dist > DRAG_THRESHOLD_PX,
+        };
+      });
+    }
+
+    async function onUp() {
+      const d = dragStateRef.current;
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("keydown", onKey);
+      if (!d) return setDragState(null);
+      // Click without movement → fall through to onClick which opens modal
+      if (!d.passedThreshold) {
+        setDragState(null);
+        return;
+      }
+      const target = computeTargetFromDrag(d);
+      setDragState(null);
+      if (!target) return;
+      const newStartMs = target.newStart.getTime();
+      // No-op if the snapped time matches the original
+      if (newStartMs === d.originalStartMs) return;
+
+      // Optimistic update
+      const previous = appointments;
+      const newEnd = new Date(newStartMs + d.durationMin * 60_000);
+      setAppointments((list) =>
+        list.map((a) =>
+          a.appointment.id === d.apptId
+            ? {
+                ...a,
+                appointment: {
+                  ...a.appointment,
+                  startAt: target.newStart.toISOString(),
+                  endAt: newEnd.toISOString(),
+                },
+              }
+            : a,
+        ),
+      );
+
+      const res = await api(`/api/v1/booking/appointments/${d.apptId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ startAt: target.newStart.toISOString() }),
+      });
+      if (!res.success) {
+        setDragError(res.error?.message ?? "Mutarea nu a putut fi salvată");
+        setAppointments(previous);
+        setTimeout(() => setDragError(null), 4000);
+      }
+    }
+
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") {
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+        window.removeEventListener("keydown", onKey);
+        setDragState(null);
+      }
+    }
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("keydown", onKey);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dragState?.apptId]);
 
   async function setStatus(id: string, status: string) {
     await api(`/api/v1/booking/appointments/${id}`, {
@@ -380,12 +553,42 @@ export default function CalendarPage() {
           </div>
 
           {/* Day columns */}
-          {days.map((d) => {
+          {days.map((d, dayIdx) => {
             const key = d.toISOString().slice(0, 10);
             const dayAppts = apptsByDay.get(key) || [];
+
+            // Where the ghost should appear if currently dragging
+            let ghostTop: number | null = null;
+            let ghostHeight = 0;
+            let ghostInvalid = false;
+            if (dragState && dragState.passedThreshold) {
+              const target = computeTargetFromDrag(dragState);
+              if (target && target.dayIdx === dayIdx) {
+                const t = target.newStart;
+                const minutesFromStart = (t.getHours() - START_HOUR) * 60 + t.getMinutes();
+                ghostTop = (minutesFromStart / 60) * HOUR_HEIGHT;
+                ghostHeight = (dragState.durationMin / 60) * HOUR_HEIGHT - 2;
+                // Naive validity preview: check overlap against other appts on this day
+                ghostInvalid = dayAppts.some((other) => {
+                  if (other.appointment.id === dragState.apptId) return false;
+                  if (["cancelled", "no_show"].includes(other.appointment.status)) return false;
+                  const oS = new Date(other.appointment.startAt).getTime();
+                  const oE = new Date(other.appointment.endAt).getTime();
+                  const tStart = t.getTime();
+                  const tEnd = tStart + dragState.durationMin * 60_000;
+                  return tStart < oE && tEnd > oS;
+                });
+              }
+            }
+
             return (
               <div
                 key={d.toISOString()}
+                ref={(el) => {
+                  if (el && dayIdx === 0) {
+                    columnWidthRef.current = el.getBoundingClientRect().width;
+                  }
+                }}
                 className="relative"
                 style={{
                   height: totalHours * HOUR_HEIGHT,
@@ -405,6 +608,27 @@ export default function CalendarPage() {
                   />
                 ))}
 
+                {/* Drag ghost */}
+                {ghostTop !== null && (
+                  <div
+                    className="absolute left-1 right-1 rounded pointer-events-none"
+                    style={{
+                      top: ghostTop,
+                      height: Math.max(20, ghostHeight),
+                      background: ghostInvalid ? "#EF444433" : "#10B98133",
+                      border: `2px dashed ${ghostInvalid ? "#EF4444" : "#10B981"}`,
+                      zIndex: 30,
+                    }}
+                  >
+                    <div
+                      className="text-[10px] font-semibold p-1"
+                      style={{ color: ghostInvalid ? "#991B1B" : "#065F46" }}
+                    >
+                      {ghostInvalid ? "Conflict" : "Mută aici"}
+                    </div>
+                  </div>
+                )}
+
                 {/* Appointments */}
                 {dayAppts.map((a) => {
                   const start = new Date(a.appointment.startAt);
@@ -420,22 +644,36 @@ export default function CalendarPage() {
 
                   const color = a.service.color || a.resource.color || "#6366F1";
                   const isCancelled = a.appointment.status === "cancelled" || a.appointment.status === "no_show";
+                  const isTerminal =
+                    isCancelled || a.appointment.status === "completed";
+                  const isDraggingThis = dragState?.apptId === a.appointment.id && dragState.passedThreshold;
 
                   return (
-                    <button
+                    <div
                       key={a.appointment.id}
-                      onClick={() => setSelectedAppt(a)}
-                      className="absolute left-1 right-1 rounded text-left p-1.5 transition-shadow hover:shadow-md"
+                      onMouseDown={(e) => onApptMouseDown(e, a)}
+                      onClick={(e) => {
+                        // If a drag just ended, the global mouseup ran first and
+                        // cleared dragState. We only consider this a click when
+                        // no movement occurred (threshold never passed).
+                        if (dragState && dragState.passedThreshold) {
+                          e.preventDefault();
+                          return;
+                        }
+                        setSelectedAppt(a);
+                      }}
+                      className="absolute left-1 right-1 rounded text-left p-1.5 transition-shadow hover:shadow-md select-none"
                       style={{
                         top,
                         height,
                         background: color + "22",
                         borderLeft: `3px solid ${color}`,
-                        opacity: isCancelled ? 0.55 : 1,
+                        opacity: isCancelled ? 0.55 : isDraggingThis ? 0.4 : 1,
                         textDecoration: isCancelled ? "line-through" : "none",
-                        cursor: "pointer",
+                        cursor: isTerminal ? "pointer" : "grab",
                         overflow: "hidden",
                       }}
+                      title={isTerminal ? undefined : "Trage pentru a reprograma"}
                     >
                       <div
                         className="text-[10px] font-medium leading-tight"
@@ -458,7 +696,7 @@ export default function CalendarPage() {
                           {a.service.name}
                         </div>
                       )}
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -467,8 +705,18 @@ export default function CalendarPage() {
         </div>
       </div>
 
+      {dragError && (
+        <div
+          className="fixed bottom-6 right-6 rounded-md px-4 py-3 text-sm z-[60] shadow-lg"
+          style={{ background: "#FEF2F2", color: "#991B1B", border: "1px solid #FECACA" }}
+        >
+          {dragError}
+        </div>
+      )}
+
       {/* Legend */}
       <div className="flex items-center gap-3 mt-4 text-xs flex-wrap" style={{ color: "var(--text-tertiary)" }}>
+        <span>Trage o programare pentru a o reprograma · </span>
         <span>Status:</span>
         {Object.entries(STATUS_LABELS).slice(0, 6).map(([k, v]) => (
           <span key={k} className="flex items-center gap-1">

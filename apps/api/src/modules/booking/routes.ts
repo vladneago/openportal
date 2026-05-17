@@ -934,6 +934,7 @@ bookingRoutes.post("/appointments", zValidator("json", appointmentCreateSchema),
 const appointmentUpdateSchema = z.object({
   startAt: z.string().optional(),
   durationMinutes: z.number().int().positive().optional(),
+  resourceId: z.string().uuid().optional(),
   status: z.enum(["pending", "confirmed", "checked_in", "in_progress", "completed", "cancelled", "no_show", "rescheduled"]).optional(),
   customerNote: z.string().max(2000).optional(),
   internalNote: z.string().max(2000).optional(),
@@ -956,19 +957,23 @@ bookingRoutes.patch("/appointments/:id", zValidator("json", appointmentUpdateSch
 
   const updates: Record<string, unknown> = { updatedAt: new Date() };
 
-  if (body.startAt) {
-    const newStart = new Date(body.startAt);
+  const targetResourceId = body.resourceId ?? current.resourceId;
+  const timeChanged = Boolean(body.startAt);
+  const resourceChanged = Boolean(body.resourceId && body.resourceId !== current.resourceId);
+
+  if (timeChanged || resourceChanged) {
+    const newStart = body.startAt ? new Date(body.startAt) : current.startAt;
     const duration = body.durationMinutes ?? Math.round((current.endAt.getTime() - current.startAt.getTime()) / 60_000);
     const newEnd = new Date(newStart.getTime() + duration * 60_000);
 
-    // Conflict check (excluding self)
+    // Conflict check on the target resource (excluding self)
     const conflicts = await db
       .select({ id: bookingAppointments.id })
       .from(bookingAppointments)
       .where(
         and(
           eq(bookingAppointments.tenantId, tenantId),
-          eq(bookingAppointments.resourceId, current.resourceId),
+          eq(bookingAppointments.resourceId, targetResourceId),
           ne(bookingAppointments.id, id),
           inArray(bookingAppointments.status, ["pending", "confirmed", "checked_in", "in_progress"]),
           lt(bookingAppointments.startAt, newEnd),
@@ -981,8 +986,13 @@ bookingRoutes.patch("/appointments/:id", zValidator("json", appointmentUpdateSch
       throw new AppError(409, "BOOKING_CONFLICT", "Resource is already booked in that new time range");
     }
 
-    updates.startAt = newStart;
-    updates.endAt = newEnd;
+    if (timeChanged) {
+      updates.startAt = newStart;
+      updates.endAt = newEnd;
+    }
+    if (resourceChanged) {
+      updates.resourceId = targetResourceId;
+    }
   }
 
   if (body.status) updates.status = body.status;
