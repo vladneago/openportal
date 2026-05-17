@@ -19,6 +19,11 @@ import {
   contentToBlocks,
   type SiteGenerationInput,
 } from "../../lib/ai-site-generator";
+import {
+  pickImages,
+  listSupportedIndustries,
+  type ImageCategory,
+} from "../../lib/site-image-bank";
 
 export const siteBuilderRoutes = new Hono();
 siteBuilderRoutes.use("*", requireAuth);
@@ -798,7 +803,7 @@ const aiGenerateInputSchema = z.object({
 siteBuilderRoutes.post("/ai-generate", zValidator("json", aiGenerateInputSchema), async (c) => {
   const input = c.req.valid("json") as SiteGenerationInput;
   const content = await generateSiteContent(input);
-  const blocks = contentToBlocks(content);
+  const blocks = contentToBlocks(content, input.industry);
   return c.json({
     success: true,
     data: {
@@ -827,7 +832,7 @@ siteBuilderRoutes.post("/ai-generate/apply", zValidator("json", aiGenerateApplyS
 
   const { applyToHomePage, siteId, ...input } = body;
   const content = await generateSiteContent(input as SiteGenerationInput);
-  const blocks = contentToBlocks(content);
+  const blocks = contentToBlocks(content, input.industry);
 
   // Find target page (home for now; future: pageId param)
   const [target] = await db
@@ -861,6 +866,42 @@ siteBuilderRoutes.post("/ai-generate/apply", zValidator("json", aiGenerateApplyS
       stub: !aiSiteGeneratorEnabled,
       content,
       page: updated,
+    },
+  });
+});
+
+// ─────────────────────────────────────────────
+// IMAGE BANK
+//
+// Owner-facing endpoints that surface the curated photo library — used
+// by the block editor (image picker) and by the "shuffle hero image"
+// button. Free, no API key, no usage tracking.
+// ─────────────────────────────────────────────
+
+const imageBankQuerySchema = z.object({
+  industry: z.string().min(2).max(50),
+  category: z.enum(["hero", "about", "general"]).default("hero"),
+  count: z.coerce.number().int().min(1).max(24).default(8),
+});
+
+siteBuilderRoutes.get("/images/pick", async (c) => {
+  const parsed = imageBankQuerySchema.safeParse({
+    industry: c.req.query("industry"),
+    category: c.req.query("category"),
+    count: c.req.query("count"),
+  });
+  if (!parsed.success) {
+    throw new AppError(400, "INVALID_INPUT", "industry, category, count");
+  }
+  const { industry, category, count } = parsed.data;
+  const images = pickImages(industry, category as ImageCategory, count);
+  return c.json({
+    success: true,
+    data: {
+      industry,
+      category,
+      images,
+      supportedIndustries: listSupportedIndustries(),
     },
   });
 });

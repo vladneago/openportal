@@ -520,7 +520,10 @@
 - [x] Block factory `contentToBlocks()` mapează output JSON la blocks site-builder existente (hero + featuresGrid + textImage + servicesPreview + reviewsList + featuresGrid pentru FAQ + ctaBanner)
 - [x] Două endpoints: `POST /site-builder/ai-generate` (preview only, returnează JSON + blocks) și `POST /site-builder/ai-generate/apply` (rescrie blocks pe pagina home + SEO title/description)
 - [x] Preview UI cu cards live (HERO, CARACTERISTICI, DESPRE, RECENZII, FAQ, CTA, SEO) + butoane „Regenerează" și „Aplică pe pagina principală" cu confirmation
-- [ ] Generare imagini placeholder (DALL-E sau Stable Diffusion sau biblioteca curată de stock)
+- [x] Bibliotecă imagini curată Unsplash — `apps/api/src/lib/site-image-bank.ts` cu 21 industrii × 3 categorii (hero/about/general), URL-uri CDN directe sub licență Unsplash (free comercial, fără API key)
+- [x] `contentToBlocks(content, industry)` injectează automat `backgroundImage` pe hero + `imageUrl` pe textImage la generarea AI — zero placeholder-uri goale
+- [x] Endpoint `GET /api/v1/site-builder/images/pick?industry=&category=&count=` returnează un set shuffled de fotografii curate pentru un industry+category dat
+- [x] `ImagePickerField` în block editor — buton „📷 Bibliotecă foto" pe orice câmp `image`, modal cu industry+category selector + grid de fotografii + buton „🔄 Amestecă", click pentru selecție. URL input direct funcționează în continuare.
 - [x] Site complet în <60 secunde — Claude Haiku 4.5 răspunde tipic în 5-15s
 - [x] Editare post-generare prin editorul de blocks existent
 - [x] Wire în onboarding flow: pe ecranul „done" apare un CTA evidențiat (amber) „✨ Personalizează cu AI" care duce direct la generator cu numele/orașul pre-completate

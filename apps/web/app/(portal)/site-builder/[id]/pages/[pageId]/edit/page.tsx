@@ -552,6 +552,13 @@ function FieldRenderer({
     case "url":
     case "image": {
       const stringValue = typeof value === "string" ? value : "";
+      if (field.type === "image") {
+        return (
+          <Field label={field.label} help={field.helpText}>
+            <ImagePickerField value={stringValue} onChange={onChange} placeholder={field.placeholder} />
+          </Field>
+        );
+      }
       return (
         <Field label={field.label} help={field.helpText}>
           <input
@@ -561,15 +568,6 @@ function FieldRenderer({
             className="input w-full text-sm font-mono"
             placeholder={field.placeholder || "https://..."}
           />
-          {stringValue && field.type === "image" && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={stringValue}
-              alt=""
-              className="mt-2 rounded-md max-h-32 object-cover"
-              style={{ border: "1px solid var(--border)" }}
-            />
-          )}
         </Field>
       );
     }
@@ -750,6 +748,225 @@ function Field({ label, children, help }: { label: string; children: React.React
       </span>
       {children}
     </label>
+  );
+}
+
+// ─────────────────────────────────────────────
+// Image picker — URL input + "Bibliotecă foto" modal that surfaces the
+// curated photo bank from /api/v1/site-builder/images/pick. The modal
+// lets the owner browse by industry + category (hero / about / general)
+// and click to assign. Manual URL input still works for owners who want
+// their own photos.
+// ─────────────────────────────────────────────
+
+interface PickedImage {
+  url: string;
+  thumbUrl: string;
+  photoId: string;
+}
+
+const IMAGE_INDUSTRIES: Array<{ value: string; label: string }> = [
+  { value: "beauty", label: "Salon înfrumusețare" },
+  { value: "barbershop", label: "Frizerie / barbershop" },
+  { value: "spa_wellness", label: "SPA & wellness" },
+  { value: "fitness", label: "Fitness" },
+  { value: "yoga_pilates", label: "Yoga / pilates" },
+  { value: "medical", label: "Cabinet medical" },
+  { value: "dental", label: "Stomatologie" },
+  { value: "cofetarie", label: "Cofetărie / patiserie" },
+  { value: "florist", label: "Florărie" },
+  { value: "photographer", label: "Fotograf" },
+  { value: "restaurant", label: "Restaurant" },
+  { value: "cafe", label: "Cafenea" },
+  { value: "lawyer", label: "Avocat" },
+  { value: "accountant", label: "Contabil" },
+  { value: "consulting", label: "Consultant" },
+  { value: "psychology", label: "Psiholog" },
+  { value: "veterinary", label: "Veterinar" },
+  { value: "automotive", label: "Atelier auto" },
+  { value: "hotel_bnb", label: "Hotel / pensiune" },
+  { value: "education", label: "Cursuri / training" },
+  { value: "tattoo_studio", label: "Tatuaj studio" },
+];
+
+function ImagePickerField({
+  value,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  onChange: (v: unknown) => void;
+  placeholder?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [industry, setIndustry] = useState<string>("beauty");
+  const [category, setCategory] = useState<"hero" | "about" | "general">("hero");
+  const [images, setImages] = useState<PickedImage[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  async function loadImages() {
+    setLoading(true);
+    const params = new URLSearchParams({ industry, category, count: "12" });
+    const res = await api<{ images: PickedImage[] }>(
+      `/api/v1/site-builder/images/pick?${params.toString()}`,
+    );
+    if (res.success && res.data) setImages(res.data.images || []);
+    setLoading(false);
+  }
+
+  useEffect(() => {
+    if (open) void loadImages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, industry, category]);
+
+  return (
+    <div>
+      <div className="flex gap-2">
+        <input
+          type="url"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="input flex-1 text-sm font-mono"
+          placeholder={placeholder || "https://..."}
+        />
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="btn-secondary text-xs whitespace-nowrap"
+        >
+          📷 Bibliotecă foto
+        </button>
+      </div>
+      {value && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={value}
+          alt=""
+          className="mt-2 rounded-md max-h-32 object-cover"
+          style={{ border: "1px solid var(--border)" }}
+        />
+      )}
+
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.6)" }}
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="rounded-lg w-full max-w-3xl max-h-[90vh] overflow-auto"
+            style={{ background: "var(--bg)", border: "1px solid var(--border)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              className="px-5 py-3 flex items-center justify-between"
+              style={{ borderBottom: "1px solid var(--border)", position: "sticky", top: 0, background: "var(--bg)" }}
+            >
+              <div>
+                <div className="text-sm font-semibold" style={{ color: "var(--text)" }}>
+                  Alege o imagine din bibliotecă
+                </div>
+                <div className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
+                  Bibliotecă curată Unsplash — free pentru uz comercial.
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="text-xs px-2 py-1 rounded"
+                style={{ color: "var(--text-tertiary)" }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="p-5 space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Industrie">
+                  <select
+                    value={industry}
+                    onChange={(e) => setIndustry(e.target.value)}
+                    className="input w-full text-sm"
+                  >
+                    {IMAGE_INDUSTRIES.map((opt) => (
+                      <option key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                <Field label="Categorie">
+                  <select
+                    value={category}
+                    onChange={(e) =>
+                      setCategory(e.target.value as "hero" | "about" | "general")
+                    }
+                    className="input w-full text-sm"
+                  >
+                    <option value="hero">Hero (wide)</option>
+                    <option value="about">Despre noi</option>
+                    <option value="general">General</option>
+                  </select>
+                </Field>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div className="text-xs" style={{ color: "var(--text-tertiary)" }}>
+                  Click pe imagine pentru a o selecta.
+                </div>
+                <button
+                  type="button"
+                  onClick={loadImages}
+                  className="btn-secondary text-xs"
+                  disabled={loading}
+                >
+                  🔄 Amestecă
+                </button>
+              </div>
+
+              {loading ? (
+                <div className="py-10 text-center text-sm" style={{ color: "var(--text-tertiary)" }}>
+                  Se încarcă…
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {images.map((img) => (
+                    <button
+                      type="button"
+                      key={img.photoId}
+                      onClick={() => {
+                        onChange(img.url);
+                        setOpen(false);
+                      }}
+                      className="rounded-md overflow-hidden hover:ring-2 hover:ring-offset-2"
+                      style={{
+                        border: "1px solid var(--border)",
+                        cursor: "pointer",
+                        padding: 0,
+                        background: "var(--bg-surface)",
+                      }}
+                      title="Selectează această imagine"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={img.thumbUrl}
+                        alt=""
+                        style={{
+                          display: "block",
+                          width: "100%",
+                          height: 120,
+                          objectFit: "cover",
+                        }}
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 

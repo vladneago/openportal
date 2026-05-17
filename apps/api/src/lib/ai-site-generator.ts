@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { pickImage } from "./site-image-bank";
 
 // ─────────────────────────────────────────────
 // AI Site Generator
@@ -335,7 +336,11 @@ function blockId(prefix: string): string {
   return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export function contentToBlocks(content: GeneratedContent): Block[] {
+export function contentToBlocks(content: GeneratedContent, industry?: string): Block[] {
+  const ind = industry || "beauty";
+  const heroImg = pickImage(ind, "hero");
+  const aboutImg = pickImage(ind, "about");
+
   const blocks: Block[] = [
     {
       id: blockId("hero"),
@@ -343,6 +348,7 @@ export function contentToBlocks(content: GeneratedContent): Block[] {
       data: {
         title: content.hero.title,
         subtitle: content.hero.subtitle,
+        backgroundImage: heroImg.url,
         ctaPrimary: content.hero.ctaPrimary,
         ...(content.hero.ctaSecondary ? { ctaSecondary: content.hero.ctaSecondary } : {}),
       },
@@ -361,6 +367,7 @@ export function contentToBlocks(content: GeneratedContent): Block[] {
       data: {
         title: content.about.title,
         text: content.about.text,
+        imageUrl: aboutImg.url,
         imagePosition: "right",
       },
     },
