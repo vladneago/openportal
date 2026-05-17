@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -67,7 +67,9 @@ function toDateInputValue(d: Date): string {
 
 export default function BookingLookupPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const code = (params?.code as string)?.toUpperCase();
+  const depositFlag = searchParams?.get("deposit");
 
   const [booking, setBooking] = useState<BookingDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -209,6 +211,37 @@ export default function BookingLookupPage() {
 
   return (
     <PageShell>
+      {depositFlag === "paid" && (
+        <div
+          style={{
+            padding: "12px 16px",
+            background: "#ECFDF5",
+            color: "#065F46",
+            border: "1px solid #A7F3D0",
+            borderRadius: 10,
+            marginBottom: 16,
+            fontSize: "0.9rem",
+          }}
+        >
+          ✅ Avansul a fost încasat. Programarea ta este confirmată — te așteptăm!
+        </div>
+      )}
+      {depositFlag === "cancelled" && (
+        <div
+          style={{
+            padding: "12px 16px",
+            background: "#FEF3C7",
+            color: "#92400E",
+            border: "1px solid #FCD34D",
+            borderRadius: 10,
+            marginBottom: 16,
+            fontSize: "0.9rem",
+          }}
+        >
+          ⚠️ Plata avansului a fost anulată. Programarea rămâne în „pending" până când avansul este achitat. Contactează-ne dacă ai nevoie de ajutor.
+        </div>
+      )}
+
       <div style={{ textAlign: "center", marginBottom: 24 }}>
         <div
           style={{

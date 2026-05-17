@@ -171,6 +171,8 @@ siteBuilderPublicRoutes.get("/sites/:siteId/services", async (c) => {
       color: bookingServices.color,
       imageUrl: bookingServices.imageUrl,
       sortOrder: bookingServices.sortOrder,
+      requiresDeposit: bookingServices.requiresDeposit,
+      depositAmount: bookingServices.depositAmount,
     })
     .from(bookingServices)
     .where(

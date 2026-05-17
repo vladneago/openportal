@@ -18,6 +18,8 @@ interface Service {
   color: string;
   isActive: boolean;
   isBookableOnline: boolean;
+  requiresDeposit: boolean;
+  depositAmount: string;
   sortOrder: number;
 }
 
@@ -58,6 +60,8 @@ export default function ServicesPage() {
     color: "#10B981",
     isActive: true,
     isBookableOnline: true,
+    requiresDeposit: false,
+    depositAmount: "0",
   });
 
   useEffect(() => {
@@ -84,6 +88,8 @@ export default function ServicesPage() {
       color: "#10B981",
       isActive: true,
       isBookableOnline: true,
+      requiresDeposit: false,
+      depositAmount: "0",
     });
     setEditing(null);
   }
@@ -102,6 +108,8 @@ export default function ServicesPage() {
       color: s.color,
       isActive: s.isActive,
       isBookableOnline: s.isBookableOnline,
+      requiresDeposit: s.requiresDeposit ?? false,
+      depositAmount: s.depositAmount ?? "0",
     });
     setShowCreate(true);
   }
@@ -226,6 +234,15 @@ export default function ServicesPage() {
                       style={{ background: "#10B98122", color: "#10B981" }}
                     >
                       online
+                    </span>
+                  )}
+                  {s.requiresDeposit && Number(s.depositAmount) > 0 && (
+                    <span
+                      className="text-[10px] px-1.5 py-0.5 rounded"
+                      style={{ background: "#6366F122", color: "#6366F1" }}
+                      title={`Avans ${Number(s.depositAmount).toFixed(2)} ${s.currency}`}
+                    >
+                      💳 avans {Number(s.depositAmount).toFixed(0)} {s.currency}
                     </span>
                   )}
                 </div>
@@ -400,6 +417,39 @@ export default function ServicesPage() {
                   />
                   Rezervabil online
                 </label>
+              </div>
+
+              <div
+                className="rounded-md p-3 mt-3"
+                style={{ background: "var(--bg-surface)", border: "1px solid var(--border)" }}
+              >
+                <label
+                  className="flex items-center gap-2 cursor-pointer text-sm"
+                  style={{ color: "var(--text)" }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={form.requiresDeposit}
+                    onChange={(e) => setForm({ ...form, requiresDeposit: e.target.checked })}
+                  />
+                  💳 Necesită avans la rezervarea online
+                </label>
+                {form.requiresDeposit && (
+                  <div className="mt-2">
+                    <Field label="Sumă avans (RON)">
+                      <input
+                        type="text"
+                        value={form.depositAmount}
+                        onChange={(e) => setForm({ ...form, depositAmount: e.target.value })}
+                        className="input w-full text-sm"
+                        placeholder="50"
+                      />
+                    </Field>
+                    <div className="text-[11px] mt-1" style={{ color: "var(--text-tertiary)" }}>
+                      Necesită Stripe configurat în <a href="/settings/stripe-payments" style={{ color: "var(--accent, #6366F1)" }}>Setări → Plăți online</a>. Programarea rămâne în „pending" până când clientul plătește.
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -4,6 +4,7 @@ import {
   tenantStripePayments,
   billingInvoices,
   billingPayments,
+  bookingAppointments,
 } from "@openportal/db";
 import { and, eq } from "drizzle-orm";
 
@@ -228,6 +229,123 @@ export async function markInvoicePaidFromSession(
       updatedAt: new Date(),
     })
     .where(eq(billingInvoices.id, invoice.id));
+
+  return { alreadyApplied: false };
+}
+
+// ─────────────────────────────────────────────
+// Appointment deposit — Stripe Checkout Session for booking deposits
+//
+// Used by the public booking widget when a service has requiresDeposit=true.
+// The appointment is created in `pending` status and locked into the
+// calendar with a short hold. The webhook flips it to `confirmed` once
+// the deposit clears.
+//
+// We use a one-shot Checkout Session (not a Payment Link) because the
+// session is tied to a single appointment + single buyer and we control
+// the success URL.
+// ─────────────────────────────────────────────
+
+export async function createAppointmentDepositSession(
+  tenantId: string,
+  appointmentId: string,
+  options: {
+    serviceName: string;
+    depositAmount: number;
+    currency: string;
+    customerEmail?: string | null;
+    successUrl: string;
+    cancelUrl: string;
+  },
+): Promise<{ url: string; sessionId: string }> {
+  const stripe = await getTenantStripe(tenantId);
+  if (!stripe) {
+    throw new Error("Stripe payments not configured for this tenant");
+  }
+
+  if (!(options.depositAmount > 0)) {
+    throw new Error("Deposit amount must be positive");
+  }
+
+  const unitAmount = Math.round(options.depositAmount * 100);
+  const currency = options.currency.toLowerCase();
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    line_items: [
+      {
+        price_data: {
+          currency,
+          unit_amount: unitAmount,
+          product_data: {
+            name: `Avans ${options.serviceName}`,
+          },
+        },
+        quantity: 1,
+      },
+    ],
+    success_url: options.successUrl,
+    cancel_url: options.cancelUrl,
+    customer_email: options.customerEmail ?? undefined,
+    metadata: {
+      tenantId,
+      appointmentId,
+      kind: "appointment_deposit",
+    },
+    payment_intent_data: {
+      description: `Avans pentru programare — ${options.serviceName}`,
+      metadata: {
+        tenantId,
+        appointmentId,
+        kind: "appointment_deposit",
+      },
+    },
+  });
+
+  if (!session.url) {
+    throw new Error("Stripe did not return a checkout URL");
+  }
+
+  return { url: session.url, sessionId: session.id };
+}
+
+export async function markAppointmentDepositPaidFromSession(
+  tenantId: string,
+  appointmentId: string,
+  session: import("stripe").Stripe.Checkout.Session,
+): Promise<{ alreadyApplied: boolean }> {
+  const [appt] = await db
+    .select()
+    .from(bookingAppointments)
+    .where(
+      and(
+        eq(bookingAppointments.tenantId, tenantId),
+        eq(bookingAppointments.id, appointmentId),
+      ),
+    )
+    .limit(1);
+  if (!appt) throw new Error("Appointment not found");
+
+  // Idempotency — deposit already applied?
+  if (Number(appt.depositPaid) > 0 && appt.status === "confirmed") {
+    return { alreadyApplied: true };
+  }
+
+  const amountReceived = (session.amount_total ?? 0) / 100;
+  if (!(amountReceived > 0)) {
+    throw new Error("Session has no amount");
+  }
+
+  await db
+    .update(bookingAppointments)
+    .set({
+      status: "confirmed",
+      depositPaid: String(amountReceived),
+      totalPaid: String(Number(appt.totalPaid || 0) + amountReceived),
+      paymentStatus: "deposit_paid",
+      updatedAt: new Date(),
+    })
+    .where(eq(bookingAppointments.id, appt.id));
 
   return { alreadyApplied: false };
 }

@@ -358,6 +358,23 @@
 - [x] UI `/billing` — buton „💳 Link plată" pe facturi neachitate (issued/sent/viewed/partially_paid/overdue), generează (sau returnează cache) link Stripe, copiază URL + deschide tab nou
 - [x] Quick link „💳 Configurează plăți online" în header-ul `/settings/abonament`
 
+### 4.5 Booking deposits (anti-no-show, via Stripe)
+- [x] Reuses Stripe Payments infra (tenant secret key + webhook). Saloanele care iau avans raportează ~70% reducere no-show.
+- [x] Câmpuri `requires_deposit` + `deposit_amount` deja prezente pe `booking_services` (schema). Acum sunt wire-uite end-to-end.
+- [x] Lib extension: `createAppointmentDepositSession` creează Stripe Checkout Session ad-hoc (Product+Price inline) cu `metadata={tenantId, appointmentId, kind:"appointment_deposit"}` și `success_url=/b/{code}?deposit=paid`, `cancel_url=/b/{code}?deposit=cancelled`
+- [x] Lib: `markAppointmentDepositPaidFromSession` idempotent — flips `status` la `confirmed`, setează `depositPaid`/`totalPaid`, `paymentStatus='deposit_paid'`
+- [x] Webhook `stripe-payments-webhook` extins — detectează `metadata.kind === 'appointment_deposit'` și rutează spre handler de appointment în loc de invoice. Tenant-mismatch check păstrat.
+- [x] Public booking `POST /public/booking/appointments` — la service-cu-deposit + Stripe enabled creează appointment `pending` + emite Checkout Session, returnează `checkoutUrl` în răspuns; widget redirecționează clientul. Roll-back automat (delete appointment) dacă crearea Checkout-ului eșuează.
+- [x] Confirmare email/SMS amânată — se trimite din webhook DUPĂ ce avansul s-a achitat (notifyBookingConfirmed) ca să nu confirmi un client care n-a plătit
+- [x] Public services endpoint expune `requiresDeposit` + `depositAmount` ca widget-ul să afișeze badge-ul „💳 avans X RON" pe lista de servicii
+- [x] UI `/booking/services` — toggle „💳 Necesită avans la rezervarea online" + câmp sumă în modal, hint link spre `/settings/stripe-payments`, badge pe rândul listei
+- [x] UI widget public `/book/[siteId]`:
+  - Badge avans pe step Serviciu
+  - Card highlight pe step Detalii cu „La confirmare se reține un avans de X RON prin card (Stripe)"
+  - Buton CTA dinamic: „Confirmă & plătește avans X RON" în loc de „Confirmă programarea"
+  - Redirect automat la `data.checkoutUrl` după submit dacă răspunsul are checkoutUrl
+- [x] UI `/b/[code]` — banner verde „✅ Avansul a fost încasat" când `?deposit=paid` în URL, banner galben „⚠️ Plata avansului a fost anulată" pentru `?deposit=cancelled`
+
 ---
 
 ## Faza 5 — Email Server MVP (Săpt 10–12)

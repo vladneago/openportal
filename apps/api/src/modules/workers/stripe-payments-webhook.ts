@@ -4,7 +4,9 @@ import { eq } from "drizzle-orm";
 import {
   verifyWebhookSignature,
   markInvoicePaidFromSession,
+  markAppointmentDepositPaidFromSession,
 } from "../../lib/tenant-stripe-payments";
+import { notifyBookingConfirmed } from "../../lib/booking-notifications";
 
 // ─────────────────────────────────────────────
 // Stripe webhook for per-tenant payment links (public, signature-verified)
@@ -51,12 +53,9 @@ stripePaymentsWebhookRoutes.post("/webhook/:tenantId", async (c) => {
   try {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as import("stripe").Stripe.Checkout.Session;
-      const invoiceId = (session.metadata?.invoiceId || "").toString();
       const metadataTenantId = (session.metadata?.tenantId || "").toString();
+      const kind = (session.metadata?.kind || "").toString();
 
-      if (!invoiceId) {
-        return c.json({ success: true, data: { ignored: "no_invoice_id" } });
-      }
       if (metadataTenantId && metadataTenantId !== tenantId) {
         // Mismatch — tenant in URL doesn't match metadata. Reject.
         return c.json(
@@ -64,7 +63,26 @@ stripePaymentsWebhookRoutes.post("/webhook/:tenantId", async (c) => {
           400,
         );
       }
-      if (session.payment_status === "paid") {
+
+      if (session.payment_status !== "paid") {
+        return c.json({ success: true, data: { ignored: "not_paid" } });
+      }
+
+      if (kind === "appointment_deposit") {
+        const appointmentId = (session.metadata?.appointmentId || "").toString();
+        if (!appointmentId) {
+          return c.json({ success: true, data: { ignored: "no_appointment_id" } });
+        }
+        const result = await markAppointmentDepositPaidFromSession(tenantId, appointmentId, session);
+        if (!result.alreadyApplied) {
+          // Fire confirmation email + SMS now that deposit cleared
+          notifyBookingConfirmed(appointmentId).catch(() => {});
+        }
+      } else {
+        const invoiceId = (session.metadata?.invoiceId || "").toString();
+        if (!invoiceId) {
+          return c.json({ success: true, data: { ignored: "no_invoice_id" } });
+        }
         await markInvoicePaidFromSession(tenantId, invoiceId, session);
       }
     }

@@ -14,6 +14,10 @@ import {
 import { and, eq, gte, lte, lt, gt, inArray, or, sql } from "drizzle-orm";
 import { AppError } from "../../middleware/error-handler";
 import { notifyBookingConfirmed, notifyBookingCancelled } from "../../lib/booking-notifications";
+import {
+  createAppointmentDepositSession,
+  getTenantStripeConfig,
+} from "../../lib/tenant-stripe-payments";
 
 export const bookingPublicRoutes = new Hono();
 
@@ -347,6 +351,18 @@ bookingPublicRoutes.post(
       bookingCode = generateBookingCode();
     }
 
+    // Determine if this service requires a deposit. Only enforce when the
+    // tenant has Stripe Payments configured + enabled — otherwise the
+    // service-level flag is a no-op (we don't have a way to collect it).
+    const depositAmount = Number(service.depositAmount || 0);
+    const stripeCfg = await getTenantStripeConfig(tenantId);
+    const stripeReady = Boolean(
+      stripeCfg && stripeCfg.enabled && stripeCfg.secretKey,
+    );
+    const needsDeposit = service.requiresDeposit === true
+      && depositAmount > 0
+      && stripeReady;
+
     const [appointment] = await db.transaction(async (tx) => {
       const [inserted] = await tx
         .insert(bookingAppointments)
@@ -358,7 +374,8 @@ bookingPublicRoutes.post(
           serviceId: body.serviceId,
           startAt,
           endAt,
-          status: "confirmed",
+          // Pending until deposit clears, otherwise auto-confirmed
+          status: needsDeposit ? "pending" : "confirmed",
           channel: "widget",
           priceSnapshot: service.price,
           currencySnapshot: service.currency,
@@ -378,7 +395,50 @@ bookingPublicRoutes.post(
       return [inserted!];
     });
 
-    // Fire-and-forget email confirmation
+    // Deposit path: issue Stripe Checkout Session
+    if (needsDeposit) {
+      const webBase = process.env.WEB_BASE_URL || "http://localhost:3000";
+      try {
+        const { url } = await createAppointmentDepositSession(tenantId, appointment.id, {
+          serviceName: service.name,
+          depositAmount,
+          currency: service.currency || "RON",
+          customerEmail: cleanEmail ?? null,
+          successUrl: `${webBase}/b/${appointment.bookingCode}?deposit=paid`,
+          cancelUrl: `${webBase}/b/${appointment.bookingCode}?deposit=cancelled`,
+        });
+        return c.json(
+          {
+            success: true,
+            data: {
+              id: appointment.id,
+              bookingCode: appointment.bookingCode,
+              startAt: appointment.startAt,
+              endAt: appointment.endAt,
+              status: appointment.status,
+              serviceName: service.name,
+              resourceName: resource.name,
+              price: appointment.priceSnapshot,
+              currency: appointment.currencySnapshot,
+              requiresDeposit: true,
+              depositAmount: String(depositAmount),
+              checkoutUrl: url,
+            },
+          },
+          201,
+        );
+      } catch (err) {
+        // Roll back the pending appointment — deposit could not be issued.
+        await db.delete(bookingAppointments).where(eq(bookingAppointments.id, appointment.id));
+        throw new AppError(
+          502,
+          "DEPOSIT_LINK_FAILED",
+          (err as Error).message ?? "Nu am putut crea sesiunea de plată pentru avans. Te rugăm încearcă mai târziu.",
+        );
+      }
+    }
+
+    // No-deposit path: send confirmation immediately
     notifyBookingConfirmed(appointment.id).catch(() => {});
 
     return c.json(
@@ -394,6 +454,7 @@ bookingPublicRoutes.post(
           resourceName: resource.name,
           price: appointment.priceSnapshot,
           currency: appointment.currencySnapshot,
+          requiresDeposit: false,
         },
       },
       201,

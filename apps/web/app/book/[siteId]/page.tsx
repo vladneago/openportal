@@ -13,6 +13,8 @@ interface Service {
   price: string;
   currency: string;
   color: string;
+  requiresDeposit?: boolean;
+  depositAmount?: string | null;
 }
 
 interface Resource {
@@ -180,6 +182,9 @@ export default function PublicBookingPage() {
       resourceName: string;
       price: string;
       currency: string;
+      requiresDeposit?: boolean;
+      depositAmount?: string;
+      checkoutUrl?: string;
     }>(`${API_URL}/api/v1/public/booking/appointments`, {
       method: "POST",
       body: JSON.stringify({
@@ -201,6 +206,13 @@ export default function PublicBookingPage() {
 
     setSubmitting(false);
     if (res.success && res.data) {
+      // Deposit path: hand off to Stripe Checkout. The success URL will
+      // bring the customer back to /b/{code}?deposit=paid where they can
+      // see their booking confirmation.
+      if (res.data.checkoutUrl) {
+        window.location.href = res.data.checkoutUrl;
+        return;
+      }
       setConfirmation(res.data);
       setStep("done");
     } else {
@@ -415,7 +427,23 @@ function ServiceStep({
           >
             <div style={{ width: 4, alignSelf: "stretch", background: s.color, borderRadius: 2 }} />
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontWeight: 600, marginBottom: 4 }}>{s.name}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                <span style={{ fontWeight: 600 }}>{s.name}</span>
+                {s.requiresDeposit && Number(s.depositAmount || 0) > 0 && (
+                  <span
+                    style={{
+                      fontSize: "0.7rem",
+                      fontWeight: 600,
+                      padding: "2px 6px",
+                      borderRadius: 6,
+                      background: "#FEF3C7",
+                      color: "#92400E",
+                    }}
+                  >
+                    💳 avans {Number(s.depositAmount || 0).toFixed(0)} {s.currency}
+                  </span>
+                )}
+              </div>
               <div style={{ fontSize: "0.85rem", color: textMuted }}>
                 {s.durationMinutes} min
                 {s.description ? ` · ${s.description}` : ""}
@@ -667,6 +695,8 @@ function DetailsStep({
 }) {
   const startAt = new Date(slot.startAt);
   const canSubmit = form.firstName.trim() && form.phone.trim().length >= 5;
+  const hasDeposit = service.requiresDeposit === true && Number(service.depositAmount || 0) > 0;
+  const depositValue = Number(service.depositAmount || 0);
 
   return (
     <div>
@@ -704,6 +734,21 @@ function DetailsStep({
         <div style={{ fontWeight: 700, marginTop: 6 }}>
           {Number(service.price).toFixed(2)} {service.currency}
         </div>
+        {hasDeposit && (
+          <div
+            style={{
+              marginTop: 10,
+              padding: 10,
+              background: "#FFFBEB",
+              border: "1px solid #FCD34D",
+              borderRadius: 8,
+              fontSize: "0.85rem",
+              color: "#92400E",
+            }}
+          >
+            💳 La confirmare se reține un <strong>avans de {depositValue.toFixed(2)} {service.currency}</strong> prin card (Stripe). Vei fi redirecționat către o pagină securizată de plată. Diferența se achită la fața locului.
+          </div>
+        )}
       </div>
 
       <h2 style={{ fontSize: "1rem", fontWeight: 600, marginTop: 0, marginBottom: 12 }}>
@@ -801,7 +846,11 @@ function DetailsStep({
             opacity: canSubmit && !submitting ? 1 : 0.5,
           }}
         >
-          {submitting ? "Se rezervă…" : "Confirmă programarea"}
+          {submitting
+            ? "Se rezervă…"
+            : hasDeposit
+            ? `Confirmă & plătește avans ${depositValue.toFixed(0)} ${service.currency}`
+            : "Confirmă programarea"}
         </button>
       </div>
     </div>
