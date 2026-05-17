@@ -63,6 +63,7 @@ export default function OnboardingPage() {
   const [staffName, setStaffName] = useState("");
   const [createSite, setCreateSite] = useState(true);
   const [siteSubdomain, setSiteSubdomain] = useState("");
+  const [createdSiteId, setCreatedSiteId] = useState<string | null>(null);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [themes, setThemes] = useState<Theme[]>([]);
 
@@ -204,7 +205,7 @@ export default function OnboardingPage() {
         const template = templates.find((t) => t.slug === preset.suggestedTemplate);
         const theme = themes.find((t) => t.slug === preset.suggestedTheme);
 
-        await api(`/api/v1/site-builder/sites`, {
+        const siteRes = await api<{ id: string }>(`/api/v1/site-builder/sites`, {
           method: "POST",
           body: JSON.stringify({
             name: business.name,
@@ -225,6 +226,9 @@ export default function OnboardingPage() {
             defaultLocale: "ro",
           }),
         });
+        if (siteRes.success && siteRes.data?.id) {
+          setCreatedSiteId(siteRes.data.id);
+        }
       }
 
       setProgress("Gata!");
@@ -752,6 +756,23 @@ export default function OnboardingPage() {
                 >
                   Vezi calendarul programărilor →
                 </Link>
+                {createSite && createdSiteId && (
+                  <Link
+                    href={`/site-builder/${createdSiteId}/generate`}
+                    style={{
+                      padding: 14,
+                      background: "#FEF3C7",
+                      color: "#92400E",
+                      borderRadius: 10,
+                      textDecoration: "none",
+                      fontWeight: 600,
+                      fontSize: "0.95rem",
+                      border: "1px solid #FCD34D",
+                    }}
+                  >
+                    ✨ Personalizează cu AI (60 secunde)
+                  </Link>
+                )}
                 {createSite && (
                   <Link
                     href={`/s/${siteSubdomain}`}

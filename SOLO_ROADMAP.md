@@ -481,11 +481,18 @@
 - [ ] Servicii de menaj / curățenie
 
 ### 8.2 AI Site Generator
-- [ ] Wizard: "Spune-mi despre business-ul tău" (industry, locatie, USP)
-- [ ] Generare automată texte (Claude)
+- [x] Wizard form `/site-builder/[id]/generate` cu inputuri: business name, industry (21 opțiuni), one-line description, USP, oraș, ton (5 variante: warm/modern/lux/casual/professional)
+- [x] Generare automată texte cu Claude (`apps/api/src/lib/ai-site-generator.ts`) — prompt structurat care întoarce JSON cu hero/features/about/servicesPreview/reviewsFallback/faq/ctaBanner/seo
+- [x] Industry hints per cele 21 verticale (style + vocabular per domeniu) + tone hints
+- [x] Strict JSON schema validation + coercion la stub content când Claude returnează malformat
+- [x] Stub mode când lipsește `ANTHROPIC_API_KEY` — folosește template generic pentru testare locală
+- [x] Block factory `contentToBlocks()` mapează output JSON la blocks site-builder existente (hero + featuresGrid + textImage + servicesPreview + reviewsList + featuresGrid pentru FAQ + ctaBanner)
+- [x] Două endpoints: `POST /site-builder/ai-generate` (preview only, returnează JSON + blocks) și `POST /site-builder/ai-generate/apply` (rescrie blocks pe pagina home + SEO title/description)
+- [x] Preview UI cu cards live (HERO, CARACTERISTICI, DESPRE, RECENZII, FAQ, CTA, SEO) + butoane „Regenerează" și „Aplică pe pagina principală" cu confirmation
 - [ ] Generare imagini placeholder (DALL-E sau Stable Diffusion sau biblioteca curată de stock)
-- [ ] Site complet în <60 secunde
-- [ ] Editare post-generare
+- [x] Site complet în <60 secunde — Claude Haiku 4.5 răspunde tipic în 5-15s
+- [x] Editare post-generare prin editorul de blocks existent
+- [x] Wire în onboarding flow: pe ecranul „done" apare un CTA evidențiat (amber) „✨ Personalizează cu AI" care duce direct la generator cu numele/orașul pre-completate
 
 ---
 

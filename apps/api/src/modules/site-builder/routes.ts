@@ -13,6 +13,12 @@ import { and, eq, sql, desc, asc, count, or, isNull } from "drizzle-orm";
 import { requireAuth } from "../../middleware/auth";
 import { AppError } from "../../middleware/error-handler";
 import { assertFeature } from "../../lib/plan-limits";
+import {
+  aiSiteGeneratorEnabled,
+  generateSiteContent,
+  contentToBlocks,
+  type SiteGenerationInput,
+} from "../../lib/ai-site-generator";
 
 export const siteBuilderRoutes = new Hono();
 siteBuilderRoutes.use("*", requireAuth);
@@ -766,4 +772,95 @@ siteBuilderRoutes.delete("/assets/:id", async (c) => {
 
   if (result.length === 0) throw new AppError(404, "NOT_FOUND", "Asset not found");
   return c.json({ success: true });
+});
+
+// ─────────────────────────────────────────────
+// AI SITE GENERATOR
+//
+// POST /ai-generate           — generate content blocks, returns JSON
+// POST /ai-generate/apply     — generate + write into the site's home
+//                               page as blocks (replaces existing blocks
+//                               on that page). Returns the updated page.
+//
+// Both routes accept the same input. Apply requires `siteId` so we know
+// which page to update.
+// ─────────────────────────────────────────────
+
+const aiGenerateInputSchema = z.object({
+  businessName: z.string().min(2).max(200),
+  industry: z.string().min(2).max(50),
+  oneLineDescription: z.string().min(5).max(500),
+  uniqueValue: z.string().max(500).optional(),
+  tone: z.enum(["modern", "lux", "casual", "warm", "professional"]).optional(),
+  city: z.string().max(120).optional(),
+});
+
+siteBuilderRoutes.post("/ai-generate", zValidator("json", aiGenerateInputSchema), async (c) => {
+  const input = c.req.valid("json") as SiteGenerationInput;
+  const content = await generateSiteContent(input);
+  const blocks = contentToBlocks(content);
+  return c.json({
+    success: true,
+    data: {
+      stub: !aiSiteGeneratorEnabled,
+      content,
+      blocks,
+    },
+  });
+});
+
+const aiGenerateApplySchema = aiGenerateInputSchema.extend({
+  siteId: z.string().uuid(),
+  applyToHomePage: z.boolean().default(true),
+});
+
+siteBuilderRoutes.post("/ai-generate/apply", zValidator("json", aiGenerateApplySchema), async (c) => {
+  const tenantId = c.get("tenantId");
+  const body = c.req.valid("json");
+
+  const [site] = await db
+    .select({ id: webSites.id })
+    .from(webSites)
+    .where(and(eq(webSites.tenantId, tenantId), eq(webSites.id, body.siteId)))
+    .limit(1);
+  if (!site) throw new AppError(404, "SITE_NOT_FOUND", "Site not found");
+
+  const { applyToHomePage, siteId, ...input } = body;
+  const content = await generateSiteContent(input as SiteGenerationInput);
+  const blocks = contentToBlocks(content);
+
+  // Find target page (home for now; future: pageId param)
+  const [target] = await db
+    .select()
+    .from(webPages)
+    .where(
+      and(
+        eq(webPages.tenantId, tenantId),
+        eq(webPages.siteId, siteId),
+        eq(webPages.isHomePage, true),
+      ),
+    )
+    .limit(1);
+
+  if (!target) throw new AppError(404, "HOME_PAGE_NOT_FOUND", "Site has no home page");
+
+  const [updated] = await db
+    .update(webPages)
+    .set({
+      blocks: blocks as unknown as Record<string, unknown>[],
+      seoTitle: content.seo.title,
+      seoDescription: content.seo.description,
+      updatedAt: new Date(),
+    })
+    .where(eq(webPages.id, target.id))
+    .returning();
+
+  return c.json({
+    success: true,
+    data: {
+      stub: !aiSiteGeneratorEnabled,
+      content,
+      page: updated,
+    },
+  });
 });

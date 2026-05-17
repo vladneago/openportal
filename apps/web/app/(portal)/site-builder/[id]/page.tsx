@@ -253,6 +253,13 @@ export default function SiteDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Link
+            href={`/site-builder/${site.id}/generate`}
+            className="btn-secondary text-sm no-underline"
+            title="Generează conținut nou cu AI"
+          >
+            ✨ AI Generator
+          </Link>
           <a
             href={`/preview/${site.id}`}
             target="_blank"
