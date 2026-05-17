@@ -344,9 +344,11 @@
 ### 6.1 Widget Embeddable
 - [x] Pagină `/chat-widget` (cards widgets cu stats conv/messages + buton "Cod embed")
 - [x] Modal "Widget nou" (site asociat, culori, poziție, industrie AI, agent name, greeting)
-- [x] Buton copy embed code (`<script src="...?id=cw_..." async>`)
-- [ ] Floating bubble + chat window client-side (widget.js — runtime separat)
-- [ ] Mobile responsive (când e creat widget.js)
+- [x] Buton copy embed code (`<script src="...?id=cw_..." async>`) — corectat URL la `/embed/chat.js`
+- [x] **Floating bubble + chat window** (`/embed/chat.js` loader generator + iframe popover 380×600 docked, lazy-mounted iframe la primul click, postMessage close-from-iframe)
+- [x] Greeting bubble dismissibilă (apare după 1.2s, dispare la deschidere chat, persistat în sessionStorage)
+- [x] Iframe chat UI la `/embed/chat/[publicKey]` cu session resume (sessionStorage), polling 2.5s pentru mesaje AI noi, optimistic insert, typing indicator cu 3 dots pulsate
+- [x] Mobile responsive: bubble + window se transformă în fullscreen pe ≤480px
 
 ### 6.2 AI Backend
 - [x] Schema completă cu config AI (model, temperature, tools, industry)

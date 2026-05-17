@@ -123,7 +123,11 @@ export default function ChatWidgetsPage() {
   }
 
   async function copyEmbedCode(w: ChatWidget) {
-    const code = `<script src="https://openportal.app/widget.js?id=${w.publicKey}" async></script>`;
+    const webOrigin =
+      typeof window !== "undefined"
+        ? process.env.NEXT_PUBLIC_WEB_BASE_URL || window.location.origin
+        : "https://openportal.app";
+    const code = `<script src="${webOrigin}/embed/chat.js?id=${w.publicKey}" async></script>`;
     await navigator.clipboard.writeText(code);
     alert("Cod copiat în clipboard:\n\n" + code);
   }
