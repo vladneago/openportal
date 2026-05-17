@@ -360,7 +360,11 @@
 - [x] Token tracking per conversation + per widget
 - [x] Skip AI dacă status = `human_handling` (takeover funcționează)
 - [x] Auto-skip dacă `ANTHROPIC_API_KEY` lipsește (graceful degradation)
-- [ ] Function calling: book appointment, get price list, escalate to human
+- [x] **Function calling cu 3 tools** (`find_available_slots`, `book_appointment`, `escalate_to_human`) — agentic loop multi-turn (cap 3 iterații) cu tool_use + tool_result blocks
+- [x] Tool `find_available_slots`: fuzzy-match service by name, scan resource availability + appointments + blocked slots peste 7-30 zile cu slot increment 15min + bufferBefore/After + minAdvanceBookingHours; max 10 slots returnate
+- [x] Tool `book_appointment`: validează slot încă liber, găsește/creează customer by phone/email, creează appointment cu channel=`ai_chat`, leagă customer la conversation, trimite email confirmare async
+- [x] Tool `escalate_to_human`: flip conversation status la `human_handling` așa apare în inbox admin și AI nu mai răspunde automat
+- [x] Schema: nou canal `ai_chat` în booking_channel enum pentru analytics (programări din chat AI vs widget/admin/phone)
 
 ### 6.3 Admin Inbox
 - [x] Pagină `/chat-widget/conversations` (split inbox: lista stânga + thread dreapta)

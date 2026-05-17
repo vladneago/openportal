@@ -10,6 +10,7 @@ import {
   type ChatWidget,
 } from "@openportal/db";
 import { and, asc, eq, sql } from "drizzle-orm";
+import { CHAT_TOOLS, executeTool, type ToolContext } from "./chat-tools";
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const DEFAULT_MODEL = process.env.ANTHROPIC_DEFAULT_MODEL || "claude-haiku-4-5-20251001";
@@ -114,6 +115,7 @@ function getIndustryPrompt(industry: string | null): string {
 }
 
 interface Service {
+  id: string;
   name: string;
   description: string | null;
   durationMinutes: number;
@@ -150,10 +152,16 @@ function formatTenantInfo(tenantName: string, settings: Record<string, unknown>)
   return lines.join("\n");
 }
 
-interface ConversationContext {
+export interface ConversationContext {
   widget: ChatWidget;
+  conversationId: string;
+  tenantId: string;
   tenantName: string;
   tenantSettings: Record<string, unknown>;
+  visitorName: string | null;
+  visitorEmail: string | null;
+  visitorPhone: string | null;
+  customerId: string | null;
   services: Service[];
   knowledgeSources: Array<{ title: string; content: string | null }>;
   history: Array<{ role: "user" | "assistant"; content: string }>;
@@ -175,6 +183,7 @@ async function loadConversationContext(conversationId: string): Promise<Conversa
 
   const services = await db
     .select({
+      id: bookingServices.id,
       name: bookingServices.name,
       description: bookingServices.description,
       durationMinutes: bookingServices.durationMinutes,
@@ -229,8 +238,14 @@ async function loadConversationContext(conversationId: string): Promise<Conversa
 
   return {
     widget,
+    conversationId,
+    tenantId: conv.tenantId,
     tenantName: tenant.name,
     tenantSettings: (tenant.settings || {}) as Record<string, unknown>,
+    visitorName: conv.visitorName,
+    visitorEmail: conv.visitorEmail,
+    visitorPhone: conv.visitorPhone,
+    customerId: conv.customerId,
     services,
     knowledgeSources,
     history,
@@ -306,52 +321,122 @@ export async function generateAIReply(conversationId: string): Promise<{
 - Răspunzi DOAR în română, cu excepția cazului în care utilizatorul scrie în altă limbă.
 - Răspunsuri SCURTE (max 3-4 propoziții), prietenoase, la obiect.
 - Nu inventezi servicii sau prețuri care nu apar în lista de mai sus.
-- Dacă utilizatorul vrea să rezerve, încurajează-l să folosească pagina de rezervări (oferi linkul "Programează-te" sau "Rezervă acum").
-- Dacă întrebarea iese din scope sau are nevoie de detalii suplimentare, propune să fie contactat un agent uman.
-- Folosește emoji-uri rar și doar dacă sunt potrivite (ex: 💇, 💅, ✨).`;
+
+═══ TOOLS DISPONIBILE ═══
+- find_available_slots: caută slot-uri disponibile pentru un serviciu. Folosește când utilizatorul vrea să rezerve.
+- book_appointment: rezervă efectiv. Folosește DOAR DUPĂ ce ai cerut și obținut DA explicit de la utilizator („Confirmi rezervarea pentru...?"). Necesită serviceId + resourceId + startAt (din slot) + nume + telefon.
+- escalate_to_human: trimite conversația la un agent uman când e nevoie de intervenție umană (reclamații, situații complexe, cerere explicită).
+
+Flow ideal de rezervare:
+1. Întreabă ce serviciu, când îi convine (zile/ore preferate).
+2. Chemi find_available_slots cu numele serviciului.
+3. Prezinți 2-3 opțiuni cu data + ora + personal.
+4. După ce alege, ceri nume + telefon (dacă nu le ai deja).
+5. Confirmi cu utilizatorul: „Confirmi rezervarea de [serviciu] pe [data] la [ora] cu [personal]?"
+6. După DA, chemi book_appointment.
+7. Anunți codul de rezervare (ABCD1234) și ora.
+
+Folosește emoji-uri rar și doar dacă sunt potrivite (ex: 💇, 💅, ✨).`;
 
   const model = ctx.widget.aiModel || DEFAULT_MODEL;
   const maxTokens = ctx.widget.aiMaxTokens || 1024;
   const temperature = Number(ctx.widget.aiTemperature || "0.7");
 
+  const toolCtx: ToolContext = {
+    tenantId: ctx.tenantId,
+    conversationId: ctx.conversationId,
+    widgetId: ctx.widget.id,
+    visitorName: ctx.visitorName,
+    visitorEmail: ctx.visitorEmail,
+    visitorPhone: ctx.visitorPhone,
+  };
+
+  // Conversation messages for the API; we keep this array mutable so we can
+  // append the assistant's tool_use turn + our tool_result turn between loop iterations.
+  type MessageParam = Anthropic.MessageParam;
+  const apiMessages: MessageParam[] = ctx.history.map((m) => ({
+    role: m.role,
+    content: m.content,
+  }));
+
   const startTime = Date.now();
+  let totalInput = 0;
+  let totalOutput = 0;
+  let totalCacheRead = 0;
+  let totalCacheCreate = 0;
+  let finalText = "";
+  let escalatedToHuman = false;
 
   try {
-    const response = await client.messages.create({
-      model,
-      max_tokens: maxTokens,
-      temperature,
-      system: [
-        {
-          type: "text",
-          text: staticBlock,
-          // cache_control is supported by API but missing from older SDK types
-          cache_control: { type: "ephemeral" },
-        } as Anthropic.TextBlockParam,
-        {
-          type: "text",
-          text: behaviorBlock,
-        },
-      ],
-      messages: ctx.history.map((m) => ({
-        role: m.role,
-        content: m.content,
-      })),
-    });
+    // Tool-use loop: cap at 3 iterations to prevent runaway loops or token blowup
+    for (let iter = 0; iter < 3; iter++) {
+      const response = await client.messages.create({
+        model,
+        max_tokens: maxTokens,
+        temperature,
+        tools: CHAT_TOOLS,
+        system: [
+          {
+            type: "text",
+            text: staticBlock,
+            cache_control: { type: "ephemeral" },
+          } as Anthropic.TextBlockParam,
+          {
+            type: "text",
+            text: behaviorBlock,
+          },
+        ],
+        messages: apiMessages,
+      });
+
+      totalInput += response.usage.input_tokens;
+      totalOutput += response.usage.output_tokens;
+      totalCacheRead += (response.usage as { cache_read_input_tokens?: number }).cache_read_input_tokens || 0;
+      totalCacheCreate += (response.usage as { cache_creation_input_tokens?: number }).cache_creation_input_tokens || 0;
+
+      if (response.stop_reason === "tool_use") {
+        // Echo the assistant turn so the model has the full conversation
+        apiMessages.push({ role: "assistant", content: response.content });
+
+        // Execute each tool_use block and gather results
+        const toolResults: Anthropic.ToolResultBlockParam[] = [];
+        for (const block of response.content) {
+          if (block.type !== "tool_use") continue;
+          const result = await executeTool(
+            block.name,
+            block.input as Record<string, unknown>,
+            toolCtx,
+          );
+          if (block.name === "escalate_to_human" && result.success) {
+            escalatedToHuman = true;
+          }
+          toolResults.push({
+            type: "tool_result",
+            tool_use_id: block.id,
+            content: JSON.stringify(result.success ? result.data ?? { ok: true } : { error: result.error || "tool failed" }),
+            is_error: !result.success,
+          });
+        }
+
+        apiMessages.push({ role: "user", content: toolResults });
+        continue; // next iteration so the model can produce a final reply
+      }
+
+      // No more tool use — extract final text
+      const textBlocks = response.content.filter((b) => b.type === "text");
+      finalText = textBlocks.map((b) => (b as Anthropic.TextBlock).text).join("\n").trim();
+      break;
+    }
 
     const latencyMs = Date.now() - startTime;
 
-    const textBlock = response.content.find((b) => b.type === "text");
-    const replyText = textBlock && textBlock.type === "text" ? textBlock.text : "";
-
-    if (!replyText.trim()) {
-      return { success: false, reason: "Empty response from model" };
+    if (!finalText) {
+      // After the loop the model still wanted to call tools — fallback message
+      finalText = "Lasă-mă un moment, verific cu un coleg. Revin imediat.";
+      escalatedToHuman = true;
     }
 
-    const inputTokens = response.usage.input_tokens;
-    const outputTokens = response.usage.output_tokens;
-    const cacheReadTokens = (response.usage as { cache_read_input_tokens?: number }).cache_read_input_tokens || 0;
-    const cacheCreateTokens = (response.usage as { cache_creation_input_tokens?: number }).cache_creation_input_tokens || 0;
+    const totalTokens = totalInput + totalOutput + totalCacheCreate + totalCacheRead;
 
     // Insert message + bump conversation/widget stats
     const result = await db.transaction(async (tx) => {
@@ -361,20 +446,23 @@ export async function generateAIReply(conversationId: string): Promise<{
           tenantId: ctx.widget.tenantId,
           conversationId,
           role: "assistant",
-          content: replyText,
+          content: finalText,
           modelUsed: model,
-          inputTokens: inputTokens + cacheCreateTokens + cacheReadTokens,
-          outputTokens,
+          inputTokens: totalInput + totalCacheCreate + totalCacheRead,
+          outputTokens: totalOutput,
           latencyMs,
         })
         .returning({ id: chatWidgetMessages.id });
 
+      // If a tool already set status to human_handling, don't overwrite.
+      const nextStatus = escalatedToHuman ? "human_handling" : "ai_handling";
+
       await tx
         .update(chatWidgetConversations)
         .set({
-          status: "ai_handling",
+          status: nextStatus,
           messageCount: sql`${chatWidgetConversations.messageCount} + 1`,
-          totalTokensUsed: sql`${chatWidgetConversations.totalTokensUsed} + ${inputTokens + outputTokens + cacheCreateTokens + cacheReadTokens}`,
+          totalTokensUsed: sql`${chatWidgetConversations.totalTokensUsed} + ${totalTokens}`,
           lastMessageAt: new Date(),
           updatedAt: new Date(),
         })

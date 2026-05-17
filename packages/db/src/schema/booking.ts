@@ -55,6 +55,7 @@ export const bookingChannelEnum = pgEnum("booking_channel", [
   "phone",
   "walkin",
   "marketplace",
+  "ai_chat",
 ]);
 
 // ─────────────────────────────────────────────
