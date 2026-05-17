@@ -243,6 +243,20 @@
 - [x] UI `/marketing/new` cu 4 șabloane preset (Aniversare/Comeback/Newsletter/Promo) + selector audiență + editor markdown
 - [x] UI `/marketing/[id]` cu split-view: editor (când nu e sent) + audiență live + preview iframe srcDoc, butoane Send Now + Edit + audience confirm dialog
 
+### 3.6 Automated marketing triggers (always-on retention)
+- [x] Schema extension: `marketing_campaigns.{is_automation, automation_type enum, automation_params jsonb, automation_active, last_automation_run_at}` + nou enum `marketing_automation_type` (birthday/comeback/post_visit/new_customer)
+- [x] Tabel nou `marketing_automation_runs` cu unique index (campaignId × customerId × triggerKey) — dedup idempotent (ex. `birthday:2026`, `comeback:2026-05-17`, `post_visit:<appointmentId>`)
+- [x] Coloană nouă `booking_customers.date_of_birth` (date, nullable) — folosită de trigger-ul birthday
+- [x] Worker tick nou `POST /api/v1/internal/marketing/automations/tick` — scanează zilnic automatizările active, calculează candidați per trigger, inserează recipient + run row, apoi drain inline
+- [x] 4 trigger-uri: **birthday** (m/d match azi, key=year), **comeback** (lastVisitAt în fereastra zile-N±windowDays, key=YYYY-MM-DD), **post_visit** (appointments completed acum N zile, key=appointmentId), **new_customer** (prima vizită acum N zile, key=customerId)
+- [x] Quota check înainte de enqueue — dacă tenant nu mai are emailuri în plan, automatizarea sare cohorta zilei și loghează quotaSkipped
+- [x] Cron script extended — `marketing-cron.mjs` apelează acum `/scheduled/tick → /automations/tick → /drain/tick`
+- [x] PATCH / DELETE relaxat pentru automation campaigns (sit la status='sending' permanent, dar `isAutomation=true` le face editabile/șterse)
+- [x] UI `/marketing/new` — selector Tip campanie (Manuală vs Automată), 4 șabloane noi automate (Aniversare/Comeback/Mulțumesc/Bun venit), formular condițional cu daysSinceLastVisit/daysAfterVisit/daysAfterFirstVisit
+- [x] UI `/marketing/[id]` — buton Pune-pe-pauză/Activează, badge automation type, banner cu explicație, panel statistici (în loc de audience preview) pentru automatizări
+- [x] UI `/marketing` list — badge ● Activ / ○ Pe pauză + tip declanșator, KPI nou „Automatizări active"
+- [x] UI `/booking/customers` — input `Data nașterii` în modalul de creare/editare client (legat de trigger-ul birthday)
+
 ### 3.3 Notifications
 - [x] Email confirmation la booking (admin + public widget)
 - [x] Email cancellation la status change

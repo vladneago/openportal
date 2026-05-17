@@ -60,9 +60,11 @@ marketingRoutes.get("/campaigns/summary", async (c) => {
 
   const [counts] = await db
     .select({
-      drafts: sql<number>`count(*) filter (where status = 'draft')::int`,
+      drafts: sql<number>`count(*) filter (where status = 'draft' and is_automation = false)::int`,
       scheduled: sql<number>`count(*) filter (where status = 'scheduled')::int`,
       sent: sql<number>`count(*) filter (where status = 'sent')::int`,
+      automations: sql<number>`count(*) filter (where is_automation = true)::int`,
+      automationsActive: sql<number>`count(*) filter (where is_automation = true and automation_active = true)::int`,
     })
     .from(marketingCampaigns)
     .where(eq(marketingCampaigns.tenantId, tenantId));
@@ -130,6 +132,10 @@ const campaignBodySchema = z.object({
   ]).default("all_with_consent"),
   targetParams: z.record(z.string(), z.unknown()).optional(),
   scheduledFor: z.string().datetime().optional().nullable(),
+  isAutomation: z.boolean().optional(),
+  automationType: z.enum(["birthday", "comeback", "post_visit", "new_customer"]).optional().nullable(),
+  automationParams: z.record(z.string(), z.unknown()).optional(),
+  automationActive: z.boolean().optional(),
 });
 
 marketingRoutes.post("/campaigns", zValidator("json", campaignBodySchema), async (c) => {
@@ -137,6 +143,7 @@ marketingRoutes.post("/campaigns", zValidator("json", campaignBodySchema), async
   const user = c.get("user");
   const body = c.req.valid("json");
 
+  const isAutomation = body.isAutomation === true;
   const [row] = await db
     .insert(marketingCampaigns)
     .values({
@@ -149,8 +156,14 @@ marketingRoutes.post("/campaigns", zValidator("json", campaignBodySchema), async
       replyTo: body.replyTo ?? null,
       targetType: body.targetType,
       targetParams: body.targetParams ?? {},
-      status: body.scheduledFor ? "scheduled" : "draft",
+      // Automation campaigns sit at status 'sending' indefinitely; the existing
+      // drain worker picks up queued recipients that automations enqueue daily.
+      status: isAutomation ? "sending" : body.scheduledFor ? "scheduled" : "draft",
       scheduledFor: body.scheduledFor ? new Date(body.scheduledFor) : null,
+      isAutomation,
+      automationType: isAutomation ? body.automationType ?? null : null,
+      automationParams: body.automationParams ?? {},
+      automationActive: body.automationActive ?? true,
       createdBy: user.id,
     })
     .returning();
@@ -168,12 +181,13 @@ marketingRoutes.patch("/campaigns/:id", zValidator("json", campaignBodySchema.pa
   const body = c.req.valid("json");
 
   const [existing] = await db
-    .select({ status: marketingCampaigns.status })
+    .select({ status: marketingCampaigns.status, isAutomation: marketingCampaigns.isAutomation })
     .from(marketingCampaigns)
     .where(and(eq(marketingCampaigns.tenantId, tenantId), eq(marketingCampaigns.id, id)))
     .limit(1);
   if (!existing) throw new AppError(404, "NOT_FOUND", "Campaign not found");
-  if (existing.status === "sent" || existing.status === "sending") {
+  // Automations sit at 'sending' permanently — they're always editable.
+  if (!existing.isAutomation && (existing.status === "sent" || existing.status === "sending")) {
     throw new AppError(400, "CAMPAIGN_LOCKED", "O campanie deja trimisă nu mai poate fi editată");
   }
 
@@ -201,12 +215,12 @@ marketingRoutes.delete("/campaigns/:id", async (c) => {
   const id = c.req.param("id");
 
   const [existing] = await db
-    .select({ status: marketingCampaigns.status })
+    .select({ status: marketingCampaigns.status, isAutomation: marketingCampaigns.isAutomation })
     .from(marketingCampaigns)
     .where(and(eq(marketingCampaigns.tenantId, tenantId), eq(marketingCampaigns.id, id)))
     .limit(1);
   if (!existing) throw new AppError(404, "NOT_FOUND", "Campaign not found");
-  if (existing.status === "sending" || existing.status === "sent") {
+  if (!existing.isAutomation && (existing.status === "sending" || existing.status === "sent")) {
     throw new AppError(400, "CAMPAIGN_LOCKED", "O campanie în trimitere sau deja trimisă nu poate fi ștearsă");
   }
 

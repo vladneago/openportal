@@ -22,14 +22,26 @@ interface Campaign {
   totalSent: number;
   totalFailed: number;
   totalSkipped: number;
+  isAutomation: boolean;
+  automationType: string | null;
+  automationActive: boolean;
   createdAt: string;
 }
+
+const AUTOMATION_LABELS: Record<string, string> = {
+  birthday: "🎂 Aniversare",
+  comeback: "💌 Comeback",
+  post_visit: "🙏 Post vizită",
+  new_customer: "👋 Welcome",
+};
 
 interface Summary {
   drafts: number;
   scheduled: number;
   sent: number;
   sentThisMonth: number;
+  automations?: number;
+  automationsActive?: number;
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -113,12 +125,17 @@ export default function MarketingListPage() {
 
       {summary && (
         <div
-          className="grid grid-cols-2 md:grid-cols-4 gap-px rounded-lg overflow-hidden mb-6"
+          className="grid grid-cols-2 md:grid-cols-5 gap-px rounded-lg overflow-hidden mb-6"
           style={{ background: "var(--border-hover)" }}
         >
           <KpiCard label="Ciorne" value={summary.drafts} />
           <KpiCard label="Programate" value={summary.scheduled} accent="#06B6D4" />
           <KpiCard label="Trimise" value={summary.sent} accent="#10B981" />
+          <KpiCard
+            label="Automatizări active"
+            value={summary.automationsActive ?? 0}
+            accent="#8B5CF6"
+          />
           <KpiCard label="Email-uri luna aceasta" value={summary.sentThisMonth} accent="#F59E0B" />
         </div>
       )}
@@ -154,33 +171,58 @@ export default function MarketingListPage() {
                   <span className="font-medium text-sm" style={{ color: "var(--text)" }}>
                     {c.name}
                   </span>
-                  <span
-                    className="text-[10px] px-2 py-0.5 rounded font-medium"
-                    style={{
-                      background: (STATUS_COLORS[c.status] || "#71717A") + "22",
-                      color: STATUS_COLORS[c.status] || "#71717A",
-                    }}
-                  >
-                    {STATUS_LABELS[c.status]}
-                  </span>
+                  {c.isAutomation ? (
+                    <>
+                      <span
+                        className="text-[10px] px-2 py-0.5 rounded font-medium"
+                        style={{
+                          background: c.automationActive ? "#10B98122" : "#71717A22",
+                          color: c.automationActive ? "#065F46" : "#71717A",
+                        }}
+                      >
+                        {c.automationActive ? "● Activ" : "○ Pe pauză"}
+                      </span>
+                      {c.automationType && (
+                        <span
+                          className="text-[10px] px-2 py-0.5 rounded font-medium"
+                          style={{ background: "var(--bg-subtle)", color: "var(--text-tertiary)" }}
+                        >
+                          {AUTOMATION_LABELS[c.automationType] || c.automationType}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    <span
+                      className="text-[10px] px-2 py-0.5 rounded font-medium"
+                      style={{
+                        background: (STATUS_COLORS[c.status] || "#71717A") + "22",
+                        color: STATUS_COLORS[c.status] || "#71717A",
+                      }}
+                    >
+                      {STATUS_LABELS[c.status]}
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs mb-1" style={{ color: "var(--text)", opacity: 0.85 }}>
                   {c.subject}
                 </div>
                 <div className="text-[11px]" style={{ color: "var(--text-tertiary)" }}>
-                  {TARGET_LABELS[c.targetType] || c.targetType} ·{" "}
-                  {c.status === "sent" || c.status === "sending"
-                    ? `${c.totalSent}/${c.totalRecipients} trimise${c.totalFailed > 0 ? ` · ${c.totalFailed} eșuate` : ""}`
-                    : c.status === "scheduled"
-                      ? `Programată ${fmtDate(c.scheduledFor)}`
-                      : `Creată ${fmtDate(c.createdAt)}`}
+                  {c.isAutomation
+                    ? `Automatizare · ${c.totalSent} email-uri trimise în total`
+                    : (TARGET_LABELS[c.targetType] || c.targetType) +
+                      " · " +
+                      (c.status === "sent" || c.status === "sending"
+                        ? `${c.totalSent}/${c.totalRecipients} trimise${c.totalFailed > 0 ? ` · ${c.totalFailed} eșuate` : ""}`
+                        : c.status === "scheduled"
+                          ? `Programată ${fmtDate(c.scheduledFor)}`
+                          : `Creată ${fmtDate(c.createdAt)}`)}
                 </div>
               </Link>
               <div className="flex items-center gap-2 shrink-0">
                 <Link href={`/marketing/${c.id}`} className="btn-secondary text-xs no-underline">
                   {c.status === "draft" || c.status === "scheduled" ? "Editează" : "Vezi detalii"}
                 </Link>
-                {(c.status === "draft" || c.status === "scheduled" || c.status === "failed") && (
+                {(c.isAutomation || c.status === "draft" || c.status === "scheduled" || c.status === "failed") && (
                   <button
                     onClick={() => deleteCampaign(c.id)}
                     className="text-xs px-2 py-1 rounded"

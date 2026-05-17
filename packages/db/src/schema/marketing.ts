@@ -10,6 +10,7 @@ import {
   pgEnum,
   index,
   uniqueIndex,
+  date,
 } from "drizzle-orm/pg-core";
 import { tenants } from "./tenants";
 import { users } from "./users";
@@ -52,6 +53,14 @@ export const recipientStatusEnum = pgEnum("marketing_recipient_status", [
   "unsubscribed",
 ]);
 
+// Automation trigger types. Manual one-shot campaigns leave automationType NULL.
+export const automationTypeEnum = pgEnum("marketing_automation_type", [
+  "birthday",       // fires when customer.dateOfBirth (m/d) matches today
+  "comeback",       // fires when customer.lastVisitAt = today - N days
+  "post_visit",     // fires N days after an appointment.status='done'
+  "new_customer",   // fires N days after first appointment
+]);
+
 // ─────────────────────────────────────────────
 // CAMPAIGNS
 // ─────────────────────────────────────────────
@@ -87,6 +96,13 @@ export const marketingCampaigns = pgTable(
     totalFailed: integer("total_failed").notNull().default(0),
     totalSkipped: integer("total_skipped").notNull().default(0),
     totalUnsubscribed: integer("total_unsubscribed").notNull().default(0),
+
+    // Automation (NULL = one-shot manual campaign)
+    isAutomation: boolean("is_automation").notNull().default(false),
+    automationType: automationTypeEnum("automation_type"),
+    automationParams: jsonb("automation_params").$type<Record<string, unknown>>().default({}),
+    automationActive: boolean("automation_active").notNull().default(true),
+    lastAutomationRunAt: timestamp("last_automation_run_at", { withTimezone: true }),
 
     // Brand
     fromName: varchar("from_name", { length: 200 }),
@@ -146,3 +162,36 @@ export const marketingRecipients = pgTable(
 
 export type MarketingRecipient = typeof marketingRecipients.$inferSelect;
 export type NewMarketingRecipient = typeof marketingRecipients.$inferInsert;
+
+// ─────────────────────────────────────────────
+// AUTOMATION RUNS (dedup log: campaign × customer × occurrence)
+//
+// For an automation like "Birthday", we want to send once per year per
+// customer. triggerKey encodes the occurrence: e.g. "birthday:2026",
+// "comeback:2026-W19", "post_visit:<appointmentId>". The unique index
+// makes the worker idempotent — multiple ticks on the same day are safe.
+// ─────────────────────────────────────────────
+
+export const marketingAutomationRuns = pgTable(
+  "marketing_automation_runs",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    tenantId: uuid("tenant_id").notNull().references(() => tenants.id, { onDelete: "cascade" }),
+    campaignId: uuid("campaign_id").notNull().references(() => marketingCampaigns.id, { onDelete: "cascade" }),
+    customerId: uuid("customer_id").notNull().references(() => bookingCustomers.id, { onDelete: "cascade" }),
+    triggerKey: varchar("trigger_key", { length: 80 }).notNull(),
+    recipientId: uuid("recipient_id").references(() => marketingRecipients.id, { onDelete: "set null" }),
+    triggeredAt: timestamp("triggered_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    uniqueIndex("marketing_automation_runs_campaign_customer_key_idx").on(
+      table.campaignId,
+      table.customerId,
+      table.triggerKey,
+    ),
+    index("marketing_automation_runs_tenant_triggered_idx").on(table.tenantId, table.triggeredAt),
+  ],
+);
+
+export type MarketingAutomationRun = typeof marketingAutomationRuns.$inferSelect;
+export type NewMarketingAutomationRun = typeof marketingAutomationRuns.$inferInsert;

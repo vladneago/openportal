@@ -12,6 +12,7 @@ interface Customer {
   phone: string | null;
   language: string;
   notes: string | null;
+  dateOfBirth: string | null;
   totalAppointments: number;
   totalSpent: string;
   lastVisitAt: string | null;
@@ -45,6 +46,7 @@ export default function CustomersPage() {
     phone: "",
     language: "ro",
     notes: "",
+    dateOfBirth: "",
     marketingConsent: false,
     smsConsent: true,
     emailConsent: true,
@@ -73,6 +75,7 @@ export default function CustomersPage() {
       phone: "",
       language: "ro",
       notes: "",
+      dateOfBirth: "",
       marketingConsent: false,
       smsConsent: true,
       emailConsent: true,
@@ -89,6 +92,7 @@ export default function CustomersPage() {
       phone: c.phone ?? "",
       language: c.language,
       notes: c.notes ?? "",
+      dateOfBirth: c.dateOfBirth ?? "",
       marketingConsent: c.marketingConsent,
       smsConsent: c.smsConsent,
       emailConsent: c.emailConsent,
@@ -104,6 +108,7 @@ export default function CustomersPage() {
       email: form.email || undefined,
       phone: form.phone || undefined,
       notes: form.notes || undefined,
+      dateOfBirth: form.dateOfBirth || null,
     };
 
     const res = editing
@@ -307,6 +312,15 @@ export default function CustomersPage() {
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className="input w-full text-sm"
+                />
+              </Field>
+
+              <Field label="Data nașterii (pentru campania de aniversare)">
+                <input
+                  type="date"
+                  value={form.dateOfBirth}
+                  onChange={(e) => setForm({ ...form, dateOfBirth: e.target.value })}
                   className="input w-full text-sm"
                 />
               </Field>

@@ -47,11 +47,15 @@ async function tick(path, body = {}) {
   }
 }
 
+// Automation tick runs less frequently (once per day is enough — most
+// triggers are date-based and idempotent). The dedup log makes calling
+// it on every cron pass safe though, so we just do it every tick.
 (async () => {
   console.log(`[marketing-cron] tick @ ${new Date().toISOString()}`);
   const r1 = await tick("/scheduled/tick");
-  const r2 = await tick("/drain/tick");
-  const ok = r1 && r2;
+  const r2 = await tick("/automations/tick");
+  const r3 = await tick("/drain/tick");
+  const ok = r1 && r2 && r3;
   console.log(`[marketing-cron] finished — ${ok ? "OK" : "PARTIAL"}`);
   process.exit(ok ? 0 : 1);
 })();

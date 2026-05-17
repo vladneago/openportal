@@ -75,6 +75,10 @@ export const bookingCustomers = pgTable("booking_customers", {
   notes: text("notes"),
   tags: jsonb("tags").$type<string[]>().default([]),
 
+  // Used by birthday automation campaigns. Year is preserved but month/day
+  // are what matters; some salons collect only m/d so YOB may be a placeholder.
+  dateOfBirth: date("date_of_birth"),
+
   marketingConsent: boolean("marketing_consent").notNull().default(false),
   smsConsent: boolean("sms_consent").notNull().default(true),
   emailConsent: boolean("email_consent").notNull().default(true),

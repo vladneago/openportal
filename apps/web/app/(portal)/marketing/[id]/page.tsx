@@ -23,9 +23,21 @@ interface Campaign {
   totalSent: number;
   totalFailed: number;
   totalSkipped: number;
+  isAutomation: boolean;
+  automationType: string | null;
+  automationParams: Record<string, unknown>;
+  automationActive: boolean;
+  lastAutomationRunAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
+
+const AUTOMATION_LABELS: Record<string, string> = {
+  birthday: "🎂 La ziua de naștere",
+  comeback: "💌 Comeback (N zile fără vizită)",
+  post_visit: "🙏 Post vizită",
+  new_customer: "👋 Bun venit (client nou)",
+};
 
 interface PreviewResult {
   subject: string;
@@ -123,7 +135,7 @@ export default function CampaignDetailPage() {
 
   useEffect(() => {
     if (campaign && !preview) void loadPreview();
-    if (campaign && !audience) void loadAudience();
+    if (campaign && !audience && !campaign.isAutomation) void loadAudience();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [campaign]);
 
@@ -186,7 +198,19 @@ export default function CampaignDetailPage() {
     );
   }
 
-  const isLocked = campaign.status === "sent" || campaign.status === "sending";
+  const isAutomation = campaign.isAutomation === true;
+  // Automations are never locked — they sit at status='sending' permanently.
+  const isLocked = !isAutomation && (campaign.status === "sent" || campaign.status === "sending");
+
+  async function toggleAutomation() {
+    if (!id) return;
+    const next = !campaign?.automationActive;
+    const res = await api(`/api/v1/marketing/campaigns/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ automationActive: next }),
+    });
+    if (res.success) await load();
+  }
 
   return (
     <div>
@@ -202,19 +226,44 @@ export default function CampaignDetailPage() {
             <h1 className="text-2xl font-semibold" style={{ color: "var(--text)" }}>
               {campaign.name}
             </h1>
-            <span
-              className="text-[10px] px-2 py-0.5 rounded font-medium"
-              style={{
-                background: (STATUS_COLORS[campaign.status] || "#71717A") + "22",
-                color: STATUS_COLORS[campaign.status] || "#71717A",
-              }}
-            >
-              {STATUS_LABELS[campaign.status]}
-            </span>
+            {isAutomation ? (
+              <span
+                className="text-[10px] px-2 py-0.5 rounded font-medium"
+                style={{
+                  background: campaign.automationActive ? "#10B98122" : "#71717A22",
+                  color: campaign.automationActive ? "#065F46" : "#71717A",
+                }}
+              >
+                {campaign.automationActive ? "● Automat activ" : "○ Automat pe pauză"}
+              </span>
+            ) : (
+              <span
+                className="text-[10px] px-2 py-0.5 rounded font-medium"
+                style={{
+                  background: (STATUS_COLORS[campaign.status] || "#71717A") + "22",
+                  color: STATUS_COLORS[campaign.status] || "#71717A",
+                }}
+              >
+                {STATUS_LABELS[campaign.status]}
+              </span>
+            )}
+            {isAutomation && campaign.automationType && (
+              <span
+                className="text-[10px] px-2 py-0.5 rounded font-medium"
+                style={{ background: "var(--bg-subtle)", color: "var(--text-tertiary)" }}
+              >
+                {AUTOMATION_LABELS[campaign.automationType] || campaign.automationType}
+              </span>
+            )}
           </div>
           <p className="text-sm" style={{ color: "var(--text-tertiary)" }}>
             {campaign.subject}
           </p>
+          {isAutomation && campaign.lastAutomationRunAt && (
+            <p className="text-[11px] mt-1" style={{ color: "var(--text-tertiary)" }}>
+              Ultima rulare: {new Date(campaign.lastAutomationRunAt).toLocaleString("ro-RO")}
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-2">
           {!isLocked && !editMode && (
@@ -222,14 +271,23 @@ export default function CampaignDetailPage() {
               Editează
             </button>
           )}
-          {!isLocked && (
+          {isAutomation ? (
             <button
-              onClick={sendNow}
-              disabled={sending || !audience || audience.eligible === 0}
-              className="btn-primary text-sm"
+              onClick={toggleAutomation}
+              className={campaign.automationActive ? "btn-secondary text-sm" : "btn-primary text-sm"}
             >
-              {sending ? "Se trimite…" : `Trimite acum${audience ? ` (${audience.eligible})` : ""}`}
+              {campaign.automationActive ? "Pune pe pauză" : "Activează"}
             </button>
+          ) : (
+            !isLocked && (
+              <button
+                onClick={sendNow}
+                disabled={sending || !audience || audience.eligible === 0}
+                className="btn-primary text-sm"
+              >
+                {sending ? "Se trimite…" : `Trimite acum${audience ? ` (${audience.eligible})` : ""}`}
+              </button>
+            )
           )}
         </div>
       </div>
@@ -254,13 +312,33 @@ export default function CampaignDetailPage() {
         </div>
       )}
 
-      {campaign.status === "sending" && (
+      {campaign.status === "sending" && !isAutomation && (
         <div
           className="rounded-md p-3 mb-4 text-sm"
           style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #FCD34D" }}
         >
           Trimitere în curs… {campaign.totalSent}/{campaign.totalRecipients} email-uri livrate. Restul se procesează la
           următorul tick al worker-ului (~2-3 min).
+        </div>
+      )}
+
+      {isAutomation && (
+        <div
+          className="rounded-md p-3 mb-4 text-sm"
+          style={{
+            background: campaign.automationActive ? "#ECFDF5" : "#F9FAFB",
+            color: campaign.automationActive ? "#065F46" : "#4B5563",
+            border: `1px solid ${campaign.automationActive ? "#A7F3D0" : "#E5E7EB"}`,
+          }}
+        >
+          {campaign.automationActive ? (
+            <>
+              Această campanie rulează automat zilnic. Worker-ul verifică condițiile și trimite emailurile fără
+              acțiune din partea ta. Total emailuri trimise până acum: <strong>{campaign.totalSent}</strong>.
+            </>
+          ) : (
+            <>Automatizarea este pe pauză. Apasă „Activează" pentru a relua trimiterile zilnice.</>
+          )}
         </div>
       )}
 
@@ -344,41 +422,85 @@ export default function CampaignDetailPage() {
             </div>
           ) : (
             <>
-              <h2 className="text-sm font-semibold mb-3" style={{ color: "var(--text)" }}>
-                Audiență
-              </h2>
-              {audience ? (
-                <div className="space-y-2 mb-4">
-                  <Row label="Eligibili (cu email + consimțământ)" value={audience.eligible} accent="#10B981" />
-                  <Row label="Fără email" value={audience.withoutEmail} dim />
-                  <Row label="Fără consimțământ email" value={audience.withoutConsent} dim />
-                  <Row label="Total în segment" value={audience.total} />
-                  {audience.sample.length > 0 && (
-                    <div className="mt-3 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
-                      <div className="text-[11px] mb-2" style={{ color: "var(--text-tertiary)" }}>
-                        Primii destinatari (sample)
-                      </div>
-                      {audience.sample.map((s, i) => (
-                        <div key={i} className="text-xs" style={{ color: "var(--text)" }}>
-                          {s.firstName} {s.lastName ?? ""} — <span style={{ color: "var(--text-tertiary)" }}>{s.email}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="text-xs" style={{ color: "var(--text-tertiary)" }}>Se calculează…</div>
-              )}
-
-              {campaign.status === "sent" && (
+              {isAutomation ? (
                 <>
-                  <h2 className="text-sm font-semibold mt-5 mb-3" style={{ color: "var(--text)" }}>
-                    Rezultate
+                  <h2 className="text-sm font-semibold mb-3" style={{ color: "var(--text)" }}>
+                    Statistici automatizare
                   </h2>
-                  <Row label="Trimise" value={campaign.totalSent} accent="#10B981" />
-                  <Row label="Eșuate" value={campaign.totalFailed} accent={campaign.totalFailed > 0 ? "#DC2626" : undefined} />
-                  <Row label="Omise" value={campaign.totalSkipped} dim />
-                  <Row label="Total destinatari" value={campaign.totalRecipients} />
+                  <div className="space-y-2 mb-4">
+                    <Row label="Total emailuri trimise" value={campaign.totalSent} accent="#10B981" />
+                    <Row
+                      label="Eșuate"
+                      value={campaign.totalFailed}
+                      accent={campaign.totalFailed > 0 ? "#DC2626" : undefined}
+                    />
+                    <Row label="Omise (fără email/consimțământ)" value={campaign.totalSkipped} dim />
+                    <Row label="Total destinatari procesați" value={campaign.totalRecipients} />
+                  </div>
+                  <div
+                    className="mt-3 pt-3 text-[11px]"
+                    style={{ borderTop: "1px solid var(--border)", color: "var(--text-tertiary)" }}
+                  >
+                    {campaign.automationType === "birthday" &&
+                      "Se trimite o dată pe an fiecărui client cu data nașterii setată."}
+                    {campaign.automationType === "comeback" &&
+                      `Se trimite la ${
+                        (campaign.automationParams?.daysSinceLastVisit as number | undefined) ?? 60
+                      } zile fără vizită. Worker-ul rulează zilnic.`}
+                    {campaign.automationType === "post_visit" &&
+                      `Se trimite la ${
+                        (campaign.automationParams?.daysAfterVisit as number | undefined) ?? 3
+                      } zile după fiecare vizită finalizată.`}
+                    {campaign.automationType === "new_customer" &&
+                      `Se trimite la ${
+                        (campaign.automationParams?.daysAfterFirstVisit as number | undefined) ?? 7
+                      } zile după prima vizită a unui client nou.`}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <h2 className="text-sm font-semibold mb-3" style={{ color: "var(--text)" }}>
+                    Audiență
+                  </h2>
+                  {audience ? (
+                    <div className="space-y-2 mb-4">
+                      <Row label="Eligibili (cu email + consimțământ)" value={audience.eligible} accent="#10B981" />
+                      <Row label="Fără email" value={audience.withoutEmail} dim />
+                      <Row label="Fără consimțământ email" value={audience.withoutConsent} dim />
+                      <Row label="Total în segment" value={audience.total} />
+                      {audience.sample.length > 0 && (
+                        <div className="mt-3 pt-3" style={{ borderTop: "1px solid var(--border)" }}>
+                          <div className="text-[11px] mb-2" style={{ color: "var(--text-tertiary)" }}>
+                            Primii destinatari (sample)
+                          </div>
+                          {audience.sample.map((s, i) => (
+                            <div key={i} className="text-xs" style={{ color: "var(--text)" }}>
+                              {s.firstName} {s.lastName ?? ""} —{" "}
+                              <span style={{ color: "var(--text-tertiary)" }}>{s.email}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="text-xs" style={{ color: "var(--text-tertiary)" }}>Se calculează…</div>
+                  )}
+
+                  {campaign.status === "sent" && (
+                    <>
+                      <h2 className="text-sm font-semibold mt-5 mb-3" style={{ color: "var(--text)" }}>
+                        Rezultate
+                      </h2>
+                      <Row label="Trimise" value={campaign.totalSent} accent="#10B981" />
+                      <Row
+                        label="Eșuate"
+                        value={campaign.totalFailed}
+                        accent={campaign.totalFailed > 0 ? "#DC2626" : undefined}
+                      />
+                      <Row label="Omise" value={campaign.totalSkipped} dim />
+                      <Row label="Total destinatari" value={campaign.totalRecipients} />
+                    </>
+                  )}
                 </>
               )}
             </>
