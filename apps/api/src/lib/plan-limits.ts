@@ -8,6 +8,7 @@ import {
   chatWidgetMessages,
   efacturaSubmissions,
   marketingRecipients,
+  smsSends,
 } from "@openportal/db";
 import { and, count, eq, gte, isNull, or } from "drizzle-orm";
 import { getPlan, PLANS, type Plan, type PlanLimits } from "./stripe";
@@ -224,6 +225,43 @@ export async function assertEmailQuota(tenantId: string, additional = 0): Promis
   }
 }
 
+/** Returns count of SMS messages sent this calendar month
+ * (only status='sent' or 'stub'; failed/skipped don't count). */
+export async function getSmsUsageThisMonth(tenantId: string): Promise<number> {
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const [{ value }] = await db
+    .select({ value: count() })
+    .from(smsSends)
+    .where(
+      and(
+        eq(smsSends.tenantId, tenantId),
+        or(eq(smsSends.status, "sent"), eq(smsSends.status, "stub"))!,
+        gte(smsSends.sentAt, monthStart),
+      ),
+    );
+
+  return value;
+}
+
+/** Throws PLAN_LIMIT_SMS if sending `additional` SMS would exceed the
+ * monthly cap. Pass 0 to just check current usage. */
+export async function assertSmsQuota(tenantId: string, additional = 1): Promise<void> {
+  const { plan, planSlug } = await getTenantPlan(tenantId);
+  if (plan.limits.smsPerMonth >= 99999) return;
+
+  const used = await getSmsUsageThisMonth(tenantId);
+  if (used + additional > plan.limits.smsPerMonth) {
+    throw new AppError(
+      402,
+      "PLAN_LIMIT_SMS",
+      `Ai folosit ${used} din ${plan.limits.smsPerMonth} SMS-uri incluse în planul ${plan.name} luna aceasta. Upgrade la Solo Pro pentru mai multe.`,
+      { used, attempting: additional, limit: plan.limits.smsPerMonth, planSlug, upgradeTo: "solo_pro" },
+    );
+  }
+}
+
 export async function assertChatAiQuota(tenantId: string): Promise<void> {
   const { plan, planSlug } = await getTenantPlan(tenantId);
   const used = await getChatAiUsageThisMonth(tenantId);
@@ -283,6 +321,7 @@ export async function getTenantUsage(tenantId: string): Promise<{
   chatAiThisMonth: { used: number; limit: number };
   efacturaThisMonth: { used: number; limit: number };
   marketingEmailsThisMonth: { used: number; limit: number };
+  smsThisMonth: { used: number; limit: number };
   sitesPublished: { used: number; limit: number | null };
 }> {
   const active = await getTenantPlan(tenantId);
@@ -296,10 +335,11 @@ export async function getTenantUsage(tenantId: string): Promise<{
       .where(and(eq(webSites.tenantId, tenantId), eq(webSites.status, "published"))),
   ]);
 
-  const [chatAiUsed, efacturaUsed, emailUsed] = await Promise.all([
+  const [chatAiUsed, efacturaUsed, emailUsed, smsUsed] = await Promise.all([
     getChatAiUsageThisMonth(tenantId),
     getEfacturaUsageThisMonth(tenantId),
     getEmailQuotaThisMonth(tenantId),
+    getSmsUsageThisMonth(tenantId),
   ]);
 
   return {
@@ -325,6 +365,10 @@ export async function getTenantUsage(tenantId: string): Promise<{
     marketingEmailsThisMonth: {
       used: emailUsed,
       limit: active.plan.limits.marketingEmailsPerMonth,
+    },
+    smsThisMonth: {
+      used: smsUsed,
+      limit: active.plan.limits.smsPerMonth,
     },
     sitesPublished: {
       used: sitesRow[0].value,

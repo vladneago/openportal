@@ -48,6 +48,7 @@ import { reviewsRoutes } from "./modules/reviews/routes";
 import { reviewsPublicRoutes } from "./modules/reviews/public";
 import { marketingRoutes } from "./modules/marketing/routes";
 import { marketingWorkerRoutes } from "./modules/workers/marketing";
+import { smsRoutes } from "./modules/sms/routes";
 import { platformBillingRoutes } from "./modules/billing/platform";
 import { anafRoutes } from "./modules/billing/anaf";
 import { chatWidgetRoutes } from "./modules/chat-widget/routes";
@@ -81,6 +82,7 @@ v1.route("/realestate", realestateRoutes); v1.route("/events", eventsRoutes); v1
 v1.route("/booking", bookingRoutes);
 v1.route("/booking/reviews", reviewsRoutes);
 v1.route("/marketing", marketingRoutes);
+v1.route("/sms", smsRoutes);
 v1.route("/billing", billingRoutes);
 v1.route("/billing/platform", platformBillingRoutes);
 v1.route("/billing/anaf", anafRoutes);

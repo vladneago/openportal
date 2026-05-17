@@ -265,7 +265,15 @@
 - [x] Best-effort delivery (fire-and-forget, nu blochează booking flow)
 - [x] Respectă `emailConsent` din customer record (GDPR)
 - [x] Marchează `confirmationSentAt` la trimitere
-- [ ] SMS confirmation (integrare Twilio sau Vonage)
+- [x] SMS — Twilio + Vonage + stub fallback dev, normalizare E.164 RO (`0712…` → `+40712…`), `apps/api/src/lib/sms.ts` cu provider abstraction direct prin fetch
+- [x] Schema: `tenant_sms_settings` (provider + creds masked + lastTest) + `sms_sends` (per-message log cu audit/quota) + coloane noi `sms_confirmation_sent_at` / `sms_reminder_24h_sent_at` / `sms_reminder_2h_sent_at` pe appointments
+- [x] Templates RO short (`sms-templates.ts`) — confirmation/24h/2h/cancelled/test, fără ghilimele smart (UTF-16 problematic pe handsets vechi), <160 chars unde posibil
+- [x] Wired în `notifyBookingConfirmed/Cancelled/Reminder` — rulează în paralel cu email, gated pe `phone + smsConsent`, marchează coloane per-canal pentru tracking dual-channel
+- [x] Plan limit `smsPerMonth` (Solo: 50, Solo Pro: 500) cu `assertSmsQuota` aplicat în `sendSms` (skip `test` ca să poți verifica conexiunea fără să consumi cotă)
+- [x] API `/api/v1/sms/{settings (GET/PUT cu secrets masked), test (POST), log, summary}`
+- [x] UI `/settings/sms` cu provider switcher (stub/twilio/vonage), formular condițional credentials, butoane test-send, banner status, KPI cards + tabel log ultimele 20
+- [x] Quick links `📱 Configurează SMS` și `📄 Configurează ANAF` în header-ul `/settings/abonament`
+- [x] `smsThisMonth` surfaced în `getTenantUsage()` și bar pe `/settings/abonament`
 - [x] Reminder 24h + 2h înainte — endpoint `/api/v1/internal/booking/reminders/tick` + script `scripts/booking-cron.mjs` (cron 5–10 min) + template email dual-variant (24h "mâine la…" / 2h "peste 2 ore")
 - [x] Tracking duplicare: `reminder_24h_sent_at` / `reminder_2h_sent_at` în DB
 - [x] Auto-mark `no_show`: endpoint `/api/v1/internal/booking/no-show/tick` (grace period configurabil, default 30 min după `end_at`)

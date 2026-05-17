@@ -302,6 +302,11 @@ export const bookingAppointments = pgTable("booking_appointments", {
   reminderSentAt: timestamp("reminder_sent_at", { withTimezone: true }),
   reminder24hSentAt: timestamp("reminder_24h_sent_at", { withTimezone: true }),
   reminder2hSentAt: timestamp("reminder_2h_sent_at", { withTimezone: true }),
+  // SMS channel — tracked separately so an owner who configures SMS doesn't
+  // re-fire emails for customers already SMS'd in the same cadence step.
+  smsConfirmationSentAt: timestamp("sms_confirmation_sent_at", { withTimezone: true }),
+  smsReminder24hSentAt: timestamp("sms_reminder_24h_sent_at", { withTimezone: true }),
+  smsReminder2hSentAt: timestamp("sms_reminder_2h_sent_at", { withTimezone: true }),
   noShowMarkedAt: timestamp("no_show_marked_at", { withTimezone: true }),
 
   // For rescheduled appointments, point to the previous one

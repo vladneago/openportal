@@ -53,6 +53,7 @@ interface UsageReport {
   chatAiThisMonth: UsageQuota;
   efacturaThisMonth: UsageQuota;
   marketingEmailsThisMonth: UsageQuota;
+  smsThisMonth: UsageQuota;
   sitesPublished: { used: number; limit: number | null };
 }
 
@@ -179,6 +180,14 @@ export default function SubscriptionPage() {
         <div>
           <h1 style={{ fontSize: "1.75rem", fontWeight: 800, margin: 0, color: "#0F172A" }}>Abonament</h1>
           <p style={{ color: "#64748B", margin: "4px 0 0", fontSize: "0.95rem" }}>Plan curent, perioadă de facturare, upgrade.</p>
+          <div style={{ display: "flex", gap: 12, marginTop: 10, fontSize: "0.85rem" }}>
+            <a href="/settings/sms" style={{ color: "#6366F1", textDecoration: "none" }}>
+              📱 Configurează SMS
+            </a>
+            <a href="/settings/anaf" style={{ color: "#6366F1", textDecoration: "none" }}>
+              📄 Configurează ANAF
+            </a>
+          </div>
         </div>
         {!sub.stripeEnabled && (
           <div style={{ background: "#FEF3C7", color: "#92400E", padding: "8px 14px", borderRadius: 8, fontSize: "0.85rem", fontWeight: 600 }}>
@@ -313,6 +322,11 @@ export default function SubscriptionPage() {
               label="Email-uri marketing luna aceasta"
               used={usage.marketingEmailsThisMonth.used}
               limit={usage.marketingEmailsThisMonth.limit}
+            />
+            <UsageBar
+              label="SMS-uri luna aceasta"
+              used={usage.smsThisMonth.used}
+              limit={usage.smsThisMonth.limit}
             />
             <UsageBar
               label="Site-uri publicate"
