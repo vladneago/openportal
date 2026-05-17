@@ -348,10 +348,15 @@
 - [x] Export CSV `GET /billing/export.csv?from=…&to=…` cu BOM UTF-8 pentru Excel/LibreOffice
 - [x] Pagina `/billing/reports` cu tabel aging colaps/expand pe bucket + export form
 
-### 4.4 Integrare Stripe
-- [ ] Cont Stripe Connect per tenant
-- [ ] Link de plată unic per factură
-- [ ] Webhook payment.succeeded → mark paid
+### 4.4 Integrare Stripe (plăți online pe facturi)
+- [-] Stripe Connect OAuth full — amânat (necesită platform-fee handling + KYC). MVP-ul curent permite owner-ului să folosească contul lui Stripe direct.
+- [x] Schema `tenant_stripe_payments` (mode test/live, secretKey + publishableKey + webhookSecret, account cache, lastTest tracking) + 3 coloane noi pe `billing_invoices` (`stripe_payment_link_id`, `stripe_payment_link_url`, `stripe_checkout_session_id`)
+- [x] Lib `apps/api/src/lib/tenant-stripe-payments.ts` cu `getTenantStripe`, `createInvoicePaymentLink` (Product+Price ad-hoc + Payment Link cu metadata{tenantId,invoiceId}), `testTenantStripeKey` (accounts.retrieve pentru validare + cache), `markInvoicePaidFromSession`, `verifyWebhookSignature`
+- [x] API `/api/v1/billing/stripe-payments/{settings (GET/PUT masked secrets), test (POST), invoices/:id/payment-link (POST)}`
+- [x] Webhook public `/api/v1/public/billing/stripe-payments/webhook/:tenantId` — semnătura verificată cu webhook-secret-ul tenant-ului din URL, handler pentru `checkout.session.completed` care insertă billingPayments + marchează factura paid, idempotent
+- [x] UI `/settings/stripe-payments` cu test/live picker, formular Restricted Key + Publishable + Webhook Secret (mask + preserve la salvare), buton „Testează conexiunea" (Stripe accounts.retrieve cu afișare country/currency), status card + URL webhook copy-to-clipboard + ghid setup pas-cu-pas
+- [x] UI `/billing` — buton „💳 Link plată" pe facturi neachitate (issued/sent/viewed/partially_paid/overdue), generează (sau returnează cache) link Stripe, copiază URL + deschide tab nou
+- [x] Quick link „💳 Configurează plăți online" în header-ul `/settings/abonament`
 
 ---
 

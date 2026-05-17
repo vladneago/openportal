@@ -247,6 +247,25 @@ export default function BillingPage() {
       .catch((err) => alert("Eroare: " + String(err)));
   }
 
+  async function generatePaymentLink(id: string) {
+    const res = await api<{ url: string; paymentLinkId: string }>(
+      `/api/v1/billing/stripe-payments/invoices/${id}/payment-link`,
+      { method: "POST" },
+    );
+    if (!res.success || !res.data) {
+      alert(res.error?.message || "Eroare la generarea link-ului de plată");
+      return;
+    }
+    // Copy to clipboard + open in new tab so the owner can verify or share
+    try {
+      await navigator.clipboard.writeText(res.data.url);
+    } catch {
+      /* clipboard not available — ignore */
+    }
+    window.open(res.data.url, "_blank");
+    await load();
+  }
+
   async function stornoInvoice(id: string, documentNumber: string) {
     const reason = prompt(`Motiv storno pentru ${documentNumber} (opțional):`);
     if (reason === null) return; // user cancelled
@@ -418,6 +437,17 @@ export default function BillingPage() {
                     → ANAF
                   </button>
                 )}
+                {inv.type !== "credit_note" &&
+                  Number(inv.amountDue) > 0 &&
+                  ["issued", "sent", "viewed", "partially_paid", "overdue"].includes(inv.status) && (
+                    <button
+                      onClick={() => generatePaymentLink(inv.id)}
+                      className="btn-secondary text-xs"
+                      title="Generează link de plată Stripe pentru client"
+                    >
+                      💳 Link plată
+                    </button>
+                  )}
                 {inv.type !== "credit_note" &&
                   ["issued", "sent", "viewed", "partially_paid", "paid", "overdue"].includes(inv.status) && (
                     <button

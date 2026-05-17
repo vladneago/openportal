@@ -49,6 +49,8 @@ import { reviewsPublicRoutes } from "./modules/reviews/public";
 import { marketingRoutes } from "./modules/marketing/routes";
 import { marketingWorkerRoutes } from "./modules/workers/marketing";
 import { smsRoutes } from "./modules/sms/routes";
+import { stripePaymentsRoutes } from "./modules/billing/stripe-payments";
+import { stripePaymentsWebhookRoutes } from "./modules/workers/stripe-payments-webhook";
 import { platformBillingRoutes } from "./modules/billing/platform";
 import { anafRoutes } from "./modules/billing/anaf";
 import { chatWidgetRoutes } from "./modules/chat-widget/routes";
@@ -86,6 +88,7 @@ v1.route("/sms", smsRoutes);
 v1.route("/billing", billingRoutes);
 v1.route("/billing/platform", platformBillingRoutes);
 v1.route("/billing/anaf", anafRoutes);
+v1.route("/billing/stripe-payments", stripePaymentsRoutes);
 v1.route("/pos", posRoutes);
 v1.route("/site-builder", siteBuilderRoutes);
 v1.route("/chat-widget", chatWidgetRoutes);
@@ -95,6 +98,7 @@ app.route("/api/v1", v1);
 app.route("/api/v1/public/site-builder", siteBuilderPublicRoutes);
 app.route("/api/v1/public/booking", bookingPublicRoutes);
 app.route("/api/v1/public/reviews", reviewsPublicRoutes);
+app.route("/api/v1/public/billing/stripe-payments", stripePaymentsWebhookRoutes);
 
 // Internal worker endpoints (cron-driven, secured by WORKER_TOKEN)
 app.route("/api/v1/internal/booking", bookingWorkerRoutes);

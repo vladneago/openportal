@@ -180,6 +180,11 @@ export const billingInvoices = pgTable("billing_invoices", {
   pdfUrl: text("pdf_url"),
   xmlUrl: text("xml_url"),
 
+  // Online payment (Stripe Payment Link) — generated on demand
+  stripePaymentLinkId: varchar("stripe_payment_link_id", { length: 80 }),
+  stripePaymentLinkUrl: text("stripe_payment_link_url"),
+  stripeCheckoutSessionId: varchar("stripe_checkout_session_id", { length: 100 }),
+
   // Tracking
   sentAt: timestamp("sent_at", { withTimezone: true }),
   viewedAt: timestamp("viewed_at", { withTimezone: true }),

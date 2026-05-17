@@ -41,6 +41,7 @@ import * as anafSchema from "./schema/anaf";
 import * as reviewsSchema from "./schema/reviews";
 import * as marketingSchema from "./schema/marketing";
 import * as smsSchema from "./schema/sms";
+import * as tenantStripePaymentsSchema from "./schema/tenant_stripe_payments";
 
 const schema: Record<string, unknown> = {
   ...tenantSchema, ...userSchema, ...siteSchema, ...listsSchema,
@@ -62,6 +63,7 @@ const schema: Record<string, unknown> = {
   ...reviewsSchema,
   ...marketingSchema,
   ...smsSchema,
+  ...tenantStripePaymentsSchema,
 };
 
 const connectionString = process.env.DATABASE_URL || "postgresql://openportal:openportal_dev@localhost:5432/openportal";
@@ -108,6 +110,7 @@ export * from "./schema/anaf";
 export * from "./schema/reviews";
 export * from "./schema/marketing";
 export * from "./schema/sms";
+export * from "./schema/tenant_stripe_payments";
 
 export { schema };
 export type Database = typeof db;
